@@ -10,5 +10,5 @@ tvdbxml = urllib2.urlopen("http://thetvdb.com/api/GetSeries.php?seriesname={0}".
 tvdbsoup = BeautifulSoup(tvdbxml.read(), 'xml')
 
 for hit in tvdbsoup.find_all('Series'):
-    print hit.find('id').string
+    print hit.id.string
 
