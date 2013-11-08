@@ -25,9 +25,11 @@ $ python scrapers/superscraper.py
 
 ### Episodes
 
+ - Episode Name
  - Season it's in
  - Overview/description
  - Episode number
  - Thumbnail
  - Air date
  - Rating
+ - IMDB ID
