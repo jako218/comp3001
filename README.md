@@ -1,6 +1,19 @@
 # comp3001
 
-##Series
+To run the python scripts, you need to use `virtualenv`!
+
+Run this in the root of the repo:
+
+```
+sudo apt-get install virtualenv
+virtualenv env
+pip install -r requirements.txt
+python scrapers/superscraper.py
+```
+
+## Data
+
+### Series
 
  - Title
  - Description
@@ -10,7 +23,7 @@
  - Status
  - IMDB ID
 
-##Episodes
+### Episodes
 
  - Season it's in
  - Overview/description
