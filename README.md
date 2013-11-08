@@ -1,8 +1,20 @@
 # comp3001
 
-## Data
+##Series
 
- - thetvdb.com for banners, series description, imdb links
- - imdb.com for ratings
- - sidereel.com for show status (current, hiatus, etc), episode screenshot s
- - wikipedia.org for airdates, episode descriptions
+ - Title
+ - Description
+ - Rating
+ - Fanart
+ - Genre
+ - Status
+ - IMDB ID
+
+##Episodes
+
+ - Season it's in
+ - Overview/description
+ - Episode number
+ - Thumbnail
+ - Air date
+ - Rating
