@@ -7,8 +7,9 @@ Run this in the root of the repo:
 ```
 $ sudo apt-get install virtualenv *or* brew install virtualenv
 $ virtualenv env
+$ source env/bin/activate
 $ pip install -r requirements.txt
-$ python scrapers/superscraper.py
+$ python scrapers/seriesscraper.py
 ```
 
 ## Data
