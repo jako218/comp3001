@@ -8,6 +8,5 @@ urlpatterns = patterns('',
     # url(r'^$', 'telehex_django.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^', include('guestbook.urls')),
+    url(r'^', include('telehex.urls')),
 )

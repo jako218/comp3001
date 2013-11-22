@@ -3,7 +3,13 @@ from django.http import HttpResponseRedirect
 
 from google.appengine.api import users
 
-from guestbook.models import Greeting
+from telehex.models import Greeting
+
+import sys
+sys.path.insert(0, 'libs')
+
+from telehex.scraper import Scraper
+
 
 import urllib
 
@@ -39,3 +45,6 @@ def sign_post(request):
         greeting.put()
         return HttpResponseRedirect('/?' + urllib.urlencode({'guestbook_name': guestbook_name}))
     return HttpResponseRedirect('/')
+
+def scrape(request):
+    Scraper(81189)
