@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
   <head>
     <link type="text/css" rel="stylesheet" href="/static/css/main.css" />
@@ -6,8 +7,8 @@
     
     <form action="/search/" method="post">
       {% csrf_token %}
-      <div><textarea name="content" rows="3" cols="60"></textarea></div>
-      <div><input type="submit" value="Sign Guestbook"></div>
+      <div><input type="text" name="query"></div>
+      <div><input type="submit" value="Search"></div>
     </form>
 
   </body>

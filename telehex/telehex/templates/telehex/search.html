@@ -1,14 +1,15 @@
 <html>
   <head>
     <link type="text/css" rel="stylesheet" href="/static/css/main.css" />
-  </head>
+    </head>
   <body>
     
+  <h1>Results</h1>
+
   <ul>
-      <li><a href="/show/show1">Show 1</a></li>
-      <li><a href="/show/show2">Show 2</a></li>
-      <li><a href="/show/show3">Show 3</a></li>
-      <li><a href="/show/show4">Show 4</a></li>
+      {% for series in results %}
+      <li><a href="#">{{ series.name }}</a></li>
+      {% endfor %}
   </ul>
     
   </body>

@@ -15,3 +15,14 @@ indexes:
   properties:
   - name: date
     direction: desc
+
+- kind: TVEpisode
+  ancestor: yes
+  properties:
+  - name: ep_number
+
+- kind: TVEpisode
+  ancestor: yes
+  properties:
+  - name: season
+  - name: ep_number

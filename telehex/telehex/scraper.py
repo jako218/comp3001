@@ -7,9 +7,11 @@ from models import TVEpisode, TVShow
 import urllib2
 from datetime import datetime
 import re
+import string
 
 API_KEY = ''
 TVDB_BANNER_URL = 'http://thetvdb.com/banners/'
+TVDB_SEARCH_URL = "http://thetvdb.com/api/GetSeries.php?seriesname={0}"
 
 class Scraper:
 
@@ -22,6 +24,10 @@ class Scraper:
         self.get_episode_info()
 
     def get_series_info(self):
+        exclude_chars = set(string.punctuation)
+        slug = ''.join(char for char in self.tvdbsoup.SeriesName.string if char not in exclude_chars)
+        slug = re.sub(r'\W+', '_', slug.lower())
+
         tv_show = TVShow( key_name = str(self.tvdb_id),
                 title = str(self.tvdbsoup.SeriesName.string),
                 desc = str(self.tvdbsoup.Overview.string),
@@ -29,7 +35,8 @@ class Scraper:
                 fanart = TVDB_BANNER_URL + str(self.tvdbsoup.fanart.string),
                 genre = str(self.tvdbsoup.Genre.string),
                 status = str(self.tvdbsoup.Status.string),
-                imdb_id = str(self.tvdbsoup.IMDB_ID.string)).put()
+                imdb_id = str(self.tvdbsoup.IMDB_ID.string),
+                url_string = str(slug)).put()
         self.series_key = tv_show # obtain the key for the TV show
         
     def get_episode_info(self):
@@ -72,3 +79,18 @@ class Scraper:
             return rating_elements.strong.string
         else:
             return -1
+
+class Search:
+    def search_tvdb(self, query):
+        searchsoup = BeautifulSoup( urllib2.urlopen(TVDB_SEARCH_URL.format(urllib2.quote(query))).read(), 'xml')
+
+        results = []
+        for series in searchsoup.find_all('Series'):
+            results.append( {
+                'tvdb_id': series.seriesid.string,
+                'name': series.SeriesName.string,
+                'desc': series.Overview.string
+                })
+
+        return results
+
