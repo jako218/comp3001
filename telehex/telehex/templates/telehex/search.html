@@ -8,7 +8,7 @@
 
   <ul>
       {% for series in results %}
-      <li><a href="#">{{ series.name }}</a></li>
+      <li><a href="/scrape/{{series.tvdb_id}}">{{ series.name }}</a></li>
       {% endfor %}
   </ul>
     

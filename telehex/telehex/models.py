@@ -2,7 +2,7 @@ from google.appengine.ext import db
 
 class TVEpisode(db.Model):
     name = db.StringProperty(required=True)
-    season = db.StringProperty(required=True)
+    season = db.IntegerProperty(required=True)
     desc = db.TextProperty()
     ep_number = db.IntegerProperty(required=True)
     thumb = db.StringProperty()
@@ -12,7 +12,7 @@ class TVEpisode(db.Model):
 	
 
 class TVShow(db.Model):
-	#tvdb_id = db.IntegerProperty(required=True)
+    #tvdb_id = db.IntegerProperty(required=True)
     title = db.StringProperty(required=True)
     desc =  db.TextProperty()
     rating = db.FloatProperty()

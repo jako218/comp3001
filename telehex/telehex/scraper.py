@@ -20,14 +20,15 @@ class Scraper:
         self.tvdb_id = tvdb_id
         self.tvdbxml = urllib2.urlopen("http://thetvdb.com/api/{0}/series/{1}/all/en.xml".format(API_KEY, self.tvdb_id))
         self.tvdbsoup = BeautifulSoup(self.tvdbxml.read(), 'xml')
+        
+        exclude_chars = set(string.punctuation)
+        self.slug = ''.join(char for char in self.tvdbsoup.SeriesName.string if char not in exclude_chars)
+        self.slug = re.sub(r'\W+', '_', self.slug.lower())
+
         self.get_series_info()
         self.get_episode_info()
 
     def get_series_info(self):
-        exclude_chars = set(string.punctuation)
-        slug = ''.join(char for char in self.tvdbsoup.SeriesName.string if char not in exclude_chars)
-        slug = re.sub(r'\W+', '_', slug.lower())
-
         tv_show = TVShow( key_name = str(self.tvdb_id),
                 title = str(self.tvdbsoup.SeriesName.string),
                 desc = str(self.tvdbsoup.Overview.string),
@@ -36,7 +37,7 @@ class Scraper:
                 genre = str(self.tvdbsoup.Genre.string),
                 status = str(self.tvdbsoup.Status.string),
                 imdb_id = str(self.tvdbsoup.IMDB_ID.string),
-                url_string = str(slug)).put()
+                url_string = str(self.slug)).put()
         self.series_key = tv_show # obtain the key for the TV show
         
     def get_episode_info(self):
@@ -61,8 +62,8 @@ class Scraper:
 
                 TVEpisode(  parent = self.series_key,
                             key_name = str(episode.id.string),
-                            name = str(episode.EpisodeName.string),
-                            season = str(episode.SeasonNumber.string),
+                            name = str(episode.EpisodeName.string.encode('ascii', 'ignore')),
+                            season = int(episode.SeasonNumber.string),
                             desc =  overview,
                             ep_number = int(episode.EpisodeNumber.string),
                             thumb = str(episode.filename.string),
@@ -70,6 +71,9 @@ class Scraper:
                             rating = ep_rating,
                             imdb_id = str(episode.IMDB_ID.string)).put()
 
+
+    def get_url_slug(self):
+        return self.slug
 
     def get_imdb_rating(self, imdb_id):
         if imdb_id:
