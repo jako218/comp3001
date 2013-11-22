@@ -1,8 +1,9 @@
 from django.conf.urls.defaults import *
-from telehex.views import main_page, sign_post, scrape
+from telehex.views import *
 
 urlpatterns = patterns('',
-    (r'^sign/$', sign_post),
+    (r'^$', index),
+    (r'^search/$', search),
     (r'^scrape/$', scrape),
-    (r'^$', main_page),
+    (r'^show/(\w+)$', show),
 )
