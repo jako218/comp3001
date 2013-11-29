@@ -11,7 +11,6 @@ class TVEpisode(db.Model):
     imdb_id = db.StringProperty()
 
 class TVShow(db.Model):
-    #tvdb_id = db.IntegerProperty(required=True)
     title = db.StringProperty(required=True)
     desc =  db.TextProperty()
     rating = db.FloatProperty()
@@ -22,3 +21,5 @@ class TVShow(db.Model):
     url_string = db.StringProperty(required=True)
     last_scraped = db.DateTimeProperty()
 
+class UserSubscriptions(db.Model):
+    shows = db.ListProperty(long)

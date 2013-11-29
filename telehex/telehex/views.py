@@ -12,7 +12,7 @@ import sys
 sys.path.insert(0, 'libs')
 
 from telehex.scraper import Scraper, Search
-from models import TVShow
+from models import *
 
 from datetime import datetime, timedelta
 import urllib
@@ -50,10 +50,94 @@ def show(request, show_name):
     if q.count() > 0:
         show = show.next()
     else:
-        return direct_to_template(request, 'telehex/notfound.html', { 'query': show_name })
+        return direct_to_template(request, 'telehex/notfound.html', { 'query': show_name } )
+
+    subscribed = False
+
+    user = users.get_current_user()
+    if user:
+        u = UserSubscriptions.get_by_key_name(user.user_id())
+        if u:
+            if long(show.key().name()) in u.shows:
+                subscribed = True
 
     q = db.GqlQuery("SELECT * FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number", show)
     episodes = q.run()
 
-    template_values = { 'show': show, 'episode_iterator': episodes }
+    template_values = { 'show': show, 'episode_iterator': episodes, 'subscribed': subscribed, 'next_episode': nextepisode }
     return direct_to_template(request, 'telehex/show.html', template_values)
+
+def profile(request):
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect(users.create_login_url(request.get_full_path()))
+
+    template_values = {
+            'user_name': user.nickname(),
+            'user_id': user.user_id(),
+    }
+    return direct_to_template(request, 'telehex/profile.html', template_values)
+
+def login(request):
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect(users.create_login_url(request.get_full_path()))
+    else:
+        return HttpResponseRedirect('/')
+
+def logout(request):
+    user = users.get_current_user()
+    if user:
+        return HttpResponseRedirect(users.create_logout_url(request.get_full_path()))
+    else:
+        return HttpResponseRedirect('/')
+
+def subscribe(request):
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/login')
+
+    if request.method != 'POST':
+        return HttpResponseRedirect('/')
+
+    tvdb_id = int(request.POST.get('show_id'))
+    subs_shows = []
+
+    u = UserSubscriptions.get_by_key_name(user.user_id())
+    if u:
+        subs_shows = u.shows
+    
+    if tvdb_id not in subs_shows:
+        subs_shows.append(tvdb_id)
+
+    UserSubscriptions(
+            key_name = user.user_id(), 
+            shows = subs_shows,
+    ).put()
+    
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+def unsubscribe(request):
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/login')
+
+    if request.method != 'POST':
+        return HttpResponseRedirect('/')
+
+    tvdb_id = int(request.POST.get('show_id'))
+    subs_shows = []
+
+    u = UserSubscriptions.get_by_key_name(user.user_id())
+    if u:
+        subs_shows = u.shows
+
+    if tvdb_id in subs_shows:
+        subs_shows.remove(tvdb_id)
+
+    UserSubscriptions(
+            key_name = user.user_id(),
+            shows = subs_shows
+    ).put()
+
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])

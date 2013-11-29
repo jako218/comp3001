@@ -6,7 +6,26 @@
 
   <h1>{{ show.title }}</h1>
 
+  {% if subscribed %}
+  <form action="/unsubscribe/" method="post" >
+      {% csrf_token %}
+      <input type="hidden" name="show_id" value="{{ show.key.name }}" />
+      <input type="submit" value="unsubscribe" />
+  </form>
+
+  {% else %}
+  <form action="/subscribe/" method="post" >
+      {% csrf_token %}
+      <input type="hidden" name="show_id" value="{{ show.key.name }}" />
+      <input type="submit" value="subscribe" />
+  </form>
+  {% endif %}
+
+  <h2>{{ show.key.name }}</h2>
+
   <h3>{{ show.rating }} || {{ show.status }}</h3>
+
+  <h3>Next airing: {{ nextepisode.airdate }}</h3>
 
   <p>{{ show.desc }}</p>
 
