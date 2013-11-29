@@ -20,4 +20,5 @@ class TVShow(db.Model):
     status = db.StringProperty(required=True, choices=set(["Ended", "Continuing", "On Hiatus", "Other"]))
     imdb_id = db.StringProperty(required=True)
     url_string = db.StringProperty(required=True)
+    last_scraped = db.DateTimeProperty()
 

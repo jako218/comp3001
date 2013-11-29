@@ -14,7 +14,10 @@ sys.path.insert(0, 'libs')
 from telehex.scraper import Scraper, Search
 from models import TVShow
 
+from datetime import datetime, timedelta
 import urllib
+
+RESCRAPE_AFTER = 7
 
 def index(request):
     template_values = {}
@@ -30,11 +33,10 @@ def search(request):
         return direct_to_template(request, 'telehex/search.html', template_values)
 
 def scrape(request, tvdb_id):
-    
     q = TVShow.get_by_key_name(tvdb_id)
 
-    if q:
-       url_slug = q.url_string
+    if q and q.last_scraped < datetime.now() - timedelta(days=RESCRAPE_AFTER):
+        url_slug = q.url_string
     else:
         s = Scraper(tvdb_id)
         url_slug = s.get_url_slug()

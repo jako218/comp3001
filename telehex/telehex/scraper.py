@@ -29,6 +29,10 @@ class Scraper:
         self.get_series_info()
         self.get_episode_info()
 
+        q = TVShow.get_by_key_name(self.tvdb_id)
+        q.last_scraped = datetime.now()
+        q.put()
+
     def get_series_info(self):
         tv_show = TVShow( key_name = self.tvdb_id,
                 title = self.tvdbsoup.SeriesName.text,
