@@ -8,6 +8,7 @@ import urllib2
 from datetime import datetime
 import re
 import string
+import collections
 
 API_KEY = ''
 TVDB_BANNER_URL = 'http://thetvdb.com/banners/'
@@ -41,7 +42,7 @@ class Scraper:
         self.series_key = tv_show # obtain the key for the TV show
         
     def get_episode_info(self):
-        ratings = {}
+        ratings = collections.defaultdict(dict)
         if self.tvdbsoup.IMDB_ID.string:
             imdbhtml = urllib2.urlopen("http://www.imdb.com/title/{0}/epdate".format(self.tvdbsoup.IMDB_ID.string))
             imdbsoup = BeautifulSoup(imdbhtml.read())
@@ -49,20 +50,28 @@ class Scraper:
             for ratingrow in ratingrows:
                 tdlist = ratingrow.find_all('td')
                 rating = tdlist[2].string
-                title = re.sub('title/', '', tdlist[1].a.get('href').strip('/'))
-                ratings[title] = rating
+                print tdlist[2].string
+                #title = re.sub('title/', '', tdlist[1].a.get('href').strip('/'))
+                sep = tdlist[0].string.split('&')[0].encode('ascii', 'ignore').split('.')
+                ratings[sep[0]][sep[1]] = rating.encode('ascii', 'ignore')
 
         episodes = self.tvdbsoup.find_all('Episode')
 
         for episode in episodes:
             if episode.SeasonNumber.string != '0' and episode.FirstAired.string:
                 ep_rating, overview = None, None;
-                if episode.IMDB_ID.string in ratings: ep_rating = float(ratings[episode.IMDB_ID.string])
+                #if episode.IMDB_ID.string in ratings: ep_rating = float(ratings[episode.IMDB_ID.string])
+                ep_rating = float(ratings[episode.SeasonNumber.string][episode.EpisodeNumber.string])
                 if episode.Overview.string: overview = str(episode.Overview.string.encode('ascii', 'ignore'))
+
+                if episode.EpisodeName.string :
+                    epname = str(episode.EpisodeName.string.encode('ascii', 'ignore'))
+                else:
+                    epname = "Not Available"
 
                 TVEpisode(  parent = self.series_key,
                             key_name = str(episode.id.string),
-                            name = str(episode.EpisodeName.string.encode('ascii', 'ignore')),
+                            name = epname,
                             season = int(episode.SeasonNumber.string),
                             desc =  overview,
                             ep_number = int(episode.EpisodeNumber.string),
@@ -90,11 +99,16 @@ class Search:
 
         results = []
         for series in searchsoup.find_all('Series'):
+            if series.Overview:
+               desc = series.Overview.string
+            else:
+               desc = "Not Available"
+
             results.append( {
                 'tvdb_id': series.seriesid.string,
                 'name': series.SeriesName.string,
-                'desc': series.Overview.string
-                })
+                'desc': desc,
+            })
 
         return results
 
