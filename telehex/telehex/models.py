@@ -9,7 +9,6 @@ class TVEpisode(db.Model):
     airdate = db.DateTimeProperty()
     rating = db.FloatProperty()
     imdb_id = db.StringProperty()
-	
 
 class TVShow(db.Model):
     #tvdb_id = db.IntegerProperty(required=True)

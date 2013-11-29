@@ -3,3 +3,4 @@ env
 .DS_Store
 flatsite/img/.DS_Store
 flatsite/img/telehexlogo.sketch/
+*.pyc
