@@ -42,7 +42,8 @@ class Scraper:
                 genre = self.tvdbsoup.Genre.text,
                 status = self.tvdbsoup.Status.text,
                 imdb_id = self.tvdbsoup.IMDB_ID.text,
-                url_string = self.slug
+                url_string = self.slug,
+                last_scraped = datetime.utcfromtimestamp(0)
         ).put()
         self.series_key = tv_show # obtain the key for the TV show
         

@@ -35,7 +35,7 @@ def search(request):
 def scrape(request, tvdb_id):
     q = TVShow.get_by_key_name(tvdb_id)
 
-    if q and q.last_scraped < datetime.now() - timedelta(days=RESCRAPE_AFTER):
+    if q and q.last_scraped > datetime.now() - timedelta(days=RESCRAPE_AFTER):
         url_slug = q.url_string
     else:
         s = Scraper(tvdb_id)
