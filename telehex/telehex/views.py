@@ -64,7 +64,7 @@ def show(request, show_name):
     q = db.GqlQuery("SELECT * FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number", show)
     episodes = q.run()
 
-    template_values = { 'show': show, 'episode_iterator': episodes, 'subscribed': subscribed, 'next_episode': nextepisode }
+    template_values = { 'show': show, 'episode_iterator': episodes, 'subscribed': subscribed }
     return direct_to_template(request, 'telehex/show.html', template_values)
 
 def profile(request):
