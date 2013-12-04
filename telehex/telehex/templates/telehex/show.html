@@ -1,55 +1,69 @@
-<html>
-  <head>
-    <link type="text/css" rel="stylesheet" href="/static/css/main.css" />
-  </head>
-  <body>
+{% include "./telehex/header.html" %}
+<div class="container">
+    <div class="row">
+        <!-- Hexagon Image -->
+        <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
+            <div class="container-fluid">
+            <img id="hex" src="{{ show.fanart }}" class="img-responsive" alt="Responsive image">
+            </div>
+            {% if subscribed %}
+            <form action="/unsubscribe/" method="post" >
+              {% csrf_token %}
+              <input type="hidden" name="show_id" value="{{ show.key.name }}" />
+              <input type="submit" value="unsubscribe" />
+            </form>
+            {% else %}
+            <form action="/subscribe/" method="post" >
+                {% csrf_token %}
+                <input type="hidden" name="show_id" value="{{ show.key.name }}" />
+                <input type="submit" value="subscribe" />
+            </form>
+            {% endif %}
+        </div>
 
-  <h1>{{ show.title }}</h1>
+        <!-- Description -->
+        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+            <div class="container">
+                <div class="row">
+                    <div id="showtitle">
+                        <p>{{ show.title }}  || {{ show.rating }} || {{ show.status }}</p>
+                        <p>Next airing: {{ nextepisode.airdate }}</p>
+                    </div>
+                </div>
 
-  {% if subscribed %}
-  <form action="/unsubscribe/" method="post" >
-      {% csrf_token %}
-      <input type="hidden" name="show_id" value="{{ show.key.name }}" />
-      <input type="submit" value="unsubscribe" />
-  </form>
+                <div class="row">
+                    <hr class="showline">
+                </div>
 
-  {% else %}
-  <form action="/subscribe/" method="post" >
-      {% csrf_token %}
-      <input type="hidden" name="show_id" value="{{ show.key.name }}" />
-      <input type="submit" value="subscribe" />
-  </form>
-  {% endif %}
+                <div class="row">
+                    <div id="showdescription">
+                        {{ show.desc }}
+                    </div>
+                </div>
 
-  <h2>{{ show.key.name }}</h2>
+                <div class="row">
+                  <h2>Episodes</h2>
+                  <table>
+                      <tr>
+                          <td>Season</td>
+                          <td>Ep Number</td>
+                          <td>Episode Name</td>
+                          <td>Episode Rating</td>
+                      </tr>
+                      
+                      {% for episode in episode_iterator %}
+                      <tr>
+                          <td>{{ episode.season }}</td>
+                          <td>{{ episode.ep_number }}</td>
+                          <td>{{ episode.name }}</td>
+                          <td>{{ episode.rating }}</td>
+                      </tr>
+                      {% endfor %}
 
-  <h3>{{ show.rating }} || {{ show.status }}</h3>
-
-  <h3>Next airing: {{ nextepisode.airdate }}</h3>
-
-  <p>{{ show.desc }}</p>
-
-  <img src="{{ show.fanart }}" style="max-width: 100%" />
-
-    <h2>Episodes</h2>
-    <table>
-        <tr>
-            <td>Season</td>
-            <td>Ep Number</td>
-            <td>Episode Name</td>
-            <td>Episode Rating</td>
-        </tr>
-        
-        {% for episode in episode_iterator %}
-        <tr>
-            <td>{{ episode.season }}</td>
-            <td>{{ episode.ep_number }}</td>
-            <td>{{ episode.name }}</td>
-            <td>{{ episode.rating }}</td>
-        </tr>
-        {% endfor %}
-
-    </table>
-
-  </body>
-</html>
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "./telehex/footer.html" %}

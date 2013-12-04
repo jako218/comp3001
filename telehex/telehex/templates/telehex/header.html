@@ -1,0 +1,32 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Telehex</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="{% static "bootstrap/bootstrap.min.css" %}" rel="stylesheet" media="screen">
+    <link href="{% static "css/bootflat.css" %}" rel="stylesheet" media="screen">
+    <link href="{% static "css/bootflat-extensions.css" %}" rel="stylesheet" media="screen">
+    <link href="{% static "css/bootflat-square.css" %}" rel="stylesheet" media="screen">
+    <link href="{% static "css/styles.css" %}" rel="stylesheet" media="screen">
+    <link href="{% static "css/font-awesome.min.css" %}" rel="stylesheet" media="screen">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="{% static "js/html5shiv.js" %}"></script>
+      <script src="{% static "js/respond.min.js" %}"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div id="wrap" class="container-fluid">
+      <div class="navbar" role="navigation" id="headerbar">
+        <div class="navbar-header">
+          <img src="{% static "img/telehexlogo.png" %}" width="114" height="52" id="headerlogo" title="telehexlogo" alt="Telehex Logo"/>
+        </div>
+
+        <div class="pull-right" id="loginbutton">
+          <a href="login.html" type="submit" class="btn btn-primary" id="loginbutton">log in</a>
+        </div>
+      </div>

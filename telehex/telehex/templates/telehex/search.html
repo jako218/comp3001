@@ -1,8 +1,6 @@
-<html>
-  <head>
-    <link type="text/css" rel="stylesheet" href="/static/css/main.css" />
-    </head>
-  <body>
+{% include "./telehex/header.html" %}
+
+  <div class="container">
     
   <h1>Results</h1>
 
@@ -11,6 +9,7 @@
       <li><a href="/scrape/{{series.tvdb_id}}">{{ series.name }}</a></li>
       {% endfor %}
   </ul>
+
+  </div>
     
-  </body>
-</html>
+{% include "./telehex/footer.html" %}
