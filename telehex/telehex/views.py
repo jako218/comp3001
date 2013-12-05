@@ -1,5 +1,5 @@
 from django.views.generic.simple import direct_to_template
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
 # Increase the timeout for the show
 from google.appengine.api import urlfetch
@@ -66,6 +66,15 @@ def show(request, show_name):
 
     template_values = { 'show': show, 'episode_iterator': episodes, 'subscribed': subscribed }
     return direct_to_template(request, 'telehex/show.html', template_values)
+
+def hexagon(request, tvdb_id):
+    q = TVShow.get_by_key_name(tvdb_id)
+    img = HexImages.get_by_key_name(tvdb_id, parent=q.key())
+    
+    response = HttpResponse(mimetype="image/png")
+    response.write(img.image)
+
+    return response
 
 def profile(request):
     user = users.get_current_user()

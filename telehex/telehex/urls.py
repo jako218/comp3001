@@ -11,4 +11,5 @@ urlpatterns = patterns('',
     (r'^logout/$', logout),
     (r'^subscribe/$', subscribe),
     (r'^unsubscribe/$', unsubscribe),
+    (r'^hexagons/([0-9]+)$', hexagon),
 )

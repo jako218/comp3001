@@ -17,6 +17,8 @@ libraries:
   version: 2.3
 - name: django
   version: 1.4
+- name: PIL
+  version: 1.1.7
 
 env_variables:
   DJANGO_SETTINGS_MODULE: 'telehex_django.settings'

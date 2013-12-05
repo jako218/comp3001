@@ -1,10 +1,15 @@
+{% load staticfiles %}
 {% include "./telehex/header.html" %}
 <div class="container">
     <div class="row">
         <!-- Hexagon Image -->
         <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
             <div class="container-fluid">
-            <img id="hex" src="{{ show.fanart }}" class="img-responsive" alt="Responsive image">
+              {% if show.fanart %}
+                <img id="hex" src="/hexagons/{{ show.key.name }}" class="img-responsive" alt="{{show.name}} hex image">
+              {% else %}
+                <img id="hex" src="{% static "img/errorhex.png" %}" class="img-responsive" alt="No Show Image">
+              {% endif %} 
             </div>
             {% if subscribed %}
             <form action="/unsubscribe/" method="post" >

@@ -61,6 +61,11 @@ body{
 
 /* Show information page styles */
 
+#hex
+{
+    margin: auto;
+}
+
 #showtitle{
     color: #ecf0f1;
     font-size: 60px;

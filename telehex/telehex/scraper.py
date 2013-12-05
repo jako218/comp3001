@@ -3,7 +3,9 @@
 TV show Scraper Class
 """
 from bs4 import BeautifulSoup
-from models import TVEpisode, TVShow
+from google.appengine.ext import db
+from models import TVEpisode, TVShow, HexImages
+from hexagon import Hexagon
 import urllib2
 from datetime import datetime
 import re
@@ -34,11 +36,17 @@ class Scraper:
         q.put()
 
     def get_series_info(self):
+        print self.tvdbsoup.fanart.text
+
+        fanart_url = None
+        if self.tvdbsoup.fanart.text:
+            fanart_url = TVDB_BANNER_URL + self.tvdbsoup.fanart.text;
+
         tv_show = TVShow( key_name = self.tvdb_id,
                 title = self.tvdbsoup.SeriesName.text,
                 desc = self.tvdbsoup.Overview.text,
                 rating = float(self.get_imdb_rating(self.tvdbsoup.IMDB_ID.text)),
-                fanart = TVDB_BANNER_URL + self.tvdbsoup.fanart.text,
+                fanart = fanart_url,
                 genre = self.tvdbsoup.Genre.text,
                 status = self.tvdbsoup.Status.text,
                 imdb_id = self.tvdbsoup.IMDB_ID.text,
@@ -46,6 +54,12 @@ class Scraper:
                 last_scraped = datetime.utcfromtimestamp(0)
         ).put()
         self.series_key = tv_show # obtain the key for the TV show
+
+        if fanart_url:
+            HexImages(  parent = self.series_key,
+                        key_name = self.tvdb_id,
+                        image = db.Blob(Hexagon(fanart_url).get_hex())
+            ).put()
         
     def get_episode_info(self):
         ratings = collections.defaultdict(dict)

@@ -16,10 +16,13 @@ class TVShow(db.Model):
     rating = db.FloatProperty()
     fanart = db.StringProperty()
     genre = db.StringProperty()
-    status = db.StringProperty(required=True, choices=set(["Ended", "Continuing", "On Hiatus", "Other"]))
-    imdb_id = db.StringProperty(required=True)
+    status = db.StringProperty(choices=set(["Ended", "Continuing", "On Hiatus", "Other"]))
+    imdb_id = db.StringProperty()
     url_string = db.StringProperty(required=True)
     last_scraped = db.DateTimeProperty()
 
 class UserSubscriptions(db.Model):
     shows = db.ListProperty(long)
+
+class HexImages(db.Model):
+    image = db.BlobProperty()
