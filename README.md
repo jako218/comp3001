@@ -1,4 +1,4 @@
-# comp3001
+# COMP3001 - Telehex
 
 We're using Google App Engine. To run the website, you'll need to have it
 installed. You can download it
@@ -6,7 +6,7 @@ installed. You can download it
 or use `brew install google-app-engine` if on a mac.
 
 You'll also need to make sure you've got the correct python requirements
-installed. You can do this by created and using a virtual environment:
+installed. You can do this by creating and using a virtual environment:
 
 ```
 $ cd comp3001
