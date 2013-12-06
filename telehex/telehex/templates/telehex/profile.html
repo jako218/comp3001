@@ -4,6 +4,7 @@
 <div class="container">
     <h1>Hello, {{user.nickname}}</h1>
 
+    {% if shows %}
     <ul>
         {% for show, next in shows %}
         <li>
@@ -16,6 +17,9 @@
         </li>
         {% endfor %}
     <ul>
+    {% else %}
+    <p>It doesn't look like you've subscribed to any shows. Try <a href="/">searching</a> for some and subscribing to them!</p>
+    {% endif %}
 </div>
 
 {% include "./telehex/footer.html" %}
