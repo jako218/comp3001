@@ -1,10 +1,8 @@
-<html>
-  <head>
-    <link type="text/css" rel="stylesheet" href="/static/css/main.css" />
-  </head>
-  <body>
-    
-  <h1>{{ query }} not found.</h1>
+{% include "./telehex/header.html" %}
 
-  </body>
-</html>
+<div class="container-fluid">
+    <h1>Ooops!</h1>
+    <p>It appears that the show you're looking for doesn't exist. Try <a href="/">searching</a> for the show instead.</a>
+</div>
+
+{% include "./telehex/footer.html" %}

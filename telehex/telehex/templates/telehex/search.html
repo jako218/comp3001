@@ -1,15 +1,14 @@
 {% include "./telehex/header.html" %}
 
-  <div class="container">
-    
-  <h1>Results</h1>
+<div class="container">
+    <h1>Results</h1>
 
-  <ul>
-      {% for series in results %}
-      <li><a href="/scrape/{{series.tvdb_id}}">{{ series.name }}</a></li>
-      {% endfor %}
-  </ul>
+    <ul>
+        {% for series in results %}
+        <li><a href="/scrape/{{series.tvdb_id}}">{{ series.name }}</a></li>
+        {% endfor %}
+    </ul>
 
-  </div>
+</div>
     
 {% include "./telehex/footer.html" %}
