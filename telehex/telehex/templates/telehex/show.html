@@ -64,7 +64,11 @@
                           <td>{{ episode.season }}</td>
                           <td>{{ episode.ep_number }}</td>
                           <td>{{ episode.name }}</td>
+                          {% if episode.rating < 0 %}
+                          <td>N/A</td>
+                          {% else %}
                           <td>{{ episode.rating }}</td>
+                          {% endif %}
                       </tr>
                       {% endfor %}
 
