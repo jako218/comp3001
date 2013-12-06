@@ -28,7 +28,14 @@
             <a href="/"><img src="{% static "img/telehexlogo.png" %}" width="114" height="52" id="headerlogo" title="telehexlogo" alt="Telehex Logo"/></a>
         </div>
 
-        <div class="pull-right" id="loginbutton">
-            <a href="login.html" type="submit" class="btn btn-primary" id="loginbutton">log in</a>
+        {% if user %}
+        <a href="/profile">{{ user.nickname }}</a>
+        <div class="pull-right" id="logoutbutton">
+            <a href="/logout" type="submit" class="btn btn-danger" id="logoutbutton">log out</a>
         </div>
+        {% else %}
+        <div class="pull-right" id="loginbutton">
+            <a href="/login" type="submit" class="btn btn-primary" id="loginbutton">log in</a>
+        </div>
+        {% endif %}
     </div>
