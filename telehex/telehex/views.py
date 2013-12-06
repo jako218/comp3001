@@ -85,24 +85,25 @@ def profile(request):
     if not user:
         return HttpResponseRedirect(users.create_login_url(request.get_full_path()))
 
+    template_values = { }
     subs_ids = UserSubscriptions.get_by_key_name(user.user_id())
+    if subs_ids:
+        subs_strings = []
+        for ids in subs_ids.shows:
+            subs_strings.append(str(ids))
 
-    subs_strings = []
-    for ids in subs_ids.shows:
-        subs_strings.append(str(ids))
+        subs_shows_names = TVShow.get_by_key_name(subs_strings)
 
-    subs_shows_names = TVShow.get_by_key_name(subs_strings)
+        subs_next_episodes = []
+        for ids in subs_shows_names:
+            q = db.GqlQuery("SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1", date.today(), ids)
+            nextepisode = q.run()
+            if q.count() > 0:
+                subs_next_episodes.append(nextepisode.next())
+            else:
+                subs_next_episodes.append(None)
 
-    subs_next_episodes = []
-    for ids in subs_shows_names:
-        q = db.GqlQuery("SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1", date.today(), ids)
-        nextepisode = q.run()
-        if q.count() > 0:
-            subs_next_episodes.append(nextepisode.next())
-        else:
-            subs_next_episodes.append(None)
-
-    template_values = { 'shows': sorted(zip(subs_shows_names, subs_next_episodes), key=lambda x: x[1].airdate if x[1] else date(MAXYEAR, 12, 31)) }
+        template_values = { 'shows': sorted(zip(subs_shows_names, subs_next_episodes), key=lambda x: x[1].airdate if x[1] else date(MAXYEAR, 12, 31)) }
     return direct_to_template(request, 'telehex/profile.html', template_values)
 
 def login(request):
@@ -168,3 +169,6 @@ def unsubscribe(request):
     ).put()
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+def calendar(request):
+    return direct_to_template(request, 'telehex/calendar.html', { })
