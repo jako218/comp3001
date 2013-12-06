@@ -4,3 +4,4 @@ env
 flatsite/img/.DS_Store
 flatsite/img/telehexlogo.sketch/
 *.pyc
+index.yaml
