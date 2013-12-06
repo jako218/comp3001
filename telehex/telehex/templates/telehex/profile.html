@@ -1,7 +1,13 @@
 {% include "./telehex/header.html" %}
 
 <div class="container">
-    <h1>Hello, {{user_id}}</h1>
+    <h1>Hello, {{user.nickname}}</h1>
+
+    <ul>
+        {% for s in shows %}
+        <li>{{ s.title }}</li>
+        {% endfor %}
+    <ul>
 </div>
 
 {% include "./telehex/footer.html" %}

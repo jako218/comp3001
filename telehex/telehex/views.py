@@ -85,10 +85,24 @@ def profile(request):
     if not user:
         return HttpResponseRedirect(users.create_login_url(request.get_full_path()))
 
-    template_values = {
-            'user_name': user.nickname(),
-            'user_id': user.user_id(),
-    }
+    subs_ids = UserSubscriptions.get_by_key_name(user.user_id())
+
+    subs_strings = []
+    for ids in subs_ids.shows:
+        subs_strings.append(str(ids))
+
+    subs_shows_names = TVShow.get_by_key_name(subs_strings)
+
+    subs_next_episodes = []
+    for ids in subs_shows_names:
+        q = db.GqlQuery("SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1", date.today(), ids)
+        nextepisode = q.run()
+        if q.count() > 0:
+            subs_next_episodes.append(nextepisode.next())
+        else:
+            subs_next_episodes.append(None)
+
+    template_values = { 'shows': subs_shows_names, 'next_episodes' : subs_next_episodes }
     return direct_to_template(request, 'telehex/profile.html', template_values)
 
 def login(request):
