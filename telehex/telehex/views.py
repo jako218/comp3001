@@ -14,7 +14,7 @@ sys.path.insert(0, 'libs')
 from telehex.scraper import Scraper, Search
 from models import *
 
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, MAXYEAR
 import urllib
 
 RESCRAPE_AFTER = 7
@@ -102,7 +102,7 @@ def profile(request):
         else:
             subs_next_episodes.append(None)
 
-    template_values = { 'shows': subs_shows_names, 'next_episodes' : subs_next_episodes }
+    template_values = { 'shows': sorted(zip(subs_shows_names, subs_next_episodes), key=lambda x: x[1].airdate if x[1] else date(MAXYEAR, 12, 31)) }
     return direct_to_template(request, 'telehex/profile.html', template_values)
 
 def login(request):

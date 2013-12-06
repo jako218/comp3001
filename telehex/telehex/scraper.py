@@ -72,7 +72,10 @@ class Scraper:
                     tdlist = ratingrow.find_all('td')
                     rating = tdlist[2].text
                     sep = tdlist[0].text.split('&')[0].split('.')
-                    ratings[int(sep[0])][int(sep[1])] = rating
+                    try:
+                        ratings[int(sep[0])][int(sep[1])] = rating
+                    except ValueError:
+                        continue
 
         episodes = self.tvdbsoup.find_all('Episode')
 
@@ -109,9 +112,9 @@ class Scraper:
             html = urllib2.urlopen("http://m.imdb.com/title/{0}".format(imdb_id))
             soup = BeautifulSoup(html.read())
             rating_elements = soup.find("p", {"class":"votes"})
-            return rating_elements.strong.text
-        else:
-            return -1
+            if rating_elements:
+                return rating_elements.strong.text 
+        return -1
 
 class Search:
     def search_tvdb(self, query):

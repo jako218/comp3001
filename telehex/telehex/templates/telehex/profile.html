@@ -1,11 +1,19 @@
+{% load staticfiles %}
 {% include "./telehex/header.html" %}
 
 <div class="container">
     <h1>Hello, {{user.nickname}}</h1>
 
     <ul>
-        {% for s in shows %}
-        <li>{{ s.title }}</li>
+        {% for show, next in shows %}
+        <li>
+            {{ show.title }} -- {{ next.name }} -- {{ next.airdate }}
+            {% if show.fanart %}
+            <img id="hex" src="/hexagons/{{ show.key.name }}" class="img-responsive" alt="{{show.name}} hex image">
+            {% else %}
+            <img id="hex" src="{% static "img/errorhex.png" %}" class="img-responsive" alt="No Show Image">
+            {% endif %} 
+        </li>
         {% endfor %}
     <ul>
 </div>
