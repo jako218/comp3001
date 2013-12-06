@@ -25,8 +25,7 @@ $ dev_appserver.py --clear_datastore 'true' telehex
 from the root of the repo. The `--clear_datastore 'true'` bit is optional - if
 used, it'll just clear your datastore everytime you restart the server.
 
-You can now access the site at http://localhost:8080 or access the Google
-control panel at http://localhost:8000
+You can now access the site at [http://localhost:8080](http://localhost:8080) or access the Google control panel at [http://localhost:8000](http://localhost:8000)
 
 ## Pages on the site
 
