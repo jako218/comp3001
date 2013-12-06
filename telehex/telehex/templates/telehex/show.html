@@ -33,7 +33,9 @@
                 <div class="row">
                     <div id="showtitle">
                         <p>{{ show.title }}  || {{ show.rating }} || {{ show.status }}</p>
-                        <p>Next airing: {{ nextepisode.airdate }}</p>
+                        {% if nextepisode %}
+                            <p>Next airing: {{ nextepisode.airdate }}</p>
+                        {% endif %}
                     </div>
                 </div>
 

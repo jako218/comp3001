@@ -95,7 +95,7 @@ class Scraper:
                             desc =  overview,
                             ep_number = int(episode.EpisodeNumber.text),
                             thumb = episode.filename.text,
-                            airdate = datetime.strptime(episode.FirstAired.text,  '%Y-%m-%d'),
+                            airdate = datetime.strptime(episode.FirstAired.text,  '%Y-%m-%d').date(),
                             rating = ep_rating,
                             imdb_id = episode.IMDB_ID.text
                 ).put()

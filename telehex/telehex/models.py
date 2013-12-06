@@ -6,7 +6,7 @@ class TVEpisode(db.Model):
     desc = db.TextProperty()
     ep_number = db.IntegerProperty(required=True)
     thumb = db.StringProperty()
-    airdate = db.DateTimeProperty()
+    airdate = db.DateProperty()
     rating = db.FloatProperty()
     imdb_id = db.StringProperty()
 

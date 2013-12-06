@@ -14,7 +14,7 @@ sys.path.insert(0, 'libs')
 from telehex.scraper import Scraper, Search
 from models import *
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import urllib
 
 RESCRAPE_AFTER = 7
@@ -64,7 +64,11 @@ def show(request, show_name):
     q = db.GqlQuery("SELECT * FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number", show)
     episodes = q.run()
 
-    template_values = { 'show': show, 'episode_iterator': episodes, 'subscribed': subscribed }
+    q = db.GqlQuery("SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1", date.today(), show)
+    nextepisode = q.run()
+    nextepisode = nextepisode.next() if q.count() > 0 else None
+
+    template_values = { 'show': show, 'episode_iterator': episodes, 'subscribed': subscribed, 'nextepisode': nextepisode }
     return direct_to_template(request, 'telehex/show.html', template_values)
 
 def hexagon(request, tvdb_id):
