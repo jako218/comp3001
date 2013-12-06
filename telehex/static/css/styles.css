@@ -1,6 +1,14 @@
+/* COLOURS:
+ * Red:     #c0392b
+ * Blue:    #2986b9
+ * Green:   #64b92a
+ * Yellow:  #d7af0d
+ * Navy:    #263544
+*/
+
 html,
 body{
-    background-color:#263544;
+    background: #263544;
     color: white;
     height: 100%;
 }
@@ -28,7 +36,6 @@ body{
 #headerbar{
     height:72px;
     background-color:#292929;
-    margin-bottom:200px;
     -moz-box-shadow: 0px -5px 8px #b1900b;
     -webkit-box-shadow: 0px -5px 8px #b1900b;
     box-shadow: 0px -5px 8px #b1900b;
@@ -45,8 +52,9 @@ body{
     top:15px;
     right:10px;
 }
-#inoutbutton a{
-    margin-left: 10px;
+
+#inoutbutton a {
+    margin-left: 20px;
 }
 
 #searchtext{
@@ -57,6 +65,10 @@ body{
 
 #searchbutton{
     width:100%;
+}
+
+#mainsearchform{
+    margin-top: 200px;
 }
 
 /* End homepage styles */
@@ -82,82 +94,3 @@ body{
 }
 
 /* End show information page styles */
-
-/* Begin profile styles */
-
-#profilecontent{
-    width:90%;
-    margin: auto;
-}
-
-#countdownhex{
-    float:left;
-    width:300px;
-}
-
-#username{
-    color: #f9f9f9;
-    font-size: 40px;
-    float:left;
-    margin-top: 5px;
-}
-
-#username p{
-    margin:0;
-    padding:0;
-}
-
-#profilecontent hr{
-    height:1px;
-    width:50%;
-    background-color:#aeb1b1;
-    float:left;
-    margin-top:70px;
-    margin-bottom:20px;
-}
-
-#calendar{
-    color: #ecf0f1;
-    float:left;
-    width:50%;
-}
-
-#calendar p{
-    margin:0;
-    padding:0;
-}
-/* End profile styles */
-
-/* Begin styles for hexagons */
-
-.center-hex
-{
-    margin: auto;
-    width: 100%;
-}
-
-.hexagon {
-    width: 800px;
-    height: 400px;
-    overflow: hidden;
-    visibility: hidden;
-    transform: rotate(120deg);
-}
-
-.hexagon-in1 {
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    transform: rotate(-60deg);
-}
-
-.hexagon-in2 {
-    width: 100%;
-    height: 100%;
-    background: url(http://thetvdb.com/banners/fanart/original/73255-59.jpg) center;
-    background-size:cover;
-    visibility: visible;
-    transform: rotate(-60deg);
-}
-
-/* End hexagon styles */
