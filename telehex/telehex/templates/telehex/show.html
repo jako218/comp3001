@@ -54,16 +54,16 @@
                 <div class="row">
 					<div class="panel-group" id="accordion">
 						{% for season, episodes in seasons_dict.items %}
-						<div class="panel" id="seasonpanel">
-							<div class="panel-heading" id="seasonheading">
+						<div class="panel seasonpanel">
+							<div class="panel-heading seasonheading">
 								<h3 class="panel-title">
 									<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse{{season}}">Season {{season}}</a>
 								</h3>
 							</div>
 							<div id="collapse{{season}}" class="panel-collapse collapse" style="height: auto;">
 								<div class="panel-body">
-                                    <table class="table" id="seasontable">
-                                        <thead>
+                                    <table class="table seasontable">
+                                        <thead style="font-weight: bold;">
                                             <tr>
                                                 <td>Episode Number</td>
                                                 <td>Episode Name</td>
