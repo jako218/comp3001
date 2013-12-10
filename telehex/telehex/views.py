@@ -11,6 +11,8 @@ from google.appengine.api import users
 import sys
 sys.path.insert(0, 'libs')
 
+import json
+
 from telehex.scraper import Scraper, Search
 from models import *
 
@@ -172,3 +174,8 @@ def unsubscribe(request):
 
 def calendar(request):
     return direct_to_template(request, 'telehex/calendar.html', { })
+
+def search_tags(request):
+    q = db.GqlQuery('SELECT title FROM TVShow')
+    show_names = [s.title for s in q.run()]
+    return HttpResponse(json.dumps(dict(tags=show_names)), content_type="application/json")
