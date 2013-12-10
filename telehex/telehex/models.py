@@ -20,6 +20,7 @@ class TVShow(db.Model):
     imdb_id = db.StringProperty()
     url_string = db.StringProperty(required=True)
     last_scraped = db.DateTimeProperty()
+    num_seasons = db.IntegerProperty()
 
 class UserSubscriptions(db.Model):
     shows = db.ListProperty(long)

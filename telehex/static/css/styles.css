@@ -93,4 +93,16 @@ body{
     color: #ecf0f1;
 }
 
+#seasonheading{
+    background-color: #c0392b;
+}
+
+#seasonpanel{
+    background-color: transparent !important;
+}
+
+#seasontable{
+    background-color: transparent !important;
+}
+
 /* End show information page styles */

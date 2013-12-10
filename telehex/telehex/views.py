@@ -70,7 +70,15 @@ def show(request, show_name):
     nextepisode = q.run()
     nextepisode = nextepisode.next() if q.count() > 0 else None
 
-    template_values = { 'show': show, 'episode_iterator': episodes, 'subscribed': subscribed, 'nextepisode': nextepisode }
+    seasons = {}
+
+    for i in range(1, show.num_seasons+1):
+        seasons[i] = []
+
+    for e in episodes:
+        seasons[e.season].append(e) 
+
+    template_values = { 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode }
     return direct_to_template(request, 'telehex/show.html', template_values)
 
 def hexagon(request, tvdb_id):

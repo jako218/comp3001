@@ -48,32 +48,46 @@
                         {{ show.desc }}
                     </div>
                 </div>
+				
+				<br>
 
                 <div class="row">
-                  <h2>Episodes</h2>
-                  <table>
-                      <tr>
-                          <td>Season</td>
-                          <td>Ep Number</td>
-                          <td>Episode Name</td>
-                          <td>Episode Rating</td>
-                      </tr>
-                      
-                      {% for episode in episode_iterator %}
-                      <tr>
-                          <td>{{ episode.season }}</td>
-                          <td>{{ episode.ep_number }}</td>
-                          <td>{{ episode.name }}</td>
-                          {% if episode.rating < 0 %}
-                          <td>N/A</td>
-                          {% else %}
-                          <td>{{ episode.rating }}</td>
-                          {% endif %}
-                      </tr>
-                      {% endfor %}
-
-                  </table>
-                </div>
+					<div class="panel-group" id="accordion">
+						{% for season, episodes in seasons_dict.items %}
+						<div class="panel" id="seasonpanel">
+							<div class="panel-heading" id="seasonheading">
+								<h3 class="panel-title">
+									<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse{{season}}">Season {{season}}</a>
+								</h3>
+							</div>
+							<div id="collapse{{season}}" class="panel-collapse collapse" style="height: auto;">
+								<div class="panel-body">
+                                    <table class="table" id="seasontable">
+                                        <thead>
+                                            <tr>
+                                                <td>Episode Number</td>
+                                                <td>Episode Name</td>
+                                                <td>Episode Rating</td>
+                                            </tr>
+                                        </thead>
+										{% for episode in episodes %}
+											<tr>
+												<td>{{ episode.ep_number }}</td>
+												<td>{{ episode.name }}</td>
+												{% if episode.rating < 0 %}
+													<td>N/A</td>
+												{% else %}
+													<td>{{ episode.rating }}</td>
+												{% endif %}
+											</tr>
+										{% endfor %}
+									</table>
+								</div>
+							</div> 
+						</div>
+						{% endfor %}
+	                </div>
+				</div>
             </div>
         </div>
     </div>

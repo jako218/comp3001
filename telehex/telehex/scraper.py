@@ -51,7 +51,8 @@ class Scraper:
                 status = self.tvdbsoup.Status.text,
                 imdb_id = self.tvdbsoup.IMDB_ID.text,
                 url_string = self.slug,
-                last_scraped = datetime.utcfromtimestamp(0)
+                last_scraped = datetime.utcfromtimestamp(0),
+                num_seasons = int(self.tvdbsoup.find_all('SeasonNumber')[-1].text)
         ).put()
         self.series_key = tv_show # obtain the key for the TV show
 
