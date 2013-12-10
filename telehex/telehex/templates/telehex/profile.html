@@ -8,11 +8,25 @@
     <ul>
         {% for show, next in shows %}
         <li>
-            {{ show.title }} -- {{ next.name }} -- {{ next.airdate }}
+            <p>{{ show.title }}  {% if next.name %}-- {{ next.name }} {% endif %} {% if next.name %}-- {{ next.airdate }} {% endif %}</p>
             {% if show.fanart %}
-            <img src="/hexagons/{{ show.key.name }}" class="hex img-responsive" alt="{{show.name}} hex image">
+            <div class="hex-im-cont">
+                <img src="/hexagons/{{ show.key.name }}" class="hex-im img-responsive" alt="{{show.name}} hex image">
+                {% if next.airdate %}
+                    <span style="display: none" class="airdate">{{ next.airdate }}</span>
+                    <h2 class="days-left"> Days Until: </h2>
+                {% elif show.status == "On Hiatus" %}
+                    <h2 class="days-left"> On Hiatus </h2>
+                {% elif show.status == "Ended" %}
+                    <h2 class="days-left"> Ended </h2>
+                {% elif show.status == "Other" %}
+                    <h2 class="days-left"> Unknown </h2>
+                {% elif show.status == "Continuing" %}
+                    <h2 class="days-left"> Next airdate to be confirmed </h2>
+                {% endif %}
+            </div>
             {% else %}
-            <img src="{% static "img/errorhex.png" %}" class="hex-error img-responsive" alt="No Show Image">
+            <img src="{% static "img/errorhex.png" %}" class="hex-im-error img-responsive" alt="No Show Image">
             {% endif %} 
         </li>
         {% endfor %}
@@ -21,5 +35,54 @@
     <p>It doesn't look like you've subscribed to any shows. Try <a href="/">searching</a> for some and subscribing to them!</p>
     {% endif %}
 </div>
+
+
+<script>
+
+// Wait until the document is loaded before doing any jQuery
+$(document).ready(function(){
+
+    function daysUntil(dateString){
+        if(dateString === "")
+            return "";
+        
+        var now = new Date(),
+        dateEnd = Date.parse(dateString), // months are zero-based
+        days = (dateEnd - now) / 1000/60/60/24;   // convert milliseconds to days
+        return Math.round(days);
+    }
+
+    // Get all the hex-images
+    var images = $(".hex-im-cont");
+
+    // For each hex-image work out the day until it next airs and append this to the string
+    images.each(function(){
+        $( this ).children(".days-left").append(daysUntil($( this ).children(".airdate").text()));
+        $( this ).children(".days-left").hide();
+    });
+
+    // Specify a function that gets executed on hex-image hover
+    $(".hex-im").hover(function(){
+        // Image is being hovered over - add the hover class
+        $(this).addClass("hover");
+        // Show the days left
+        $(this).siblings(".days-left").show();
+    }, function(){
+        // Image is being left 
+        $(this).removeClass("hover");
+        $(this).siblings(".days-left").hide();
+    });
+
+    // Function to prevent flickering when days left div is hovered over
+    $(".days-left").hover(function(){
+        $(this).siblings(".hex-im").mouseenter();
+    }, function(){
+        $(this).siblings(".hex-im").mouseleave();
+    });
+})
+
+
+</script>
+
 
 {% include "./telehex/footer.html" %}
