@@ -70,13 +70,15 @@ def show(request, show_name):
     nextepisode = q.run()
     nextepisode = nextepisode.next() if q.count() > 0 else None
 
-    seasons = {}
-
-    for i in range(1, show.num_seasons+1):
-        seasons[i] = []
+    seasons = {key: [] for key in range(1, show.num_seasons+1)}
 
     for e in episodes:
         seasons[e.season].append(e) 
+
+    # Check for any empty seasons
+    for key in seasons.keys():
+        if len(seasons[key]) == 0:
+            seasons.pop(key, None)
 
     template_values = { 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode }
     return direct_to_template(request, 'telehex/show.html', template_values)
