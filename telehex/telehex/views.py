@@ -90,9 +90,7 @@ def profile(request):
     template_values = { }
     subs_ids = UserSubscriptions.get_by_key_name(user.user_id())
     if subs_ids:
-        subs_strings = []
-        for ids in subs_ids.shows:
-            subs_strings.append(str(ids))
+        subs_strings = [str(ids) for ids in subs_ids.shows]
 
         subs_shows_names = TVShow.get_by_key_name(subs_strings)
 
