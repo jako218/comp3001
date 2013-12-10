@@ -10,9 +10,9 @@
         <li>
             {{ show.title }} -- {{ next.name }} -- {{ next.airdate }}
             {% if show.fanart %}
-            <img id="hex" src="/hexagons/{{ show.key.name }}" class="img-responsive" alt="{{show.name}} hex image">
+            <img src="/hexagons/{{ show.key.name }}" class="hex img-responsive" alt="{{show.name}} hex image">
             {% else %}
-            <img id="hex" src="{% static "img/errorhex.png" %}" class="img-responsive" alt="No Show Image">
+            <img src="{% static "img/errorhex.png" %}" class="hex-error img-responsive" alt="No Show Image">
             {% endif %} 
         </li>
         {% endfor %}

@@ -75,7 +75,7 @@ body{
 
 /* Show information page styles */
 
-#hex
+.hex, .hex-error
 {
     margin: auto;
 }
