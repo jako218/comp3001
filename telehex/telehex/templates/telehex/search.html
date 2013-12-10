@@ -3,12 +3,16 @@
 <div class="container">
     <h1>Results</h1>
 
-    <ul>
-        {% for series in results %}
-        <li><a href="/scrape/{{series.tvdb_id}}">{{ series.name }}</a></li>
-        {% endfor %}
-    </ul>
 
+    {% if results|length < 1  %}
+    	<p>We're sorry your search did not return any results, please try another <a href="/search/">search</a> to try again!</p>
+    {% else %}
+    	<ul>
+        {% for series in results %}
+        	<li><a href="/scrape/{{series.tvdb_id}}">{{ series.name }}</a></li>
+        {% endfor %}
+    	</ul>
+    {% endif %}
 </div>
     
 {% include "./telehex/footer.html" %}
