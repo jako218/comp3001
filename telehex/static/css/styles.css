@@ -101,6 +101,23 @@ body{
     background-color: transparent !important;
 }
 
+.rating-col {
+    position: relative;
+}
+
+.rating-bar {
+    background-color: #2986b9;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.rating-num {
+    position: absolute;
+    z-index: 1 !important;
+}
+
 /* End show information page styles */
 
 

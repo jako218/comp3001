@@ -83,7 +83,10 @@
 												{% if episode.rating < 0 %}
 													<td>N/A</td>
 												{% else %}
-													<td>{{ episode.rating }}</td>
+													<td class="rating-col">
+                                                        <div class="rating-num">{{ episode.rating }}</div>
+                                                        <span class="rating-bar"></span>
+                                                    </td>
 												{% endif %}
 											</tr>
 										{% endfor %}
@@ -106,6 +109,11 @@
             $(location.hash).css('background-color', '#2986b9');
             $(location.hash).animate({'background-color': "transparent"}, 4000);
         }
+
+        $(".rating-col").each(function() {
+            var r = $(this).children('.rating-num').text();
+            $(this).children('.rating-bar').css('width', (r*10));
+        });
     });
 </script>
         
