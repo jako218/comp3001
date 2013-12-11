@@ -101,6 +101,15 @@ body{
     background-color: transparent !important;
 }
 
+.panel-heading {
+    position: relative !important;
+}
+
+.panel-title, .panel-title a {
+    display: block !important;
+    width: 100% !important;
+}
+
 .rating-col {
     position: relative;
 }
