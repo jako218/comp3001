@@ -46,6 +46,34 @@ def stats(request, show_title):
     template_values =  { 'show' : show }
     return direct_to_template(request, 'telehex/stats.html', template_values)
 
+def graph_data(request, show_title):
+    q = db.GqlQuery("SELECT * FROM TVShow WHERE url_string = :1", show_title)
+    
+    show = q.run(limit=1)
+    if q.count() > 0:
+        show = show.next()
+    else:
+        return HttpResponseRedirect('/')
+
+    events = []
+
+    q = db.GqlQuery("SELECT season, ep_number, rating FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number", show)
+    episodes = q.run()
+
+    seasons = {key: [] for key in range(1, show.num_seasons+1)}
+
+    # Create dict of seasons with dicts of ep_num:rating 
+    for e in episodes:
+        seasons[e.season].append(e.rating) 
+
+    # Check for any empty seasons
+    for key in seasons.keys():
+        if len(seasons[key]) == 0:
+            seasons.pop(key, None)
+
+    return HttpResponse(json.dumps(seasons), content_type="application/json")
+    return HttpResponseRedirect('/')
+
 def scrape(request, tvdb_id):
     q = TVShow.get_by_key_name(tvdb_id)
 
