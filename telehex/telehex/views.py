@@ -196,6 +196,7 @@ def calendar_data(request):
         return HttpResponseRedirect('/')
 
     u = UserSubscriptions.get_by_key_name(user.user_id())
+    subs_shows = []
     if u:
         subs_shows = u.shows
 
