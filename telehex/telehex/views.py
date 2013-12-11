@@ -183,7 +183,16 @@ def unsubscribe(request):
 def calendar(request):
     return direct_to_template(request, 'telehex/calendar.html', { })
 
+# Json returns
+
 def search_tags(request):
     q = db.GqlQuery('SELECT title FROM TVShow')
     show_names = [s.title for s in q.run()]
     return HttpResponse(json.dumps(dict(tags=show_names)), content_type="application/json")
+
+def calendar_data(request):
+    
+    events = [{title: 'all day event', start: '2013-12-11'}, {title: 'all day event', start: '2013-13-11'}]
+
+
+    return HttpResponse(json.dumps(dict(events=events)), content_type="application/json")
