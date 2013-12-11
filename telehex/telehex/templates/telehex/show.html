@@ -65,15 +65,21 @@
                                     <table class="table seasontable">
                                         <thead style="font-weight: bold;">
                                             <tr>
-                                                <td>Episode Number</td>
-                                                <td>Episode Name</td>
-                                                <td>Episode Rating</td>
+                                                <td>#</td>
+                                                <td>Name</td>
+                                                <td>Air Date</td>
+                                                <td>Rating</td>
                                             </tr>
                                         </thead>
 										{% for episode in episodes %}
-											<tr>
+                                            <tr id="s{{season|stringformat:'02d'}}e{{episode.ep_number|stringformat:'02d'}}">
 												<td>{{ episode.ep_number }}</td>
 												<td>{{ episode.name }}</td>
+                                                {% if episode.airdate %}
+                                                    <td>{{ episode.airdate }}</td>
+                                                {% else %}
+                                                    <td>N/A</td>
+                                                {% endif %}
 												{% if episode.rating < 0 %}
 													<td>N/A</td>
 												{% else %}
@@ -92,5 +98,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function(){
+        if(location.hash){
+            $(location.hash).closest('.panel-collapse').removeClass("collapse").addClass("in");
+            $(location.hash).css('background-color', '#2986b9');
+            $(location.hash).animate({'background-color': "transparent"}, 4000);
+        }
+    });
+</script>
+        
 
 {% include "./telehex/footer.html" %}
