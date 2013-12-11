@@ -236,6 +236,7 @@ def calendar_data(request):
         return HttpResponseRedirect('/')
 
     u = UserSubscriptions.get_by_key_name(user.user_id())
+    subs_shows = []
     if u:
         subs_shows = u.shows
 
@@ -249,7 +250,7 @@ def calendar_data(request):
         episode_iterator = q.run()
 
         for episode in episode_iterator:
-            events.append({'title': entity.title + " - " + episode.name, 'start': episode.airdate.strftime('%Y-%m-%d')})
+            events.append({'title': "{0}\n{1}".format(entity.title, episode.name.encode('utf8')), 'start': episode.airdate.strftime('%Y-%m-%d'), 'url': "/show/{0}#s{1:02d}e{2:02d}".format(entity.url_string, episode.season, episode.ep_number)})
 
     print json.dumps(dict(events=events))
     return HttpResponse(json.dumps(events), content_type="application/json")

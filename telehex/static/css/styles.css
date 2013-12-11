@@ -80,6 +80,22 @@ body{
     margin: auto;
 }
 
+.hex-wrapper {
+    position: relative;
+}
+
+#ratinghex {
+    background: url('../img/bluehexsmall.png') no-repeat;
+    position: absolute;
+    right: 0;
+    top: calc(50% - 43px);
+    width: 100px;
+    height: 86px;
+    text-align: center;
+    font-size: 32px;
+    line-height: 86px;
+}
+
 #showtitle{
     color: #ecf0f1;
     font-size: 60px;
@@ -99,6 +115,32 @@ body{
 
 .seasonpanel, .seasontable{
     background-color: transparent !important;
+}
+
+.panel-heading {
+    position: relative !important;
+}
+
+.panel-title, .panel-title a {
+    display: block !important;
+    width: 100% !important;
+}
+
+.rating-col {
+    position: relative;
+}
+
+.rating-bar {
+    background-color: #2986b9;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.rating-num {
+    position: absolute;
+    z-index: 1 !important;
 }
 
 /* End show information page styles */
@@ -122,3 +164,20 @@ body{
     text-align: center;
     width: 100%;
 }
+
+/* Calendar styles */
+.fc-day {
+    background: #f9f9f9 !important;
+}
+
+.fc-today {
+    background: #f9f9f9 !important;
+    border: 3px solid #c0392b !important;
+}
+
+.fc-day-header {
+    background: #aeb1b1 !important;
+    height: 40px !important;
+    vertical-align: middle !important;
+}
+

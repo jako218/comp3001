@@ -14,7 +14,7 @@
                 <img src="/hexagons/{{ show.key.name }}" class="hex-im img-responsive" alt="{{show.name}} hex image">
                 {% if next.airdate %}
                     <span style="display: none" class="airdate">{{ next.airdate }}</span>
-                    <h2 class="days-left" style="display: none"> Days Until: </h2>
+                    <h2 class="days-left" style="display: none"> On in </h2>
                 {% elif show.status == "On Hiatus" %}
                     <h2 class="days-left" style="display: none"> On Hiatus </h2>
                 {% elif show.status == "Ended" %}
@@ -39,32 +39,33 @@
 
 <script>
 
+function daysUntil(dateString){
+    if(dateString === "")
+        return "";
+    
+    var now = Date.parse(new Date().toDateString()),
+    dateEnd = Date.parse(dateString),
+    days = (dateEnd - now) / 1000/60/60/24;   // convert milliseconds to days
+    return days;
+}
+
 // Wait until the document is loaded before doing any jQuery
 $(document).ready(function(){
+    // Get all the hex-images with airdates
+    var images = $(".hex-im-cont").children(".airdate");
 
-    function daysUntil(dateString){
-        if(dateString === "")
-            return "";
-        
-        var now = new Date(),
-        dateEnd = Date.parse(dateString), // months are zero-based
-        days = (dateEnd - now) / 1000/60/60/24;   // convert milliseconds to days
-        return Math.round(days);
-    }
-
-    // Get all the hex-images
-    var images = $(".hex-im-cont");
-
-    // For each hex-image work out the day until it next airs and append this to the string
+    // For each hex-image work out the day until it next airs and append this to the string in the hover
     images.each(function(){
-        var daysleft = daysUntil($( this ).children(".airdate").text());
+        var daysleft = daysUntil($( this ).text());
         
         if(daysleft === 0)
-            $( this ).children(".days-left").text("Today");
+            $( this ).siblings(".days-left").text("Today");
+        else if (daysleft === 1)
+            $( this ).siblings(".days-left").text("Tomorrow");
         else
-            $( this ).children(".days-left").append(daysleft);
+            $( this ).siblings(".days-left").append(daysleft + " days!");
         
-        $( this ).children(".days-left").hide();
+        $( this ).siblings(".days-left").hide();
     });
 
     // Specify a function that gets executed on hex-image hover
@@ -85,7 +86,7 @@ $(document).ready(function(){
     }, function(){
         $(this).siblings(".hex-im").mouseleave();
     });
-})
+});
 
 
 </script>

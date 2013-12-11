@@ -11,13 +11,27 @@
 $(document).ready(function() {
 
     $('#calendar').fullCalendar({
-	    	theme: true,
-	    	header: {left: 'prev,next today', center: 'title', right: 'month,basicWeek,basicDay'},
-	    	events: "/calendar_data/"
+        theme: true,
+        header: {left: 'prev,next today', center: 'title', right: 'month,basicWeek'},
+        events: "/calendar_data/",
+        firstDay: 1,
+        weekMode: "variable",
+        eventRender: function(calevent, element) {
+            currentDate = new Date();
+            currentDate.setDate(currentDate.getDate() - 1);
+            if(calevent.start.getTime() < currentDate)
+                element.addClass("oldclass");
+        }
 	});
 });
 
 </script>
+
+<style>
+    .oldclass {
+        opacity: 0.3;
+    }
+</style>
 
 
 {% include "./telehex/footer.html" %}

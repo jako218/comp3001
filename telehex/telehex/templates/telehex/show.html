@@ -6,11 +6,16 @@
         <!-- Hexagon Image -->
         <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
             <div class="container-fluid">
-              {% if show.fanart %}
-                <img id="hex" src="/hexagons/{{ show.key.name }}" class="img-responsive" alt="{{show.name}} hex image">
-              {% else %}
-                <img id="hex" src="{% static "img/errorhex.png" %}" class="img-responsive" alt="No Show Image">
-              {% endif %} 
+                <div class="hex-wrapper">
+                    {% if show.fanart %}
+                        <img id="hex" src="/hexagons/{{ show.key.name }}" class="img-responsive" alt="{{show.name}} hex image">
+                    {% else %}
+                        <img id="hex" src="{% static "img/errorhex.png" %}" class="img-responsive" alt="No Show Image">
+                    {% endif %} 
+                    <div id="ratinghex">
+                        {{ show.rating }}
+                    </div>
+                </div>
             </div>
             {% if subscribed %}
             <form action="/unsubscribe/" method="post" >
@@ -33,7 +38,7 @@
             <div class="container">
                 <div class="row">
                     <div id="showtitle">
-                        <p>{{ show.title }}  || {{ show.rating }} || {{ show.status }}</p>
+                        <p>{{ show.title }}  || {{ show.status }}</p>
                         {% if nextepisode %}
                             <p>Next airing: {{ nextepisode.airdate }}</p>
                         {% endif %}
@@ -54,31 +59,40 @@
 
                 <div class="row">
 					<div class="panel-group" id="accordion">
-						{% for season, episodes in seasons_dict.items %}
+						{% for season, episodes in seasons_dict.items reversed %}
 						<div class="panel seasonpanel">
 							<div class="panel-heading seasonheading">
 								<h3 class="panel-title">
 									<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse{{season}}">Season {{season}}</a>
 								</h3>
 							</div>
-							<div id="collapse{{season}}" class="panel-collapse collapse" style="height: auto;">
+                            <div id="collapse{{season}}" class="panel-collapse {% if forloop.first %}in{% else %}collapse{% endif %}" style="height: auto;">
 								<div class="panel-body">
                                     <table class="table seasontable">
                                         <thead style="font-weight: bold;">
                                             <tr>
-                                                <td>Episode Number</td>
-                                                <td>Episode Name</td>
-                                                <td>Episode Rating</td>
+                                                <td>#</td>
+                                                <td>Name</td>
+                                                <td>Air Date</td>
+                                                <td>Rating</td>
                                             </tr>
                                         </thead>
 										{% for episode in episodes %}
-											<tr>
+                                            <tr id="s{{season|stringformat:'02d'}}e{{episode.ep_number|stringformat:'02d'}}">
 												<td>{{ episode.ep_number }}</td>
 												<td>{{ episode.name }}</td>
+                                                {% if episode.airdate %}
+                                                    <td>{{ episode.airdate }}</td>
+                                                {% else %}
+                                                    <td>N/A</td>
+                                                {% endif %}
 												{% if episode.rating < 0 %}
 													<td>N/A</td>
 												{% else %}
-													<td>{{ episode.rating }}</td>
+													<td class="rating-col">
+                                                        <div class="rating-num">{{ episode.rating }}</div>
+                                                        <span class="rating-bar"></span>
+                                                    </td>
 												{% endif %}
 											</tr>
 										{% endfor %}
@@ -93,5 +107,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function(){
+        if(location.hash){
+            $(location.hash).closest('.panel-collapse').removeClass("collapse").addClass("in");
+            $(location.hash).css('background-color', '#2986b9');
+            $(location.hash).animate({'background-color': "transparent"}, 4000);
+        }
+
+        $(".rating-col").each(function() {
+            var r = $(this).children('.rating-num').text();
+            $(this).children('.rating-bar').css('width', (r*10));
+        });
+    });
+</script>
+        
 
 {% include "./telehex/footer.html" %}
