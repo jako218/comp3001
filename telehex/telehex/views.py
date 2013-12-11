@@ -195,7 +195,34 @@ def unsubscribe(request):
 def calendar(request):
     return direct_to_template(request, 'telehex/calendar.html', { })
 
+# JSON returns
+
 def search_tags(request):
     q = db.GqlQuery('SELECT title FROM TVShow')
     show_names = [s.title for s in q.run()]
     return HttpResponse(json.dumps(dict(tags=show_names)), content_type="application/json")
+
+def calendar_data(request):
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/')
+
+    u = UserSubscriptions.get_by_key_name(user.user_id())
+    if u:
+        subs_shows = u.shows
+
+    subs_shows_strings = [str(ids) for ids in subs_shows]
+    subs_shows_entities = TVShow.get_by_key_name(subs_shows_strings)
+
+    events = []
+
+    for entity in subs_shows_entities:
+        q = db.GqlQuery('SELECT * FROM TVEpisode WHERE airdate >= :start AND airdate <= :end AND ANCESTOR IS :ancestor', ancestor=entity, start=datetime.fromtimestamp(int(request.GET.get('start'))), end=datetime.fromtimestamp(int(request.GET.get('end'))))
+        episode_iterator = q.run()
+
+        for episode in episode_iterator:
+            events.append({'title': entity.title + " - " + episode.name, 'start': episode.airdate.strftime('%Y-%m-%d')})
+
+    print json.dumps(dict(events=events))
+    return HttpResponse(json.dumps(events), content_type="application/json")
+    return HttpResponseRedirect('/')

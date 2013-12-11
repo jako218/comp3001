@@ -3,6 +3,21 @@
 
 <div class="container">
     <h1>{{user.nickname}}'s Calendar</h1>
+    <br>
+    <div id='calendar'></div>
 </div>
+
+<script>
+$(document).ready(function() {
+
+    $('#calendar').fullCalendar({
+	    	theme: true,
+	    	header: {left: 'prev,next today', center: 'title', right: 'month,basicWeek,basicDay'},
+	    	events: "/calendar_data/"
+	});
+});
+
+</script>
+
 
 {% include "./telehex/footer.html" %}
