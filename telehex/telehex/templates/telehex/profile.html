@@ -14,15 +14,15 @@
                 <img src="/hexagons/{{ show.key.name }}" class="hex-im img-responsive" alt="{{show.name}} hex image">
                 {% if next.airdate %}
                     <span style="display: none" class="airdate">{{ next.airdate }}</span>
-                    <h2 class="days-left"> Days Until: </h2>
+                    <h2 class="days-left" style="display: none"> Days Until: </h2>
                 {% elif show.status == "On Hiatus" %}
-                    <h2 class="days-left"> On Hiatus </h2>
+                    <h2 class="days-left" style="display: none"> On Hiatus </h2>
                 {% elif show.status == "Ended" %}
-                    <h2 class="days-left"> Ended </h2>
+                    <h2 class="days-left" style="display: none"> Ended </h2>
                 {% elif show.status == "Other" %}
-                    <h2 class="days-left"> Unknown </h2>
+                    <h2 class="days-left" style="display: none"> Unknown </h2>
                 {% elif show.status == "Continuing" %}
-                    <h2 class="days-left"> Next airdate to be confirmed </h2>
+                    <h2 class="days-left" style="display: none"> Next airdate to be confirmed </h2>
                 {% endif %}
             </div>
             {% else %}
