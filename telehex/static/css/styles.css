@@ -80,6 +80,22 @@ body{
     margin: auto;
 }
 
+.hex-wrapper {
+    position: relative;
+}
+
+#ratinghex {
+    background: url('../img/bluehexsmall.png') no-repeat;
+    position: absolute;
+    right: 0;
+    top: calc(50% - 43px);
+    width: 100px;
+    height: 86px;
+    text-align: center;
+    font-size: 32px;
+    line-height: 86px;
+}
+
 #showtitle{
     color: #ecf0f1;
     font-size: 60px;

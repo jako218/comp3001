@@ -6,11 +6,16 @@
         <!-- Hexagon Image -->
         <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
             <div class="container-fluid">
-              {% if show.fanart %}
-                <img id="hex" src="/hexagons/{{ show.key.name }}" class="img-responsive" alt="{{show.name}} hex image">
-              {% else %}
-                <img id="hex" src="{% static "img/errorhex.png" %}" class="img-responsive" alt="No Show Image">
-              {% endif %} 
+                <div class="hex-wrapper">
+                    {% if show.fanart %}
+                        <img id="hex" src="/hexagons/{{ show.key.name }}" class="img-responsive" alt="{{show.name}} hex image">
+                    {% else %}
+                        <img id="hex" src="{% static "img/errorhex.png" %}" class="img-responsive" alt="No Show Image">
+                    {% endif %} 
+                    <div id="ratinghex">
+                        {{ show.rating }}
+                    </div>
+                </div>
             </div>
             {% if subscribed %}
             <form action="/unsubscribe/" method="post" >
@@ -32,7 +37,7 @@
             <div class="container">
                 <div class="row">
                     <div id="showtitle">
-                        <p>{{ show.title }}  || {{ show.rating }} || {{ show.status }}</p>
+                        <p>{{ show.title }}  || {{ show.status }}</p>
                         {% if nextepisode %}
                             <p>Next airing: {{ nextepisode.airdate }}</p>
                         {% endif %}
