@@ -57,7 +57,13 @@ $(document).ready(function(){
 
     // For each hex-image work out the day until it next airs and append this to the string
     images.each(function(){
-        $( this ).children(".days-left").append(daysUntil($( this ).children(".airdate").text()));
+        var daysleft = daysUntil($( this ).children(".airdate").text());
+        
+        if(daysleft === 0)
+            $( this ).children(".days-left").text("Today");
+        else
+            $( this ).children(".days-left").append(daysleft);
+        
         $( this ).children(".days-left").hide();
     });
 
