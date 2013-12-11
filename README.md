@@ -50,9 +50,12 @@ You can now access the site at [http://localhost:8080](http://localhost:8080) or
 
 * Stop breaking on null searches, do something when nothing matches search
 * Make results page better
-* Javascript calendar showing past/future episodes for user
 * Javascript countdown on episode page
 * Sort out CSS for most pages
 * A whole bunch of Javascript graphs and data visualisations
 * Refactor/tidy up most of the python code
 * Make more backgrounds for main page
+* Admin page, allowing rescrape button and list of already scraped
+* Episode information on hovering (in the table)
+* Make a 404 page
+* Fix calendar unicode bug
