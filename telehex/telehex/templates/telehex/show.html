@@ -58,14 +58,14 @@
 
                 <div class="row">
 					<div class="panel-group" id="accordion">
-						{% for season, episodes in seasons_dict.items %}
+						{% for season, episodes in seasons_dict.items reversed %}
 						<div class="panel seasonpanel">
 							<div class="panel-heading seasonheading">
 								<h3 class="panel-title">
 									<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse{{season}}">Season {{season}}</a>
 								</h3>
 							</div>
-							<div id="collapse{{season}}" class="panel-collapse collapse" style="height: auto;">
+                            <div id="collapse{{season}}" class="panel-collapse {% if forloop.first %}in{% else %}collapse{% endif %}" style="height: auto;">
 								<div class="panel-body">
                                     <table class="table seasontable">
                                         <thead style="font-weight: bold;">
