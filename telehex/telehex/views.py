@@ -34,6 +34,18 @@ def search(request):
         template_values =  { 'results': Search().search_tvdb(query) }
         return direct_to_template(request, 'telehex/search.html', template_values)
 
+def stats(request, show_title):
+    q = db.GqlQuery("SELECT * FROM TVShow WHERE url_string = :1", show_title)
+
+    show = q.run(limit=1)
+    if q.count() > 0:
+        show = show.next()
+    else:
+        return direct_to_template(request, 'telehex/notfound.html', { 'query': show_title } )
+
+    template_values =  { 'show' : show }
+    return direct_to_template(request, 'telehex/stats.html', template_values)
+
 def scrape(request, tvdb_id):
     q = TVShow.get_by_key_name(tvdb_id)
 
