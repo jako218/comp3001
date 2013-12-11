@@ -39,19 +39,19 @@
 
 <script>
 
+function daysUntil(dateString){
+    if(dateString === "")
+        return "";
+    
+    var now = new Date(),
+    dateEnd = Date.parse(dateString), // months are zero-based
+    days = (dateEnd - now) / 1000/60/60/24;   // convert milliseconds to days
+    
+    return Math.round(days);
+}
+
 // Wait until the document is loaded before doing any jQuery
 $(document).ready(function(){
-
-    function daysUntil(dateString){
-        if(dateString === "")
-            return "";
-        
-        var now = new Date(),
-        dateEnd = Date.parse(dateString), // months are zero-based
-        days = (dateEnd - now) / 1000/60/60/24;   // convert milliseconds to days
-        return Math.round(days);
-    }
-
     // Get all the hex-images
     var images = $(".hex-im-cont");
 
@@ -59,7 +59,7 @@ $(document).ready(function(){
     images.each(function(){
         var daysleft = daysUntil($( this ).children(".airdate").text());
         
-        if(daysleft === 0)
+        if(daysleft < 0)
             $( this ).children(".days-left").text("Today");
         else
             $( this ).children(".days-left").append(daysleft);

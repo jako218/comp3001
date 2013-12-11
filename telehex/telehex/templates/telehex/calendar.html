@@ -18,6 +18,7 @@ $(document).ready(function() {
         weekMode: "variable",
         eventRender: function(calevent, element) {
             currentDate = new Date();
+            currentDate.setDate(currentDate.getDate() - 1);
             if(calevent.start.getTime() < currentDate)
                 element.addClass("oldclass");
         }
