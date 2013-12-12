@@ -75,5 +75,6 @@ STATIC_URL = '/static/'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "telehex.context_processors.user_processor",
+    "telehex.context_processors.admin_processor",
     "django.core.context_processors.request",
 )
