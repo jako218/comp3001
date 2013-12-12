@@ -1,0 +1,11 @@
+{% include "./telehex/header.html" %}
+
+<div class="container-fluid">
+    {% if admin %}
+    <h1>Hello, admin!</h1>
+    {% else %}
+    <h1>Rejected.</h1>
+    {% endif %}
+</div>
+
+{% include "./telehex/footer.html" %}

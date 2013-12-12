@@ -157,7 +157,7 @@ def hexagon(request, tvdb_id):
 def profile(request):
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect(users.create_login_url(request.get_full_path()))
+        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
 
     q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
     show_ids = [str(showid.show_id) for showid in q.run()]
@@ -182,21 +182,27 @@ def profile(request):
 def login(request):
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect(users.create_login_url(request.META['HTTP_REFERER']))
-    else:
-        return HttpResponseRedirect('/')
+        if 'continue' in request.GET:
+            return HttpResponseRedirect(users.create_login_url(request.GET['continue']))
+        else:
+            return HttpResponseRedirect(users.create_login_url('/'))
+
+    return HttpResponseRedirect('/')
 
 def logout(request):
     user = users.get_current_user()
     if user:
-        return HttpResponseRedirect(users.create_logout_url(request.META['HTTP_REFERER']))
-    else:
-        return HttpResponseRedirect('/')
+        if 'continue' in request.GET:
+            return HttpResponseRedirect(users.create_logout_url(request.GET['continue']))
+        else:
+            return HttpResponseRedirect(users.create_logout_url('/'))
+
+    return HttpResponseRedirect('/')
 
 def subscribe(request):
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect('/login')
+        return HttpResponseRedirect('/login?continue={0}'.format(request.META['HTTP_REFERER']))
 
     if request.method != 'POST':
         return HttpResponseRedirect('/')
@@ -204,19 +210,18 @@ def subscribe(request):
     tvdb_id = int(request.POST.get('show_id'))
     
     # Put a link from a show to a user
-    UserShow(   key_name="{0}{1}".format(user.user_id(), tvdb_id),
-                user_id=user.user_id(),
-                show_id=tvdb_id
-            ).put()
-
-
+    UserShow(
+        key_name="{0}{1}".format(user.user_id(), tvdb_id),
+        user_id=user.user_id(),
+        show_id=tvdb_id
+    ).put()
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 def unsubscribe(request):
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect('/login')
+        return HttpResponseRedirect('/login?continue={0}'.format(request.META['HTTP_REFERER']))
 
     if request.method != 'POST':
         return HttpResponseRedirect('/')
@@ -259,3 +264,15 @@ def calendar_data(request):
             events.append({'title': "{0}\n{1}".format(entity.title, episode.name.encode('utf8')), 'start': episode.airdate.strftime('%Y-%m-%d'), 'url': "/show/{0}#s{1:02d}e{2:02d}".format(entity.url_string, episode.season, episode.ep_number)})
 
     return HttpResponse(json.dumps(events), content_type="application/json")
+
+def admin(request):
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/login?continue=/admin')
+
+    template_values = { 'admin': False }
+    if users.is_current_user_admin():
+        template_values['admin'] = True
+
+    return direct_to_template(request, 'telehex/admin.html', template_values)
+

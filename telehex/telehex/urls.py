@@ -3,6 +3,7 @@ from telehex.views import *
 
 urlpatterns = patterns('',
     (r'^$', index),
+    (r'^admin/$', admin),
     (r'^calendar_data/$', calendar_data),
     (r'^graph_data/(\w+)$', graph_data),
     (r'^hexagons/([0-9]+)$', hexagon),
