@@ -97,6 +97,7 @@ table, tr, td { height: 100%; }
     text-align: center;
     font-size: 32px;
     line-height: 86px;
+    opacity: 0.8;
 }
 
 #showtitle{
@@ -138,6 +139,7 @@ table, tr, td { height: 100%; }
 
 .rating-bar {
     background-color: #2986b9;
+    opacity: 0.8;
     height: 100%;
     position: absolute;
     top: 0;
