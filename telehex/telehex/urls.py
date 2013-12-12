@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     (r'^search/$', search),
     (r'^search_tags/$', search_tags),
     (r'^show/(\w+)$', show),
+    (r'^stats/(\w+)$', stats),
+    (r'^graph_data/(\w+)$', graph_data),
     (r'^subscribe/$', subscribe),
     (r'^unsubscribe/$', unsubscribe),
 )
