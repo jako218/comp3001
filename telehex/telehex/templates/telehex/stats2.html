@@ -1,5 +1,179 @@
+{% load staticfiles %}
 {% include "./telehex/header.html" %}
 
-<h2>WOOOOOO</h2>
+    <script type="text/javascript" src="http://mbostock.github.io/d3/talk/20111018/d3/d3.js"></script>
+    <script type="text/javascript" src="http://mbostock.github.io/d3/talk/20111018/d3/d3.layout.js"></script>
+    <style type="text/css">
 
+
+.node polygon {
+  cursor: pointer;
+  fill: #fff;
+  stroke: #2986b9;
+  stroke-width: 3px;
+}
+
+.node text {
+  font-size: 12px;
+  fill: #fff;
+  font-weight: bold;
+}
+
+path.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+    </style>
+
+    <div id="graph" class="container">
+      
+    </div>
+
+    <script>
+
+var i = 0,
+    hex_width = 25,
+    hex_height = Math.sqrt(3)/2 * 25, //should be root(3)/2 * hex_width 
+    width = 980,
+    height = 800,
+    root;
+
+var tree = d3.layout.tree().size([height, width]);
+
+var diagonal = d3.svg.diagonal().projection(function(d) { return [d.y, d.x]; });
+
+var vis = d3.select("#graph").append("svg:svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("svg:g")
+    .attr("transform", "translate(120, 20)");
+
+// Get the show JSON data and set the root
+d3.json('/get_show_children/{{show.key.name}}', function(json) {
+  root = json;
+  // Specify the location of the root
+  root.x0 = height / 2;
+  root.y0 = 0;
+
+  function toggleAll(d) {
+    if (d.children) {
+      d.children.forEach(toggleAll);
+      toggle(d);
+    }
+  }
+
+  // Initialize the display to show a few nodes.
+  root.children.forEach(toggleAll);
+
+  update(root);
+});
+
+function update(source) {
+  var duration = 500;
+
+  // Runs tree layout and return array of nodes associated with root
+  var nodes = tree.nodes(root).reverse();
+
+  // Specify where each node appears based on its depth
+  nodes.forEach(function(d) { 
+    d.y = d.depth * 150;
+  });
+
+  // Select all the nodes and update them
+  var node = vis.selectAll("g.node").data(nodes, function(d) { 
+    // Return the id or create it if it's not been set
+    return d.id || (d.id = ++i);
+  });
+
+  // Enter any new nodes at the parent's previous position.
+  var nodeEnter = node.enter().append("svg:g")
+      .attr("class", "node")
+      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+      .on("click", function(d) { toggle(d); update(d); });
+
+  hex_width = 1e-6;
+  hex_height = Math.sqrt(3)/2 * 1e-6;
+
+  nodeEnter.append("svg:polygon").attr("points", [[hex_width, 0],[hex_width/2,hex_height],[-hex_width/2,hex_height],[-hex_width,0],[-hex_width/2,-hex_height],[hex_width/2,-hex_height]]).attr("fill", "url(#image)");
+    
+  nodeEnter.append("svg:image").attr("xlink:href", function(d){
+    return "/hexagons/"+d.showid})
+  .attr("width", 1e-6).attr("height", 1e-6);
+
+  nodeEnter.append("svg:text")
+      .attr("x", "0")
+      .attr("dy", "-50")
+      .attr("text-anchor", "middle")
+      .text(function(d) { return d.name; })
+      .style("fill-opacity", 1e-6);
+
+  // Transition nodes to their new position.
+  var nodeUpdate = node.transition().duration(duration).attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+
+  hex_width = 50;
+  hex_height = Math.sqrt(3)/2 * hex_width;
+
+  nodeEnter.select("polygon").attr("points", [[hex_width, 0],[hex_width/2,hex_height],[-hex_width/2,hex_height],[-hex_width,0],[-hex_width/2,-hex_height],[hex_width/2,-hex_height]]).style("fill", function(d) {
+     return d._children ? "lightsteelblue" : "#fff"; 
+   });
+  nodeEnter.select("image").attr("width", 100).attr("height", 100).attr("transform", "translate(-50, -50)");
+
+  nodeUpdate.select("text").style("fill-opacity", 1);
+
+  // Transition exiting nodes to the parent's new position.
+  var nodeExit = node.exit().transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+      .remove();
+
+  hex_width = 1e-6;
+  hex_height = Math.sqrt(3)/2 * hex_width;
+  
+  // Change the size of the hexagon on exit
+  nodeExit.select("polygon").attr("points", [[hex_width, 0],[hex_width/2,hex_height],[-hex_width/2,hex_height],[-hex_width,0],[-hex_width/2,-hex_height],[hex_width/2,-hex_height]]);
+  //nodeExit.select("text").style("fill-opacity", 1e-6);
+
+  nodeExit.select("image").attr("width", 1e-6).attr("height", 1e-6).attr("transform", "translate(50, 50)");
+
+  // Update the links…
+  var link = vis.selectAll("path.link").data(tree.links(nodes), function(d) { return d.target.id; });
+
+  // Enter any new links at the parent's previous position.
+  link.enter().insert("svg:path", "g")
+      .attr("class", "link")
+      .attr("d", function(d) {
+        var o = {x: source.x0, y: source.y0};
+        return diagonal({source: o, target: o});
+      })
+      .transition()
+      .duration(duration)
+      .attr("d", diagonal);
+
+  // Transition links to their new position.
+  link.transition().duration(duration).attr("d", diagonal);
+
+  // Transition exiting nodes to the parent's new position.
+  link.exit().remove();
+
+  // Stash the old positions for transition.
+  nodes.forEach(function(d) {
+    d.x0 = d.x;
+    d.y0 = d.y;
+  });
+}
+
+// Toggle children.
+function toggle(d) {
+  if (d.children) {
+    d._children = d.children;
+    d.children = null;
+  } else {
+    d.children = d._children;
+    d._children = null;
+  }
+}
+
+    </script>
 {% include "./telehex/footer.html" %}

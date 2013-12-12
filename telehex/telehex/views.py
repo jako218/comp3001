@@ -8,6 +8,8 @@ urlfetch.set_default_fetch_deadline(60)
 from google.appengine.ext import db
 from google.appengine.api import users
 
+from collections import Counter
+
 import sys
 sys.path.insert(0, 'libs')
 
@@ -55,17 +57,7 @@ def stats2(request, show_title):
     else:
         return direct_to_template(request, 'telehex/notfound.html', { 'query': show_title })
 
-    q = db.GqlQuery("SELECT user_id from UserShow WHERE show_id = :id", id=int(show.key().name()))
-    user_ids = [userid.user_id for userid in q.run()]
-    
-
-
-    q = db.GqlQuery("SELECT show_id from UserShow WHERE user_id IN :ids", ids=user_ids)
-    show_ids = [showid.show_id for showid in q.run()]
-    
-
-
-    template_values =  {};
+    template_values =  { "show" : show};
     return direct_to_template(request, 'telehex/stats2.html', template_values)
 
 def graph_data(request, show_title):
@@ -238,6 +230,58 @@ def search_tags(request):
     q = db.GqlQuery('SELECT title FROM TVShow')
     show_names = [s.title for s in q.run()]
     return HttpResponse(json.dumps(dict(tags=show_names)), content_type="application/json")
+
+
+def get_show_children(request, showid):
+    # Get the show object for this stats page
+    show = TVShow.get_by_key_name(showid)
+
+    # Get all the user shows
+    q = db.GqlQuery("SELECT user_id, show_id FROM UserShow")
+    user_shows = [(sid.show_id, sid.user_id) for sid in q.run()]
+    
+    # Create a dictionary holding the show data
+    show_json = generate_dict({"name": show.title, "showid" : "{0}".format(showid), "children": []}, showid, user_shows)
+    # print json.dumps(show_json)
+
+    return HttpResponse(json.dumps(show_json), content_type="application/json")
+
+def generate_dict(d, showid,  user_shows, depth=3):
+    # Base case
+    if depth == 0:
+        return None
+
+    # Find all the user ids subscribed to this show
+    user_ids =  [u[1] for u in user_shows if u[0] == int(showid)]
+
+    # Find all the shows these users are subscribed to    
+    show_ids = [s[0] for s in user_shows for u in user_ids if s[1] == u]
+
+    # Get the top 7 shows
+    top_7 =  Counter(show_ids).most_common(7)
+
+    # Loop through the top 7 and get the ids
+    top_7_ids = [str(i[0]) for i in top_7]
+    
+    # Remove your own show name from the list
+    top_7_ids.remove(showid)
+    
+    # Get the show names
+    tv_show_names = [t.title for t in TVShow.get_by_key_name(top_7_ids)]
+
+    # Zip the shows so we can loop through them together
+    tv_shows = zip(top_7_ids, tv_show_names)
+
+    # For each show do the same thing!
+    for x in tv_shows:
+        children = generate_dict({"name": "{0}".format(x[1]), "showid" : "{0}".format(x[0]), "children": []}, x[0], user_shows, depth-1)
+        if children:
+            d['children'].append(children)
+        else:
+            if 'children' in d:
+                d.pop('children')
+
+    return d;
 
 def calendar_data(request):
     user = users.get_current_user()
