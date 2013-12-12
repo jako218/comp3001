@@ -89,9 +89,11 @@
 												{% if episode.rating < 0 %}
 													<td>N/A</td>
 												{% else %}
-													<td class="rating-col">
+													<td style="padding: 0;">
+                                                        <div class="rating-col">
                                                         <div class="rating-num">{{ episode.rating }}</div>
                                                         <span class="rating-bar"></span>
+                                                        </div>
                                                     </td>
 												{% endif %}
 											</tr>
@@ -118,7 +120,7 @@
 
         $(".rating-col").each(function() {
             var r = $(this).children('.rating-num').text();
-            $(this).children('.rating-bar').css('width', (r*10));
+            $(this).children('.rating-bar').css('width', (r*10)+"%");
         });
     });
 </script>
