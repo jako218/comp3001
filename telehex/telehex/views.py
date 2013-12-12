@@ -86,8 +86,7 @@ def graph_data(request, show_title):
 
     # Create dict of seasons with dicts of ep_num:rating 
     for e in episodes:
-        seasons[e.season].append({'name': e.name, 'episode':e.ep_number, 'rating':e.rating, 'url': "/show/{0}#s{1:02d}e{2:02d}".format(show.url_string, e.season, e.ep_number)}) 
-        print e.name
+        seasons[e.season].append({'name': "{0}".format(e.name.encode('utf8')), 'episode':e.ep_number, 'rating':e.rating, 'url': "/show/{0}#s{1:02d}e{2:02d}".format(show.url_string, e.season, e.ep_number)}) 
 
     # Check for any empty seasons
     for key in seasons.keys():
