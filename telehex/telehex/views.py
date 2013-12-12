@@ -41,10 +41,32 @@ def stats(request, show_title):
     if q.count() > 0:
         show = show.next()
     else:
-        return direct_to_template(request, 'telehex/notfound.html', { 'query': show_title } )
+        return direct_to_template(request, 'telehex/notfound.html', { 'query': show_title })
 
     template_values =  { 'show' : show }
     return direct_to_template(request, 'telehex/stats.html', template_values)
+
+def stats2(request, show_title):
+    q = db.GqlQuery("SELECT * FROM TVShow WHERE url_string = :1", show_title)
+
+    show = q.run(limit=1)
+    if q.count() > 0:
+        show = show.next()
+    else:
+        return direct_to_template(request, 'telehex/notfound.html', { 'query': show_title })
+
+    q = db.GqlQuery("SELECT user_id from UserShow WHERE show_id = :id", id=int(show.key().name()))
+    user_ids = [userid.user_id for userid in q.run()]
+    
+
+
+    q = db.GqlQuery("SELECT show_id from UserShow WHERE user_id IN :ids", ids=user_ids)
+    show_ids = [showid.show_id for showid in q.run()]
+    
+
+
+    template_values =  {};
+    return direct_to_template(request, 'telehex/stats2.html', template_values)
 
 def graph_data(request, show_title):
     q = db.GqlQuery("SELECT * FROM TVShow WHERE url_string = :1", show_title)
@@ -98,10 +120,9 @@ def show(request, show_name):
 
     user = users.get_current_user()
     if user:
-        q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id = :id AND show_id = :show", id=user.user_id(), show=int(show.key().name()))
-        q.run() 
-        if q.count() > 0:
-                subscribed = True
+        u = UserShow.get_by_key_name("{0}{1}".format(user.user_id(), show.key().name()))
+        if u:
+            subscribed = True
 
     q = db.GqlQuery("SELECT * FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number", show)
     episodes = q.run()
@@ -181,11 +202,13 @@ def subscribe(request):
 
     tvdb_id = int(request.POST.get('show_id'))
     
-
     # Put a link from a show to a user
-    UserShow(   user_id=user.user_id(),
+    UserShow(   key_name="{0}{1}".format(user.user_id(), tvdb_id),
+                user_id=user.user_id(),
                 show_id=tvdb_id
             ).put()
+
+
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 

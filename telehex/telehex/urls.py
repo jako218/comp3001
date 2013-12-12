@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     (r'^search_tags/$', search_tags),
     (r'^show/(\w+)$', show),
     (r'^stats/(\w+)$', stats),
+    (r'^stats2/(\w+)$', stats2),
     (r'^subscribe/$', subscribe),
     (r'^unsubscribe/$', unsubscribe),
 )
