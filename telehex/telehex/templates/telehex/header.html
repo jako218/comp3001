@@ -46,9 +46,10 @@
                     <li><a href="/profile/calendar/">Calendar</a></li>
                 </ul>
             </div>
-            <a href="/logout" type="submit" class="btn btn-danger">log out</a>
+            <a href="/logout?continue={{request.META.PATH_INFO}}" type="submit" class="btn btn-danger">log out</a>
         {% else %}
-            <a href="/login" type="submit" class="btn btn-primary">log in</a>
+            <a href="/login?continue={{request.META.PATH_INFO}}" type="submit" class="btn btn-primary">log in</a>
         {% endif %}
         </div>
+
     </div>

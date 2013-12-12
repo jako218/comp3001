@@ -73,4 +73,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-TEMPLATE_CONTEXT_PROCESSORS = ("telehex.context_processors.user_processor", )
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "telehex.context_processors.user_processor",
+    "django.core.context_processors.request",
+)
