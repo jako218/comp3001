@@ -1,0 +1,34 @@
+{% load apptags %}
+{% include "./telehex/header.html" %}
+
+<div class="container">
+    {% if is_admin %}
+    <h1>All Scraped Shows</h1>
+    <div class="row">
+        <table class="table seasontable">
+            <thead style="font-weight: bold;">
+                <tr>
+                    <td>ID</td>
+                    <td>Show Name</td>
+                    <td>Users Subscribed</td>
+                    <td>Last Scraped</td>
+                    <td>&nbsp;</td>
+                </tr>
+            </thead>
+            {% for show in show_iterator %}
+            <tr>
+                <td>{{ show.key.name }}</td>
+                <td><a href="/show/{{ show.url_string }}">{{ show.title }}</a></td>
+                <td>{{ subs_counts|get_item:show.key.name }}</td>
+                <td>{{ show.last_scraped }}</td>
+                <td><a href="/scrape/{{show.key.name}}?force=1">Rescrape</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% else %}
+    <h1>You're not an admin.</h1>
+    {% endif %}
+</div>
+
+{% include "./telehex/footer.html" %}

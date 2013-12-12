@@ -76,6 +76,22 @@ table, tr, td { height: 100%; }
 
 /* End homepage styles */
 
+#overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 99999;
+    text-align: center;
+}
+
+#overlay img {
+    position: relative;
+    top: 30%;
+}
+
 /* Show information page styles */
 
 .hex-im, .hex-im-error
@@ -189,4 +205,57 @@ table, tr, td { height: 100%; }
     background: #aeb1b1 !important;
     height: 40px !important;
     vertical-align: middle !important;
+}
+
+/* Bar Chart Styles */
+.charts .graph{
+    margin:auto;
+    padding-bottom:70px !important;
+    width:960px;
+}
+
+rect:hover{
+    fill: #2986b9;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #2986b9;
+	stroke-width:2px;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 14px;
+	fill: #2986b9;
+}
+
+.x.label, .y.label{
+    font-family: sans-serif;
+    font-size: 14px;
+	fill: white;
+}
+
+.title.label{
+    font-family: sans-serif;
+    font-size: 25px;
+	fill: white;
+}
+
+.noratings.label{
+    font-family: sans-serif;
+    font-size: 25px;
+	fill: #2986b9;
+}
+
+.d3-tip {
+    line-height: 1.4;
+    font-weight: bold;
+    padding: 12px;
+    background: rgba(41, 41, 41, 0.8);
+    color: #fff;
+    text-align:center;
+    border-radius: 2px;
 }

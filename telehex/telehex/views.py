@@ -58,6 +58,15 @@ def stats2(request, show_title):
         return direct_to_template(request, 'telehex/notfound.html', { 'query': show_title })
 
     template_values =  { "show" : show};
+
+    q = db.GqlQuery("SELECT user_id from UserShow WHERE show_id = :id", id=int(show.key().name()))
+    user_ids = [userid.user_id for userid in q.run()]
+
+    q = db.GqlQuery("SELECT show_id from UserShow WHERE user_id IN :ids", ids=user_ids)
+    show_ids = [showid.show_id for showid in q.run()]
+    
+    template_values =  {};
+
     return direct_to_template(request, 'telehex/stats2.html', template_values)
 
 def graph_data(request, show_title):
@@ -71,28 +80,45 @@ def graph_data(request, show_title):
 
     events = []
 
-    q = db.GqlQuery("SELECT season, ep_number, rating FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number", show)
+    q = db.GqlQuery("SELECT name, season, ep_number, rating FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number", show)
     episodes = q.run()
 
     seasons = {key: [] for key in range(1, show.num_seasons+1)}
 
     # Create dict of seasons with dicts of ep_num:rating 
     for e in episodes:
-        seasons[e.season].append(e.rating) 
+        seasons[e.season].append({'name': "{0}".format(e.name.encode('utf8')), 'episode':e.ep_number, 'rating':e.rating, 'url': "/show/{0}#s{1:02d}e{2:02d}".format(show.url_string, e.season, e.ep_number)}) 
 
     # Check for any empty seasons
     for key in seasons.keys():
         if len(seasons[key]) == 0:
             seasons.pop(key, None)
 
-    return HttpResponse(json.dumps(seasons), content_type="application/json")
+    no_ratings = []
+
+    # Check for seasons with no ratings
+    for key in seasons.keys():
+        ratings = 'false'
+        for ep in seasons[key]:
+            if ep["rating"] >= 0:
+                ratings = 'true'
+        if ratings == 'false':
+            no_ratings.append(key)
+
+    data = {"shows":seasons, "no_ratings":no_ratings}
+
+    return HttpResponse(json.dumps(data), content_type="application/json")
     return HttpResponseRedirect('/')
 
 def scrape(request, tvdb_id):
     q = TVShow.get_by_key_name(tvdb_id)
+    
+    if users.is_current_user_admin() and 'force' in request.GET and request.GET['force'] == '1':
+        s = Scraper(tvdb_id)
+        return HttpResponseRedirect("/show/{0}".format(s.get_url_slug()))
 
     if q and q.last_scraped > datetime.now() - timedelta(days=RESCRAPE_AFTER):
-        url_slug = q.url_string
+            url_slug = q.url_string
     else:
         s = Scraper(tvdb_id)
         url_slug = s.get_url_slug()
@@ -148,7 +174,7 @@ def hexagon(request, tvdb_id):
 def profile(request):
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect(users.create_login_url(request.get_full_path()))
+        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
 
     q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
     show_ids = [str(showid.show_id) for showid in q.run()]
@@ -173,21 +199,27 @@ def profile(request):
 def login(request):
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect(users.create_login_url(request.META['HTTP_REFERER']))
-    else:
-        return HttpResponseRedirect('/')
+        if 'continue' in request.GET:
+            return HttpResponseRedirect(users.create_login_url(request.GET['continue']))
+        else:
+            return HttpResponseRedirect(users.create_login_url('/'))
+
+    return HttpResponseRedirect('/')
 
 def logout(request):
     user = users.get_current_user()
     if user:
-        return HttpResponseRedirect(users.create_logout_url(request.META['HTTP_REFERER']))
-    else:
-        return HttpResponseRedirect('/')
+        if 'continue' in request.GET:
+            return HttpResponseRedirect(users.create_logout_url(request.GET['continue']))
+        else:
+            return HttpResponseRedirect(users.create_logout_url('/'))
+
+    return HttpResponseRedirect('/')
 
 def subscribe(request):
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect('/login')
+        return HttpResponseRedirect('/login?continue={0}'.format(request.META['HTTP_REFERER']))
 
     if request.method != 'POST':
         return HttpResponseRedirect('/')
@@ -195,19 +227,18 @@ def subscribe(request):
     tvdb_id = int(request.POST.get('show_id'))
     
     # Put a link from a show to a user
-    UserShow(   key_name="{0}{1}".format(user.user_id(), tvdb_id),
-                user_id=user.user_id(),
-                show_id=tvdb_id
-            ).put()
-
-
+    UserShow(
+        key_name="{0}{1}".format(user.user_id(), tvdb_id),
+        user_id=user.user_id(),
+        show_id=tvdb_id
+    ).put()
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 def unsubscribe(request):
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect('/login')
+        return HttpResponseRedirect('/login?continue={0}'.format(request.META['HTTP_REFERER']))
 
     if request.method != 'POST':
         return HttpResponseRedirect('/')
@@ -302,3 +333,26 @@ def calendar_data(request):
             events.append({'title': "{0}\n{1}".format(entity.title, episode.name.encode('utf8')), 'start': episode.airdate.strftime('%Y-%m-%d'), 'url': "/show/{0}#s{1:02d}e{2:02d}".format(entity.url_string, episode.season, episode.ep_number)})
 
     return HttpResponse(json.dumps(events), content_type="application/json")
+
+def admin(request):
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/login?continue=/admin')
+
+    q = db.GqlQuery("SELECT * FROM TVShow")
+    show_iterator = q.run()
+
+    q = db.GqlQuery("SELECT * FROM UserShow")
+    subs_iterator = q.run()
+    subs_counts = {}
+
+    for sub in q.run():
+        if str(sub.show_id) in subs_counts:
+            subs_counts[str(sub.show_id)] += 1
+        else:
+            subs_counts[str(sub.show_id)] = 1
+
+    template_values = { 'show_iterator': show_iterator, 'subs_counts': subs_counts }
+
+    return direct_to_template(request, 'telehex/admin.html', template_values)
+

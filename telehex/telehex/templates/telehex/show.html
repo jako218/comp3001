@@ -30,6 +30,9 @@
                 <input type="submit" value="subscribe" />
             </form>
             {% endif %}
+            {% if is_admin %}
+            <a href="/scrape/{{show.key.name}}?force=1" />rescrape this show</a><br />
+            {% endif %}
             <a href="/stats/{{ show.url_string }}">graph this show</a>
         </div>
 
