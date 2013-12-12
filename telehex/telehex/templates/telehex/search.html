@@ -1,3 +1,4 @@
+{% load staticfiles %}
 {% include "./telehex/header.html" %}
 
 <div class="container">
@@ -9,10 +10,22 @@
     {% else %}
     	<ul>
         {% for series in results %}
-        	<li><a href="/scrape/{{series.tvdb_id}}">{{ series.name }}</a></li>
+        	<li><a href="/scrape/{{series.tvdb_id}}" class="load-on-click">{{ series.name }}</a></li>
         {% endfor %}
     	</ul>
     {% endif %}
 </div>
+
+<script>
+    $(document).ready(function() {
+            $('body').append('<div id="overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>');
+
+        $('#overlay').hide();
+
+        $('.load-on-click').click(function() {
+            $('#overlay').show();
+        });
+    });
+</script>
     
 {% include "./telehex/footer.html" %}

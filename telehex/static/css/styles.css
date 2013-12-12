@@ -76,6 +76,22 @@ table, tr, td { height: 100%; }
 
 /* End homepage styles */
 
+#overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 99999;
+    text-align: center;
+}
+
+#overlay img {
+    position: relative;
+    top: 30%;
+}
+
 /* Show information page styles */
 
 .hex-im, .hex-im-error
