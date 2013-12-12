@@ -228,6 +228,12 @@ rect:hover{
 	fill: white;
 }
 
+.noratings.label{
+    font-family: sans-serif;
+    font-size: 25px;
+	fill: #2986b9;
+}
+
 .d3-tip {
     line-height: 1.4;
     font-weight: bold;

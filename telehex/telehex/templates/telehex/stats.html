@@ -36,12 +36,14 @@
 
       d3.json("/graph_data/{{ show.url_string }}", function(error, data){
 
-        var keys = d3.keys(data).sort(function(a,b){
+        var no_ratings = d3.set(data["no_ratings"]);
+
+        var keys = d3.keys(data.shows).sort(function(a,b){
             return b - a;      
         });
 
         for(i=0; i<keys.length; i++){
-            var series = data[keys[i]];
+            var series = data.shows[keys[i]];
             var series_num = keys[i];
 
 			xScale.domain(series.map(function(d){ return d.episode }))
@@ -52,7 +54,10 @@
 						.append("div")
 						.attr("id", chartclass)
 						.attr("class", "row graph")
-                  
+            
+            console.log(no_ratings);
+
+
            var svg = d3.select("#" + chartclass)
 		   			   	.append("svg")
 						.attr("width", width + margin.left + margin.right)
@@ -111,6 +116,15 @@
                 .attr("y", -50)
                 .attr("x", 0+margin.left)
                 .text("Season " + series_num);
+                
+            if(no_ratings.has(series_num)){
+               svg.append("text")
+                .attr("class", "noratings label")
+                .attr("text-anchor", "middle")
+                .attr("x", width/2)
+                .attr("y", height/2)
+                .text("No Ratings Available");
+            }
         }
     });
 </script>
