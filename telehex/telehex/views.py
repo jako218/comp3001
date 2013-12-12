@@ -57,14 +57,10 @@ def stats2(request, show_title):
 
     q = db.GqlQuery("SELECT user_id from UserShow WHERE show_id = :id", id=int(show.key().name()))
     user_ids = [userid.user_id for userid in q.run()]
-    
-
 
     q = db.GqlQuery("SELECT show_id from UserShow WHERE user_id IN :ids", ids=user_ids)
     show_ids = [showid.show_id for showid in q.run()]
     
-
-
     template_values =  {};
     return direct_to_template(request, 'telehex/stats2.html', template_values)
 
@@ -146,7 +142,7 @@ def show(request, show_name):
         if len(seasons[key]) == 0:
             seasons.pop(key, None)
 
-    template_values = { 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode }
+    template_values = { 'is_admin': users.is_current_user_admin(), 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode }
     return direct_to_template(request, 'telehex/show.html', template_values)
 
 def hexagon(request, tvdb_id):
@@ -276,7 +272,20 @@ def admin(request):
 
     q = db.GqlQuery("SELECT * FROM TVShow")
     show_iterator = q.run()
-    template_values = { 'show_iterator': show_iterator }
+
+    q = db.GqlQuery("SELECT * FROM UserShow")
+    subs_iterator = q.run()
+    subs_counts = {}
+
+    for sub in q.run():
+        if str(sub.show_id) in subs_counts:
+            subs_counts[str(sub.show_id)] += 1
+        else:
+            subs_counts[str(sub.show_id)] = 1
+
+    print subs_counts
+
+    template_values = { 'is_admin': users.is_current_user_admin(), 'show_iterator': show_iterator, 'subs_counts': subs_counts }
 
     return direct_to_template(request, 'telehex/admin.html', template_values)
 
