@@ -17,10 +17,27 @@
 </div>
 
  <script>
-  $(function() {
-    $.get( "/search_tags/", function( data ) {
-        $( "#searchtext" ).autocomplete({appendTo: "#someElem", minLength: 2, source: data.tags });
+  
+    $(document).ready(function(){
+        $.get( "/search_tags/", function( data ) {
+            $( "#searchtext" ).autocomplete({appendTo: "#someElem", minLength: 2, source: data.tags });
+        });
+
+        var input = $('#searchtext');
+
+        $('#mainsearchform').submit(function() {
+            if( !$('#searchtext').val()  ) {
+                input.attr('placeholder', 'we\'re good, but we\'ve yet to implement mind reading - enter a search term!');
+                input.css({'border-color':'#c0392b', 'border-width':'2px'}).focus();
+                return false;
+            }
+        });
+
+        input.keypress(function(){
+            $(this).css({'border-color':'', 'border-width':''});
+        });
+
     });
-  });
+
   </script>
 {% include "./telehex/footer.html" %}
