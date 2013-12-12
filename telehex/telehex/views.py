@@ -274,9 +274,9 @@ def admin(request):
     if not user:
         return HttpResponseRedirect('/login?continue=/admin')
 
-    template_values = { 'admin': False }
-    if users.is_current_user_admin():
-        template_values['admin'] = True
+    q = db.GqlQuery("SELECT * FROM TVShow")
+    show_iterator = q.run()
+    template_values = { 'show_iterator': show_iterator }
 
     return direct_to_template(request, 'telehex/admin.html', template_values)
 
