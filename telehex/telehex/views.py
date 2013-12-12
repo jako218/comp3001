@@ -181,14 +181,14 @@ def profile(request):
 def login(request):
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect(users.create_login_url(request.get_full_path()))
+        return HttpResponseRedirect(users.create_login_url(request.META['HTTP_REFERER']))
     else:
         return HttpResponseRedirect('/')
 
 def logout(request):
     user = users.get_current_user()
     if user:
-        return HttpResponseRedirect(users.create_logout_url(request.get_full_path()))
+        return HttpResponseRedirect(users.create_logout_url(request.META['HTTP_REFERER']))
     else:
         return HttpResponseRedirect('/')
 
