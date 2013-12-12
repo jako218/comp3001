@@ -2,6 +2,10 @@
 
 <style>
 
+rect:hover{
+    fill: #2986b9;
+}
+
 .axis path,
 .axis line {
     fill: none;
@@ -16,7 +20,21 @@
 	fill: #2986b9;
 }
 
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(41, 41, 41, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
 
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 10
+  left: 0;
+}
 </style>
 
 <div class="container">
@@ -29,6 +47,7 @@
 </div>
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.min.js"></script>
 
 <script>
 
@@ -49,14 +68,26 @@
 		
 	var yAxis = d3.svg.axis()
 	    .scale(yScale)
-	    .orient("left");
+        .orient("left");
 
-    d3.json("/graph_data/{{ show.url_string }}", function(error, data){
+    var tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-20, 0])
+      .html(function(d) {
+          return "<em>" + d.name + "</em><br><strong>Rating:</strong> <span style='color:#c0392b'>" + d.rating + "</span>";
+      })
 
-        for(series_num in data){
-            var series = data[series_num];
-						
-			xScale.domain(series.map(function(d, i){ return i+1; }))
+      d3.json("/graph_data/{{ show.url_string }}", function(error, data){
+
+        var keys = d3.keys(data).sort(function(a,b){
+            return a < b;      
+        });
+
+        for(i=0; i<keys.length; i++){
+            var series = data[keys[i]];
+            var series_num = keys[i];
+
+			xScale.domain(series.map(function(d){ return d.episode }))
             
             var chartclass = "season_" + series_num;
 		
@@ -78,39 +109,28 @@
             var bar = svg.selectAll("g")
                         .data(series)
                         .enter().append("g")
-                        .attr("transform", function(d, i) {
-							return "translate(" + xScale(i+1) + ", 0)";
-						});
-            
+                        .attr("transform", function(d) {
+							return "translate(" + xScale(d.episode) + ", 0)";
+                        })
+                        
+            svg.call(tip); 
+
             bar.append("rect")
-                  .attr("y", function(d) { return yScale(d); })
-                  .attr("height", function(d) { return height - yScale(d); })
+                  .attr("class", ".bar")
+                  .attr("y", function(d) { return yScale(d.rating); })
+                  .attr("height", function(d) { return height - yScale(d.rating); })
                   .attr("width", xScale.rangeBand())
-				  .attr("fill", "#c0392b");
-            
-            svg.selectAll("text")
-                   .data(series)
-                   .enter()
-                   .append("text")
-                   .text(function(d) {
-                        return d;
-                   })
-                   .attr("text-anchor", "middle")
-                   .attr("x", function(d, i) {
-                        return xScale(i+1) + xScale.rangeBand() / 2;
-                   })
-                   .attr("y", function(d) {
-                        return yScale(d) + 25;
-                   })
-                   .attr("font-family", "sans-serif")
-                   .attr("font-size", "16px")
-                   .attr("fill", "#292929");
-				   
+				  .attr("fill", "#c0392b")
+                  .attr("onclick", function(d) {
+                      return "window.location.href='" + d.url + "';";
+                  })
+                  .on('mouseover', tip.show)
+                  .on('mouseout', tip.hide);
+
  		   svg.append("g")
  		       .attr("class", "x axis")
  		       .attr("transform", "translate(0," + height + ")")
  		       .call(xAxis);
-
 				 
 		  svg.append("g")
 		     .attr("class", "y axis")

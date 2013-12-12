@@ -79,14 +79,15 @@ def graph_data(request, show_title):
 
     events = []
 
-    q = db.GqlQuery("SELECT season, ep_number, rating FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number", show)
+    q = db.GqlQuery("SELECT name, season, ep_number, rating FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number", show)
     episodes = q.run()
 
     seasons = {key: [] for key in range(1, show.num_seasons+1)}
 
     # Create dict of seasons with dicts of ep_num:rating 
     for e in episodes:
-        seasons[e.season].append(e.rating) 
+        seasons[e.season].append({'name': e.name, 'episode':e.ep_number, 'rating':e.rating, 'url': "/show/{0}#s{1:02d}e{2:02d}".format(show.url_string, e.season, e.ep_number)}) 
+        print e.name
 
     # Check for any empty seasons
     for key in seasons.keys():
