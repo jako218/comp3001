@@ -141,7 +141,7 @@ def show(request, show_name):
         if len(seasons[key]) == 0:
             seasons.pop(key, None)
 
-    template_values = { 'is_admin': users.is_current_user_admin(), 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode }
+    template_values = { 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode }
     return direct_to_template(request, 'telehex/show.html', template_values)
 
 def hexagon(request, tvdb_id):
@@ -282,9 +282,7 @@ def admin(request):
         else:
             subs_counts[str(sub.show_id)] = 1
 
-    print subs_counts
-
-    template_values = { 'is_admin': users.is_current_user_admin(), 'show_iterator': show_iterator, 'subs_counts': subs_counts }
+    template_values = { 'show_iterator': show_iterator, 'subs_counts': subs_counts }
 
     return direct_to_template(request, 'telehex/admin.html', template_values)
 
