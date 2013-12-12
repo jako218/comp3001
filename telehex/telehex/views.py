@@ -89,7 +89,20 @@ def graph_data(request, show_title):
         if len(seasons[key]) == 0:
             seasons.pop(key, None)
 
-    return HttpResponse(json.dumps(seasons), content_type="application/json")
+    no_ratings = []
+
+    # Check for seasons with no ratings
+    for key in seasons.keys():
+        ratings = 'false'
+        for ep in seasons[key]:
+            if ep["rating"] >= 0:
+                ratings = 'true'
+        if ratings == 'false':
+            no_ratings.append(key)
+
+    data = {"shows":seasons, "no_ratings":no_ratings}
+
+    return HttpResponse(json.dumps(data), content_type="application/json")
     return HttpResponseRedirect('/')
 
 def scrape(request, tvdb_id):
