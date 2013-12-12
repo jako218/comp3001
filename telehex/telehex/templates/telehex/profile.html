@@ -11,7 +11,7 @@
             <p>{{ show.title }}  {% if next.name %}-- {{ next.name }} {% endif %} {% if next.name %}-- {{ next.airdate }} {% endif %}</p>
             {% if show.fanart %}
             <div class="hex-im-cont">
-                <img src="/hexagons/{{ show.key.name }}" class="hex-im img-responsive" alt="{{show.name}} hex image">
+                <a href="/show/{{show.url_string}}"><img src="/hexagons/{{ show.key.name }}" class="hex-im img-responsive" alt="{{show.name}} hex image"></a>
                 {% if next.airdate %}
                     <span style="display: none" class="airdate">{{ next.airdate }}</span>
                     <h2 class="days-left" style="display: none"> On in </h2>
@@ -57,7 +57,6 @@ $(document).ready(function(){
     // For each hex-image work out the day until it next airs and append this to the string in the hover
     images.each(function(){
         var daysleft = daysUntil($( this ).text());
-        
         if(daysleft === 0)
             $( this ).siblings(".days-left").text("Today");
         else if (daysleft === 1)
@@ -73,18 +72,18 @@ $(document).ready(function(){
         // Image is being hovered over - add the hover class
         $(this).addClass("hover");
         // Show the days left
-        $(this).siblings(".days-left").show();
+        $(this).parent().siblings(".days-left").show();
     }, function(){
         // Image is being left 
         $(this).removeClass("hover");
-        $(this).siblings(".days-left").hide();
+        $(this).parent().siblings(".days-left").hide();
     });
 
     // Function to prevent flickering when days left div is hovered over
     $(".days-left").hover(function(){
-        $(this).siblings(".hex-im").mouseenter();
+        $(this).siblings("a").children(".hex-im").mouseenter();
     }, function(){
-        $(this).siblings(".hex-im").mouseleave();
+        $(this).siblings("a").children(".hex-im").mouseleave();
     });
 });
 

@@ -98,9 +98,9 @@ def show(request, show_name):
 
     user = users.get_current_user()
     if user:
-        u = UserSubscriptions.get_by_key_name(user.user_id())
-        if u:
-            if long(show.key().name()) in u.shows:
+        q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id = :id AND show_id = :show", id=user.user_id(), show=int(show.key().name()))
+        q.run() 
+        if q.count() > 0:
                 subscribed = True
 
     q = db.GqlQuery("SELECT * FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number", show)
@@ -137,23 +137,24 @@ def profile(request):
     if not user:
         return HttpResponseRedirect(users.create_login_url(request.get_full_path()))
 
+    q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
+    show_ids = [str(showid.show_id) for showid in q.run()]
+
     template_values = { }
-    subs_ids = UserSubscriptions.get_by_key_name(user.user_id())
-    if subs_ids:
-        subs_strings = [str(ids) for ids in subs_ids.shows]
 
-        subs_shows_names = TVShow.get_by_key_name(subs_strings)
+    # Get the subscribed TVShows based on the show id
+    subscribed_tv_shows = TVShow.get_by_key_name(show_ids)
 
-        subs_next_episodes = []
-        for ids in subs_shows_names:
-            q = db.GqlQuery("SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1", date.today(), ids)
-            nextepisode = q.run()
-            if q.count() > 0:
-                subs_next_episodes.append(nextepisode.next())
-            else:
-                subs_next_episodes.append(None)
+    subs_next_episodes = []
+    for ids in subscribed_tv_shows:
+        q = db.GqlQuery("SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1", date.today(), ids)
+        nextepisode = q.run()
+        if q.count() > 0:
+            subs_next_episodes.append(nextepisode.next())
+        else:
+            subs_next_episodes.append(None)
 
-        template_values = { 'shows': sorted(zip(subs_shows_names, subs_next_episodes), key=lambda x: x[1].airdate if x[1] else date(MAXYEAR, 12, 31)) }
+        template_values = { 'shows': sorted(zip(subscribed_tv_shows, subs_next_episodes), key=lambda x: x[1].airdate if x[1] else date(MAXYEAR, 12, 31)) }
     return direct_to_template(request, 'telehex/profile.html', template_values)
 
 def login(request):
@@ -179,20 +180,13 @@ def subscribe(request):
         return HttpResponseRedirect('/')
 
     tvdb_id = int(request.POST.get('show_id'))
-    subs_shows = []
-
-    u = UserSubscriptions.get_by_key_name(user.user_id())
-    if u:
-        subs_shows = u.shows
     
-    if tvdb_id not in subs_shows:
-        subs_shows.append(tvdb_id)
 
-    UserSubscriptions(
-            key_name = user.user_id(), 
-            shows = subs_shows,
-    ).put()
-    
+    # Put a link from a show to a user
+    UserShow(   user_id=user.user_id(),
+                show_id=tvdb_id
+            ).put()
+
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 def unsubscribe(request):
@@ -204,19 +198,11 @@ def unsubscribe(request):
         return HttpResponseRedirect('/')
 
     tvdb_id = int(request.POST.get('show_id'))
-    subs_shows = []
+    
 
-    u = UserSubscriptions.get_by_key_name(user.user_id())
-    if u:
-        subs_shows = u.shows
-
-    if tvdb_id in subs_shows:
-        subs_shows.remove(tvdb_id)
-
-    UserSubscriptions(
-            key_name = user.user_id(),
-            shows = subs_shows
-    ).put()
+    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id = :id AND show_id = :show", id=user.user_id(), show=tvdb_id)
+    usershow = q.fetch(limit=1)[0]
+    usershow.delete()
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
@@ -235,16 +221,12 @@ def calendar_data(request):
     if not user:
         return HttpResponseRedirect('/')
 
-    u = UserSubscriptions.get_by_key_name(user.user_id())
-    subs_shows = []
-    if u:
-        subs_shows = u.shows
+    q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
+    show_ids = [str(showid.show_id) for showid in q.run()]
 
-    subs_shows_strings = [str(ids) for ids in subs_shows]
-    subs_shows_entities = TVShow.get_by_key_name(subs_shows_strings)
+    subs_shows_entities = TVShow.get_by_key_name(show_ids)
 
     events = []
-
     for entity in subs_shows_entities:
         q = db.GqlQuery('SELECT * FROM TVEpisode WHERE airdate >= :start AND airdate <= :end AND ANCESTOR IS :ancestor', ancestor=entity, start=datetime.fromtimestamp(int(request.GET.get('start'))), end=datetime.fromtimestamp(int(request.GET.get('end'))))
         episode_iterator = q.run()
@@ -252,6 +234,4 @@ def calendar_data(request):
         for episode in episode_iterator:
             events.append({'title': "{0}\n{1}".format(entity.title, episode.name.encode('utf8')), 'start': episode.airdate.strftime('%Y-%m-%d'), 'url': "/show/{0}#s{1:02d}e{2:02d}".format(entity.url_string, episode.season, episode.ep_number)})
 
-    print json.dumps(dict(events=events))
     return HttpResponse(json.dumps(events), content_type="application/json")
-    return HttpResponseRedirect('/')
