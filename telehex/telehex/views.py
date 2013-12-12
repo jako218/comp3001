@@ -59,14 +59,6 @@ def stats2(request, show_title):
 
     template_values =  { "show" : show};
 
-    q = db.GqlQuery("SELECT user_id from UserShow WHERE show_id = :id", id=int(show.key().name()))
-    user_ids = [userid.user_id for userid in q.run()]
-
-    q = db.GqlQuery("SELECT show_id from UserShow WHERE user_id IN :ids", ids=user_ids)
-    show_ids = [showid.show_id for showid in q.run()]
-    
-    template_values =  {};
-
     return direct_to_template(request, 'telehex/stats2.html', template_values)
 
 def graph_data(request, show_title):
