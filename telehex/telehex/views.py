@@ -99,9 +99,13 @@ def graph_data(request, show_title):
 
 def scrape(request, tvdb_id):
     q = TVShow.get_by_key_name(tvdb_id)
+    
+    if users.is_current_user_admin() and 'force' in request.GET and request.GET['force'] == '1':
+        s = Scraper(tvdb_id)
+        return HttpResponseRedirect("/show/{0}".format(s.get_url_slug()))
 
     if q and q.last_scraped > datetime.now() - timedelta(days=RESCRAPE_AFTER):
-        url_slug = q.url_string
+            url_slug = q.url_string
     else:
         s = Scraper(tvdb_id)
         url_slug = s.get_url_slug()
