@@ -152,18 +152,19 @@ def show(request, show_title):
     # Remove any seasons which have no episodes
     remove_empty_seasons(seasons)
 
-    viewed_dict = {}
+    viewed_list = []
     if 'telehex_viewed' in request.COOKIES:
-        viewed_dict = json.loads(request.COOKIES['telehex_viewed'])
+        viewed_list = json.loads(request.COOKIES['telehex_viewed'])
 
-    viewed_dict[show.title] = show.url_string
+    viewed_list = [d for d in viewed_list if d['title'] != show.title]
+    viewed_list.insert(0, {'title': show.title, 'url_string': show.url_string})
 
-    template_values = { 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode, 'viewed_shows': viewed_dict }
+    template_values = { 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode, 'viewed_shows': viewed_list[:11] }
 
     response = HttpResponse()
     response = render(request, 'telehex/show.html', template_values)
 
-    response.set_cookie('telehex_viewed', json.dumps(viewed_dict))
+    response.set_cookie('telehex_viewed', json.dumps(viewed_list[:11]))
 
     return response
 

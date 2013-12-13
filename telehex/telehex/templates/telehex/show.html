@@ -45,9 +45,9 @@
                 <div class="container sidebar">
                     <h4>Recently Viewed</h4>
                     <ul>
-                        {% for name, url_string in viewed_shows.items %}
-                        {% ifnotequal name show.title %}
-                        <li><a href="/show/{{url_string}}">{{ name }}</a></li>
+                        {% for vshow in viewed_shows %}
+                        {% ifnotequal vshow.title show.title %}
+                        <li><a href="/show/{{vshow.url_string}}">{{ vshow.title }}</a></li>
                         {% endifnotequal %}
                         {% endfor %}
                     </ul>
