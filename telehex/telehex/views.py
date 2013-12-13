@@ -1,5 +1,5 @@
-from django.views.generic.simple import direct_to_template
 from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render
 
 # Increase the timeout for the show
 from google.appengine.api import urlfetch
@@ -42,14 +42,14 @@ def admin(request):
     subs_counts = Counter([str(show.show_id) for show in subs_iterator])
 
     template_values = { 'show_iterator': show_iterator, 'subs_counts': subs_counts }
-    return direct_to_template(request, 'telehex/admin.html', template_values)
+    return render(request, 'telehex/admin.html', template_values)
 
 def calendar(request):
-    return direct_to_template(request, 'telehex/calendar.html')
+    return render(request, 'telehex/calendar.html')
 
 def index(request):
     template_values = {}
-    return direct_to_template(request, 'telehex/index.html', template_values)
+    return render(request, 'telehex/index.html', template_values)
 
 def login(request):
     user = users.get_current_user()
@@ -94,7 +94,7 @@ def profile(request):
             subs_next_episodes.append(None)
 
         template_values = { 'shows': sorted(zip(subscribed_tv_shows, subs_next_episodes), key=lambda x: x[1].airdate if x[1] else date(MAXYEAR, 12, 31)) }
-    return direct_to_template(request, 'telehex/profile.html', template_values)
+    return render(request, 'telehex/profile.html', template_values)
 
 def scrape(request, tvdb_id):
     q = TVShow.get_by_key_name(tvdb_id)
@@ -118,13 +118,13 @@ def search(request):
         query = request.POST.get('query')
         
         template_values =  { 'results': Search().search_tvdb(query) }
-        return direct_to_template(request, 'telehex/search.html', template_values)
+        return render(request, 'telehex/search.html', template_values)
 
 def show(request, show_title):
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
-        return direct_to_template(request, 'telehex/notfound.html', { 'query': show_title } )
+        return render(request, 'telehex/notfound.html', { 'query': show_title } )
 
     # Determine if the user is subscribed
     user = users.get_current_user()
@@ -148,27 +148,29 @@ def show(request, show_title):
     # Remove any seasons which have no episodes
     remove_empty_seasons(seasons)
 
+    #request.set_cookie('telehex_viewed', ['New Girl', 'Breaking Bad', 'Walking Dead'])
+
     template_values = { 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode }
-    return direct_to_template(request, 'telehex/show.html', template_values)
+    return render(request, 'telehex/show.html', template_values)
 
 def stats(request, show_title):
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
-        return direct_to_template(request, 'telehex/notfound.html', { 'query': show_title })
+        return render(request, 'telehex/notfound.html', { 'query': show_title })
 
     # Pass show variable to template and redirect
-    return direct_to_template(request, 'telehex/stats.html', { 'show' : show })
+    return render(request, 'telehex/stats.html', { 'show' : show })
 
 #TODO merge with stats
 def stats2(request, show_title):
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
-        return direct_to_template(request, 'telehex/notfound.html', { 'query': show_title })
+        return render(request, 'telehex/notfound.html', { 'query': show_title })
 
     # Pass show variable to template and redirect
-    return direct_to_template(request, 'telehex/stats2.html', { 'show' : show })
+    return render(request, 'telehex/stats2.html', { 'show' : show })
 
 def subscribe(request):
     user = users.get_current_user()
