@@ -183,26 +183,26 @@ th.sortable {
     cursor: pointer;
 }
 
-th.sortable:before {
+th.sortable:after {
     content: '\f0dc';
     font-family: FontAwesome;
-    padding-right: 5px;
+    padding-left: 5px;
     font-size: 0.8em;
 }
 
-th.headerSortUp:before {
+th.headerSortUp:after {
     content: '\f0d8';
     color: #c0392b;
     font-family: FontAwesome;
-    padding-right: 5px;
+    padding-left: 5px;
     font-size: 0.8em;
 }
 
-th.headerSortDown:before {
+th.headerSortDown:after {
     content: '\f0d7';
     color: #c0392b;
     font-family: FontAwesome;
-    padding-right: 5px;
+    padding-left: 5px;
     font-size: 0.8em;
 }
 

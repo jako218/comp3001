@@ -92,10 +92,10 @@
                                     <table class="table seasontable">
                                         <thead style="font-weight: bold;">
                                             <tr>
-                                                <th>#</th>
-                                                <th>Name</th>
-                                                <th>Air Date</th>
-                                                <th>Rating</th>
+                                                <th class="sortable">#</th>
+                                                <th class="sortable">Name</th>
+                                                <th class="sortable">Air Date</th>
+                                                <th class="sortable">Rating</th>
                                             </tr>
                                         </thead>
                                         {% for episode in episodes %}
@@ -142,6 +142,10 @@
         $(".rating-col").each(function() {
             var r = $(this).children('.rating-num').text();
             $(this).children('.rating-bar').css('width', (r*10)+"%");
+        });
+
+        $('.seasontable').tablesorter({
+            sortList: [[0,0]]
         });
     });
 </script>
