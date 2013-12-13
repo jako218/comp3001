@@ -110,11 +110,11 @@ class Scraper:
 
     def get_imdb_rating(self, imdb_id):
         if imdb_id:
-            html = urllib2.urlopen("http://m.imdb.com/title/{0}".format(imdb_id))
-            soup = BeautifulSoup(html.read())
-            rating_elements = soup.find("p", {"class":"votes"})
-            if rating_elements:
-                return rating_elements.strong.text 
+            xml = urllib2.urlopen("http://omdbapi.com/?i={0}&r=xml".format(imdb_id))
+            soup = BeautifulSoup(xml.read(), 'xml')
+            tv_show = soup.find('movie')
+            rating = tv_show['imdbRating'] if tv_show else -1
+            return rating
         return -1
 
 class Search:
