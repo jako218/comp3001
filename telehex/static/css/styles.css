@@ -181,7 +181,7 @@ th.sortable:before {
 }
 
 th.headerSortUp:before {
-    content: '\f0de';
+    content: '\f0d8';
     color: #c0392b;
     font-family: FontAwesome;
     padding-right: 5px;
@@ -189,7 +189,7 @@ th.headerSortUp:before {
 }
 
 th.headerSortDown:before {
-    content: '\f0dd';
+    content: '\f0d7';
     color: #c0392b;
     font-family: FontAwesome;
     padding-right: 5px;
