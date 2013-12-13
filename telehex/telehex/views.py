@@ -121,8 +121,10 @@ def search(request):
         return HttpResponseRedirect('/')
     else:
         query = request.POST.get('query')
-        
-        template_values =  { 'results': Search().search_tvdb(query) }
+        results = Search().search_tvdb(query)
+        if len(results) == 1:
+            return HttpResponseRedirect("/scrape/{0}".format(results[0]["tvdb_id"]))
+        template_values =  { 'results': results }
         return render(request, 'telehex/search.html', template_values)
 
 def show(request, show_title):
