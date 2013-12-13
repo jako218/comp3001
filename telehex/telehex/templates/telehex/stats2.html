@@ -81,8 +81,7 @@ function update(source) {
   // Enter any new nodes at the parent's previous position.
   var nodeEnter = node.enter().append("svg:g")
       .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + source.x0 + "," + source.y0 + ")"; })
-      .on("click", function(d) { toggle(d); update(d); });
+      .attr("transform", function(d) { return "translate(" + source.x0 + "," + source.y0 + ")"; });
 
   hex_width = 1e-6;
   hex_height = Math.sqrt(3)/2 * 1e-6;
@@ -92,7 +91,7 @@ function update(source) {
   nodeEnter.append("svg:image")
     .attr("xlink:href", function(d){ return d.imagelink; })
     .attr("width", 1e-6).attr("height", 1e-6)
-    .attr("transform", "translate(-50, -50)").on("oncontextmenu", function(d) { window.location = "/show/" + d.url; })
+    .attr("transform", "translate(-50, -50)").on("oncontextmenu", function(d) { window.location = "/show/" + d.url; }).on("click", function(d) { toggle(d); update(d); });
 
   nodeEnter
       .append("svg:a")

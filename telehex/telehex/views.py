@@ -238,8 +238,8 @@ def unsubscribe(request):
 
 ########## FUNCTIONS ##########
 
-def generate_dict(d, showid, visited,  user_shows, depth=6):
-    # Base case
+def generate_dict(d, showid, visited,  user_shows, depth=4):
+    # Base case, return a null list and the visited list
     if depth == 0:
         return [None, visited]
 
@@ -249,19 +249,20 @@ def generate_dict(d, showid, visited,  user_shows, depth=6):
     # Find all the shows these users are subscribed to    
     show_ids = [s[0] for s in user_shows for u in user_ids if s[1] == u]
 
-    # Remove any shows ids which have already appear in the graph
+    # Remove any shows ids which have already appeared in the graph
     top_shows = [x for x in show_ids if str(x) not in visited]
 
-    # From the remaining show get the top 6 if they exist
-    top_7 =  Counter(top_shows).most_common(6)
+    # Count each of the shows and get the most common
+    show_count =  Counter(top_shows).most_common()
 
-    # Loop through the top 7 and get the ids
-    top_7_ids = [str(i[0]) for i in top_7]
+    # Loop through and get the top 6 most popular show
+    top_shows = [str(i[0]) for i in show_count[:6]]
     
-    visited.extend(top_7_ids)
+    # Add the shows to the visited list
+    visited.extend(top_shows)
 
-    # Get the tv shows
-    tv_shows = TVShow.get_by_key_name(top_7_ids)
+    # Get the TV show entities from the database
+    tv_shows = TVShow.get_by_key_name(top_shows)
 
     if len(tv_shows) == 0 and 'children' in d:
         d.pop('children')
@@ -330,7 +331,9 @@ def get_show_children(request, showid):
     # Create a dictionary holding the show data
     [show_json, visited] = generate_dict({"name": show.title, "url" : show.url_string, "showid" : "{0}".format(showid), "imagelink" : imagelink, "children": []}, showid, [str(showid)], user_shows)
     
-    print json.dumps(show_json)
+    # It is possible that this show has no links
+    if 'children' not in show_json:
+        show_json['children'] = []
 
     return HttpResponse(json.dumps(show_json), content_type="application/json")
 
