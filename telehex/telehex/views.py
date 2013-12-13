@@ -121,9 +121,16 @@ def search(request):
         return HttpResponseRedirect('/')
     else:
         query = request.POST.get('query')
-        
-        template_values =  { 'results': Search().search_tvdb(query) }
-        return render(request, 'telehex/search.html', template_values)
+    
+    # Get the results from this query
+    results = Search().search_tvdb(query)
+    
+    # If one result go straight to the show page
+    if len(results) == 1:
+        return scrape(request, results[0]['tvdb_id'])
+
+    template_values =  { 'results': results }
+    return render(request, 'telehex/search.html', template_values)
 
 def show(request, show_title):
     # Get the show based on the show_title
