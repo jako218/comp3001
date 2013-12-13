@@ -1,19 +1,24 @@
+
 {% load staticfiles %}
 {% include "./telehex/header.html" %}
 
 <div class="container">
     <h1>Results</h1>
 
-
+    <div class="list-group">
     {% if results|length < 1  %}
     	<p>We're sorry your search did not return any results, please try another <a href="/search/">search</a> to try again!</p>
     {% else %}
-    	<ul>
         {% for series in results %}
-        	<li><a href="/scrape/{{series.tvdb_id}}" class="load-on-click">{{ series.name }}</a></li>
+            <div class="results-list">
+            	<a class="list-group-item" href="/scrape/{{series.tvdb_id}}">
+                    <h4 class="list-group-item-heading">{{ series.name }}</h4>
+                    <p class="list-group-item-text">{{series.desc}}</p>
+                </a>
+            </div>
         {% endfor %}
-    	</ul>
     {% endif %}
+    </div>
 </div>
 
 <script>
