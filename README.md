@@ -48,17 +48,3 @@ You can now access the site at [http://localhost:8080](http://localhost:8080) or
 | Hexagons                 | `/hexagons/12345`       | *N/A*           |
 | Calendar Data (for AJAX) | `/calendar_data`        | *N/A*           |
 | Graph Data (for AJAX)    | `/graph_data/show_slug` | *N/A*           |
-
-## Todo
-
-* Stop breaking on null searches, do something when nothing matches search
-* Make results page better
-* Javascript countdown on episode page
-* Sort out CSS for most pages
-* A whole bunch of Javascript graphs and data visualisations
-* Refactor/tidy up most of the python code
-* Make more backgrounds for main page
-* Admin page, allowing rescrape button and list of already scraped
-* Episode information on hovering (in the table)
-* Make a 404 page
-* Fix calendar unicode bug
