@@ -127,7 +127,8 @@ def show(request, show_title):
         return direct_to_template(request, 'telehex/notfound.html', { 'query': show_title } )
 
     # Determine if the user is subscribed
-    is_user_sub = UserShow.get_by_key_name("{0}{1}".format(users.get_current_user().user_id(), show.key().name()))
+    user = users.get_current_user()
+    is_user_sub = UserShow.get_by_key_name("{0}{1}".format(user.user_id(), show.key().name())) if user else None
     subscribed = True if is_user_sub else False
     
     # Select all the episodes for show        
