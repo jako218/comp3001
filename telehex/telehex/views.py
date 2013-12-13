@@ -22,6 +22,7 @@ from datetime import datetime, timedelta, date, MAXYEAR
 import urllib
 
 RESCRAPE_AFTER = 7
+scraping = False
 
 ########## PAGES ##########
 
@@ -41,7 +42,7 @@ def admin(request):
     # Count the number of times a show has been subscribed to
     subs_counts = Counter([str(show.show_id) for show in subs_iterator])
 
-    template_values = { 'show_iterator': show_iterator, 'subs_counts': subs_counts }
+    template_values = { 'show_iterator': show_iterator, 'subs_counts': subs_counts, 'is_scraping': scraping }
     return render(request, 'telehex/admin.html', template_values)
 
 def calendar(request):
@@ -106,8 +107,11 @@ def scrape(request, tvdb_id):
     if q and q.last_scraped > datetime.now() - timedelta(days=RESCRAPE_AFTER):
             url_slug = q.url_string
     else:
-        s = Scraper(tvdb_id)
-        url_slug = s.get_url_slug()
+        if scraping:
+            s = Scraper(tvdb_id)
+            url_slug = s.get_url_slug()
+        else:
+            url_slug = tvdb_id
 
     return HttpResponseRedirect("/show/{0}".format(url_slug))
 
@@ -198,6 +202,13 @@ def subscribe(request):
         user_id=user.user_id(),
         show_id=tvdb_id
     ).put()
+
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+def togglescraping(request):
+    if users.is_current_user_admin():
+        global scraping
+        scraping = not scraping
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
