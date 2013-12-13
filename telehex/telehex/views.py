@@ -238,10 +238,10 @@ def unsubscribe(request):
 
 ########## FUNCTIONS ##########
 
-def generate_dict(d, showid,  user_shows, depth=3):
+def generate_dict(d, showid, visited,  user_shows, depth=6):
     # Base case
     if depth == 0:
-        return None
+        return [None, visited]
 
     # Find all the user ids subscribed to this show
     user_ids =  [u[1] for u in user_shows if u[0] == int(showid)]
@@ -249,32 +249,36 @@ def generate_dict(d, showid,  user_shows, depth=3):
     # Find all the shows these users are subscribed to    
     show_ids = [s[0] for s in user_shows for u in user_ids if s[1] == u]
 
-    # Get the top 7 shows
-    top_7 =  Counter(show_ids).most_common(7)
+    # Remove any shows ids which have already appear in the graph
+    top_shows = [x for x in show_ids if str(x) not in visited]
+
+    # From the remaining show get the top 6 if they exist
+    top_7 =  Counter(top_shows).most_common(6)
 
     # Loop through the top 7 and get the ids
     top_7_ids = [str(i[0]) for i in top_7]
     
-    # Remove your own show name from the list
-    if showid in top_7_ids:
-        top_7_ids.remove(showid)
-    
-    # Get the show names
-    tv_show_names = [t.title for t in TVShow.get_by_key_name(top_7_ids)]
+    visited.extend(top_7_ids)
 
-    # Zip the shows so we can loop through them together
-    tv_shows = zip(top_7_ids, tv_show_names)
+    # Get the tv shows
+    tv_shows = TVShow.get_by_key_name(top_7_ids)
+
+    if len(tv_shows) == 0 and 'children' in d:
+        d.pop('children')
 
     # For each show do the same thing!
-    for x in tv_shows:
-        children = generate_dict({"name": "{0}".format(x[1]), "showid" : "{0}".format(x[0]), "children": []}, x[0], user_shows, depth-1)
+    for show in tv_shows:
+        showid = str(show.key().name())
+        imagelink = "/hexagons/{0}".format(showid) if show.fanart else '/static/img/errorhex.png'
+        [children, visited] = generate_dict({"name": "{0}".format(show.title), "url" : show.url_string, "showid" : showid, "imagelink" : imagelink, "children": []}, showid, visited, user_shows, depth-1)
+
         if children:
             d['children'].append(children)
         else:
             if 'children' in d:
                 d.pop('children')
 
-    return d;
+    return [d, visited];
 
 def get_tv_show(show_title):
     # Try get a TVShow entity from the database based on the show_title
@@ -322,8 +326,11 @@ def get_show_children(request, showid):
     q = db.GqlQuery("SELECT user_id, show_id FROM UserShow")
     user_shows = [(sid.show_id, sid.user_id) for sid in q.run()]
     
+    imagelink = "/hexagons/{0}".format(showid) if show.fanart else '/static/img/errorhex.png'
     # Create a dictionary holding the show data
-    show_json = generate_dict({"name": show.title, "showid" : "{0}".format(showid), "children": []}, showid, user_shows)
+    [show_json, visited] = generate_dict({"name": show.title, "url" : show.url_string, "showid" : "{0}".format(showid), "imagelink" : imagelink, "children": []}, showid, [str(showid)], user_shows)
+    
+    print json.dumps(show_json)
 
     return HttpResponse(json.dumps(show_json), content_type="application/json")
 
