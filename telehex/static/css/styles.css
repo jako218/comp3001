@@ -281,3 +281,22 @@ rect:hover {
     text-align:center;
     border-radius: 2px;
 }
+
+/* Results Page */
+.list-group-item {
+    background-color: transparent;
+    margin-bottom:5px !important;
+    border: 0px transparent !important;
+}
+
+.list-group-item:hover {
+    background: rgba(192, 57, 43, 0.3) !important;
+}
+
+.list-group-item-heading {
+    color: #2986b9 !important;
+}
+
+.list-group-item-text {
+    color: #fff;
+}
