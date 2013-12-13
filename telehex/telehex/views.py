@@ -249,7 +249,8 @@ def generate_dict(d, showid,  user_shows, depth=3):
     top_7_ids = [str(i[0]) for i in top_7]
     
     # Remove your own show name from the list
-    top_7_ids.remove(showid)
+    if showid in top_7_ids:
+        top_7_ids.remove(showid)
     
     # Get the show names
     tv_show_names = [t.title for t in TVShow.get_by_key_name(top_7_ids)]
