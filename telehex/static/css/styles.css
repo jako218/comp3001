@@ -21,6 +21,10 @@ table, tr, td { height: 100%; }
     margin: 0 auto -30px;
 }
 
+#hex {
+    margin: 0 auto;
+}
+
 #push, #footer {
     height: 60px;
 }
@@ -95,6 +99,8 @@ table, tr, td { height: 100%; }
 
 .hex-wrapper {
     position: relative;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 #ratinghex {
