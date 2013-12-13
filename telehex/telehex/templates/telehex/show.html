@@ -43,10 +43,8 @@
             <div class="container">
                 <div class="row">
                     <div id="showtitle">
-                        <p>{{ show.title }}  || {{ show.status }}</p>
-                        {% if nextepisode %}
-                        <p>Next airing: {{ nextepisode.airdate }}</p>
-                        {% endif %}
+                        <h1>{{ show.title }}</h1>
+                        <h3>{{ show.status }}{% if nextepisode %} - Next airing: {{ nextepisode.airdate }}{% endif %}</h3>
                     </div>
                 </div>
 

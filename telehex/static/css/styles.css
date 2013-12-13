@@ -116,7 +116,7 @@ table, tr, td { height: 100%; }
     opacity: 0.8;
 }
 
-#showtitle {
+#showtitle h1 {
     color: #ecf0f1;
     font-size: 60px;
 }
