@@ -148,10 +148,20 @@ def show(request, show_title):
     # Remove any seasons which have no episodes
     remove_empty_seasons(seasons)
 
-    #request.set_cookie('telehex_viewed', ['New Girl', 'Breaking Bad', 'Walking Dead'])
+    viewed_dict = {}
+    if 'telehex_viewed' in request.COOKIES:
+        viewed_dict = json.loads(request.COOKIES['telehex_viewed'])
 
-    template_values = { 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode }
-    return render(request, 'telehex/show.html', template_values)
+    viewed_dict[show.title] = show.url_string
+
+    template_values = { 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode, 'viewed_shows': viewed_dict }
+
+    response = HttpResponse()
+    response = render(request, 'telehex/show.html', template_values)
+
+    response.set_cookie('telehex_viewed', json.dumps(viewed_dict))
+
+    return response
 
 def stats(request, show_title):
     # Get the show based on the show_title

@@ -19,23 +19,41 @@
                     {% endif %}
                 </div>
             </div>
-            {% if subscribed %}
-            <form action="/unsubscribe/" method="post" >
-                {% csrf_token %}
-                <input type="hidden" name="show_id" value="{{ show.key.name }}" />
-                <input type="submit" value="unsubscribe" />
-            </form>
-            {% else %}
-            <form action="/subscribe/" method="post" >
-                {% csrf_token %}
-                <input type="hidden" name="show_id" value="{{ show.key.name }}" />
-                <input type="submit" value="subscribe" />
-            </form>
+            <div class="row" style="text-align: center">
+                <div class="container sidebar">
+                    {% if subscribed %}
+                    <form action="/unsubscribe/" method="post" >
+                        {% csrf_token %}
+                        <input type="hidden" name="show_id" value="{{ show.key.name }}" />
+                        <input class="btn btn-danger" type="submit" value="unsubscribe" />
+                    </form>
+                    {% else %}
+                    <form action="/subscribe/" method="post" >
+                        {% csrf_token %}
+                        <input type="hidden" name="show_id" value="{{ show.key.name }}" />
+                        <input class="btn btn-success" type="submit" value="subscribe" />
+                    </form>
+                    {% endif %}
+                    {% if is_admin %}
+                    <a href="/scrape/{{show.key.name}}?force=1" />rescrape this show</a><br />
+                    {% endif %}
+                    <a href="/stats/{{ show.url_string }}">graph this show</a>
+                </div>
+            </div>
+            {% if viewed_shows|length > 1 %}
+            <div class="row">
+                <div class="container sidebar">
+                    <h4>Recently Viewed</h4>
+                    <ul>
+                        {% for name, url_string in viewed_shows.items %}
+                        {% ifnotequal name show.title %}
+                        <li><a href="/show/{{url_string}}">{{ name }}</a></li>
+                        {% endifnotequal %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
             {% endif %}
-            {% if is_admin %}
-            <a href="/scrape/{{show.key.name}}?force=1" />rescrape this show</a><br />
-            {% endif %}
-            <a href="/stats/{{ show.url_string }}">graph this show</a>
         </div>
 
         <!-- Description -->
