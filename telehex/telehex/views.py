@@ -21,8 +21,9 @@ from models import *
 from datetime import datetime, timedelta, date, MAXYEAR
 import urllib
 
+from django.conf import settings
+
 RESCRAPE_AFTER = 7
-scraping = False
 
 ########## PAGES ##########
 
@@ -42,7 +43,7 @@ def admin(request):
     # Count the number of times a show has been subscribed to
     subs_counts = Counter([str(show.show_id) for show in subs_iterator])
 
-    template_values = { 'show_iterator': show_iterator, 'subs_counts': subs_counts, 'is_scraping': scraping }
+    template_values = { 'show_iterator': show_iterator, 'subs_counts': subs_counts, 'is_scraping': settings.SCRAPING }
     return render(request, 'telehex/admin.html', template_values)
 
 def calendar(request):
@@ -107,7 +108,7 @@ def scrape(request, tvdb_id):
     if q and q.last_scraped > datetime.now() - timedelta(days=RESCRAPE_AFTER):
             url_slug = q.url_string
     else:
-        if scraping:
+        if settings.SCRAPING:
             s = Scraper(tvdb_id)
             url_slug = s.get_url_slug()
         else:
@@ -208,8 +209,7 @@ def subscribe(request):
 
 def togglescraping(request):
     if users.is_current_user_admin():
-        global scraping
-        scraping = not scraping
+        settings.SCRAPING = not settings.SCRAPING
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
