@@ -169,6 +169,33 @@ table, tr, td { height: 100%; }
     top: 8px;
 }
 
+th.sortable {
+    cursor: pointer;
+}
+
+th.sortable:before {
+    content: '\f0dc';
+    font-family: FontAwesome;
+    padding-right: 5px;
+    font-size: 0.8em;
+}
+
+th.headerSortUp:before {
+    content: '\f0de';
+    color: #c0392b;
+    font-family: FontAwesome;
+    padding-right: 5px;
+    font-size: 0.8em;
+}
+
+th.headerSortDown:before {
+    content: '\f0dd';
+    color: #c0392b;
+    font-family: FontAwesome;
+    padding-right: 5px;
+    font-size: 0.8em;
+}
+
 /* End show information page styles */
 
 
