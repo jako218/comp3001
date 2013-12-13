@@ -11,7 +11,7 @@
     {% else %}
         {% for series in results %}
             <div class="results-list">
-            	<a class="list-group-item" href="/scrape/{{series.tvdb_id}}">
+            	<a class="list-group-item load-on-click" href="/scrape/{{series.tvdb_id}}">
                     <h4 class="list-group-item-heading">{{ series.name }}</h4>
                     <p class="list-group-item-text">{{series.desc}}</p>
                 </a>

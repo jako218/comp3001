@@ -25,7 +25,6 @@ class TVShow(db.Model):
 class HexImages(db.Model):
     image = db.BlobProperty()
 
-
 class UserShow(db.Model):
     user_id = db.StringProperty(required=True)
     show_id = db.IntegerProperty(required=True) 

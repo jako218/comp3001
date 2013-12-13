@@ -21,6 +21,8 @@ from models import *
 from datetime import datetime, timedelta, date, MAXYEAR
 import urllib
 
+from django.conf import settings
+
 RESCRAPE_AFTER = 7
 
 ########## PAGES ##########
@@ -41,7 +43,7 @@ def admin(request):
     # Count the number of times a show has been subscribed to
     subs_counts = Counter([str(show.show_id) for show in subs_iterator])
 
-    template_values = { 'show_iterator': show_iterator, 'subs_counts': subs_counts }
+    template_values = { 'show_iterator': show_iterator, 'subs_counts': subs_counts, 'is_scraping': settings.SCRAPING }
     return render(request, 'telehex/admin.html', template_values)
 
 def calendar(request):
@@ -106,8 +108,11 @@ def scrape(request, tvdb_id):
     if q and q.last_scraped > datetime.now() - timedelta(days=RESCRAPE_AFTER):
             url_slug = q.url_string
     else:
-        s = Scraper(tvdb_id)
-        url_slug = s.get_url_slug()
+        if settings.SCRAPING:
+            s = Scraper(tvdb_id)
+            url_slug = s.get_url_slug()
+        else:
+            url_slug = tvdb_id
 
     return HttpResponseRedirect("/show/{0}".format(url_slug))
 
@@ -148,18 +153,19 @@ def show(request, show_title):
     # Remove any seasons which have no episodes
     remove_empty_seasons(seasons)
 
-    viewed_dict = {}
+    viewed_list = []
     if 'telehex_viewed' in request.COOKIES:
-        viewed_dict = json.loads(request.COOKIES['telehex_viewed'])
+        viewed_list = json.loads(request.COOKIES['telehex_viewed'])
 
-    viewed_dict[show.title] = show.url_string
+    viewed_list = [d for d in viewed_list if d['title'] != show.title]
+    viewed_list.insert(0, {'title': show.title, 'url_string': show.url_string})
 
-    template_values = { 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode, 'viewed_shows': viewed_dict }
+    template_values = { 'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode, 'viewed_shows': viewed_list[:11] }
 
     response = HttpResponse()
     response = render(request, 'telehex/show.html', template_values)
 
-    response.set_cookie('telehex_viewed', json.dumps(viewed_dict))
+    response.set_cookie('telehex_viewed', json.dumps(viewed_list[:11]))
 
     return response
 
@@ -198,6 +204,12 @@ def subscribe(request):
         user_id=user.user_id(),
         show_id=tvdb_id
     ).put()
+
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+def togglescraping(request):
+    if users.is_current_user_admin():
+        settings.SCRAPING = not settings.SCRAPING
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
