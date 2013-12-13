@@ -340,6 +340,9 @@ def search_tags(request):
 def hexagon(request, show_id):
     # Get the image relating to this show from the database
     q = TVShow.get_by_key_name(show_id)
+    if q is None:
+        return None
+
     hex_blob = HexImages.get_by_key_name(show_id, parent=q.key())
     
     # Covert the blob to a png and return in the response
