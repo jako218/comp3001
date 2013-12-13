@@ -12,9 +12,11 @@
                     {% else %}
                     <img id="hex" src="{% static "img/errorhex.png" %}" class="img-responsive" alt="No Show Image">
                     {% endif %}
+                    {% if show.rating >= 0 %}
                     <div id="ratinghex">
                         {{ show.rating }}
                     </div>
+                    {% endif %}
                 </div>
             </div>
             {% if subscribed %}
