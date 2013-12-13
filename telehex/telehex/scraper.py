@@ -119,20 +119,32 @@ class Scraper:
 
 class Search:
     def search_tvdb(self, query):
-        searchsoup = BeautifulSoup( urllib2.urlopen(TVDB_SEARCH_URL.format(urllib2.quote(query))).read(), 'xml')
-
         results = []
-        for series in searchsoup.find_all('Series'):
-            if series.Overview:
-               desc = series.Overview.text
-            else:
-               desc = "Not Available"
+        try:
+            searchsoup = BeautifulSoup( urllib2.urlopen(TVDB_SEARCH_URL.format(urllib2.quote(query))).read(), 'xml')
+            for series in searchsoup.find_all('Series'):
+                desc = "No Description Available"
+                if series.Overview:
+                   desc = series.Overview.text if len(series.Overview.text) > 1 else desc
 
-            results.append( {
-                'tvdb_id': series.seriesid.text,
-                'name': series.SeriesName.text,
-                'desc': desc,
-            })
+                results.append( {
+                    'tvdb_id': series.seriesid.text,
+                    'name': series.SeriesName.text,
+                    'desc': desc,
+                })
+        except Exception:
+            q = db.GqlQuery("SELECT * FROM TVShow WHERE title >=:search1 AND title <:search2", search1=query, search2=query + u"\ufffd")
+            series = q.run()
+
+            for s in series:
+                desc = "No Description Available" if len(s.desc) < 2 else s.desc
+                results.append( {
+                    'tvdb_id': s.key().name(),
+                    'name': s.title,
+                    'desc': desc,
+                })
+
+
 
         return results
 
