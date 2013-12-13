@@ -6,8 +6,7 @@
  * Navy:    #263544
 */
 
-html,
-body{
+html, body {
     background: url('../img/bg.png') repeat #263544;
     color: white;
     height: 100%;
@@ -15,33 +14,28 @@ body{
 
 table, tr, td { height: 100%; }
 
-
-#wrap 
-{
-        min-height: 100%;
-        height: auto !important;
-        height: 100%;
-        margin: 0 auto -30px;
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -30px;
 }
 
-#hex 
-{
+#hex {
     margin: 0 auto;
 }
 
-#push,
-#footer {
+#push, #footer {
     height: 60px;
 }
 
-#footerlogo
-{
+#footerlogo {
     text-align: center;
 }
 
 /* Homepage styles */
 
-#headerbar{
+#headerbar {
     height:72px;
     background-color:#292929;
     -moz-box-shadow: 0px -5px 8px #b1900b;
@@ -49,13 +43,13 @@ table, tr, td { height: 100%; }
     box-shadow: 0px -5px 8px #b1900b;
 }
 
-#headerlogo{
+#headerlogo {
     position:absolute;
     left:10px;
     top:10px;
 }
 
-#inoutbutton{
+#inoutbutton {
     position:absolute;
     top:15px;
     right:10px;
@@ -65,17 +59,17 @@ table, tr, td { height: 100%; }
     margin-left: 20px;
 }
 
-#searchtext{
+#searchtext {
     height:40px;
     font-size:20px;
     margin-bottom: 10px;
 }
 
-#searchbutton{
+#searchbutton {
     width:100%;
 }
 
-#mainsearchform{
+#mainsearchform {
     margin-top: 200px;
 }
 
@@ -99,8 +93,7 @@ table, tr, td { height: 100%; }
 
 /* Show information page styles */
 
-.hex-im, .hex-im-error
-{
+.hex-im, .hex-im-error {
     margin: auto;
 }
 
@@ -123,24 +116,24 @@ table, tr, td { height: 100%; }
     opacity: 0.8;
 }
 
-#showtitle{
+#showtitle {
     color: #ecf0f1;
     font-size: 60px;
 }
 
-#showline{
+#showline {
     background-color:#ecf0f1;
 }
 
-#showdescription{
+#showdescription {
     color: #ecf0f1;
 }
 
-.seasonheading{
+.seasonheading {
     background-color: #c0392b !important;
 }
 
-.seasonpanel, .seasontable{
+.seasonpanel, .seasontable {
     background-color: transparent !important;
 }
 
@@ -176,22 +169,45 @@ table, tr, td { height: 100%; }
     top: 8px;
 }
 
+th.sortable {
+    cursor: pointer;
+}
+
+th.sortable:before {
+    content: '\f0dc';
+    font-family: FontAwesome;
+    padding-right: 5px;
+    font-size: 0.8em;
+}
+
+th.headerSortUp:before {
+    content: '\f0d8';
+    color: #c0392b;
+    font-family: FontAwesome;
+    padding-right: 5px;
+    font-size: 0.8em;
+}
+
+th.headerSortDown:before {
+    content: '\f0d7';
+    color: #c0392b;
+    font-family: FontAwesome;
+    padding-right: 5px;
+    font-size: 0.8em;
+}
+
 /* End show information page styles */
 
-
-.hover
-{
+.hover {
     opacity: 0.2;
     -webkit-filter: blur(3px); 
 }
 
-.hex-im-cont
-{
+.hex-im-cont {
     position: relative;
 }
 
-.days-left
-{
+.days-left {
     position: absolute;
     top: 40%;
     text-align: center;
@@ -215,46 +231,45 @@ table, tr, td { height: 100%; }
 }
 
 /* Bar Chart Styles */
-.charts .graph{
+.charts .graph {
     margin:auto;
     padding-bottom:70px !important;
     width:960px;
 }
 
-rect:hover{
+rect:hover {
     fill: #2986b9;
 }
 
-.axis path,
-.axis line {
+.axis path, .axis line {
     fill: none;
     stroke: #2986b9;
-	stroke-width:2px;
+    stroke-width:2px;
     shape-rendering: crispEdges;
 }
 
 .axis text {
     font-family: sans-serif;
     font-size: 14px;
-	fill: #2986b9;
+    fill: #2986b9;
 }
 
-.x.label, .y.label{
+.x.label, .y.label {
     font-family: sans-serif;
     font-size: 14px;
-	fill: white;
+    fill: white;
 }
 
-.title.label{
+.title.label {
     font-family: sans-serif;
     font-size: 25px;
-	fill: white;
+    fill: white;
 }
 
-.noratings.label{
+.noratings.label {
     font-family: sans-serif;
     font-size: 25px;
-	fill: #2986b9;
+    fill: #2986b9;
 }
 
 .d3-tip {
