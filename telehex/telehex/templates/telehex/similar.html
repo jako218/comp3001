@@ -9,6 +9,12 @@
   stroke-width: 3px;
 }
 
+#graph{
+    width:980px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
 .node text {
   font-size: 12px;
   fill: #fff;
@@ -23,9 +29,15 @@ path.link {
 
 </style>
 
-    <div id="graph" class="container">
+<div class="container">
+    <div class="row">
+        <h2>Similar shows to {{ show.title }}</h2>
+        <a href="/show/{{show.url_string}}">&larr; back to show information</a>
+    </div>
+    <div id="graph" class="row">
       
     </div>
+</div>
 
     <script>
 

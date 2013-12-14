@@ -241,10 +241,16 @@ th.headerSortDown:after {
 }
 
 /* Bar Chart Styles */
-.charts .graph {
+
+#ratingsgraphs{
+    width:960px;
+    margin:auto;
+}
+
+.graph {
+    width:100%;
     margin:auto;
     padding-bottom:70px !important;
-    width:960px;
 }
 
 rect:hover {

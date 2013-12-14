@@ -1,9 +1,11 @@
 {% include "./telehex/header.html" %}
 
 <div class="container">
-    <div class="charts">
-
+    <div class="row" id="ratingstitle">
+        <h2>Ratings for {{ show.title }}</h2>
+        <a href="/show/{{ show.url_string }}">&larr; back to show information</a>
     </div>
+    <div class="row" id="ratingsgraphs"></div>
 </div>
 
 <script>
@@ -58,7 +60,7 @@ d3.json("/ratings_data/")
 
         var chartclass = "season_" + series_num;
 
-        var svg = d3.select(".charts")
+        var svg = d3.select("#ratingsgraphs")
             .append("div")
             .attr("id", chartclass)
             .attr("class", "row graph");
