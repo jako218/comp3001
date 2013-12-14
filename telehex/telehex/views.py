@@ -176,14 +176,14 @@ def show(request, show_title):
 
     return response
 
-def stats(request, show_title):
+def ratings(request, show_title):
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
         return render(request, 'telehex/notfound.html', { 'query': show_title })
 
     # Pass show variable to template and redirect
-    return render(request, 'telehex/stats.html', { 'show' : show })
+    return render(request, 'telehex/ratings.html', { 'show' : show })
 
 #TODO merge with stats
 def stats2(request, show_title):
@@ -319,7 +319,14 @@ def calendar_data(request):
 
     return HttpResponse(json.dumps(events), content_type="application/json")
 
-def get_show_children(request, showid):
+def show_children(request):
+    
+    if(request.method != 'POST'):
+        return HttpResponseRedirect('/')
+    
+    # Get show title out of POST data
+    showid = request.POST.__getitem__("showid")
+    
     # Get the show object for this stats page
     show = TVShow.get_by_key_name(showid)
 
@@ -337,9 +344,17 @@ def get_show_children(request, showid):
 
     return HttpResponse(json.dumps(show_json), content_type="application/json")
 
-def graph_data(request, show_title):
+def ratings_data(request):
+    
+    if(request.method != 'POST'):
+        return HttpResponseRedirect('/')
+    
+    # Get show title out of POST data
+    show_title = request.POST.__getitem__("show_slug")
+    
     # Get the show based on the show_title
     show = get_tv_show(show_title)
+    
     if not show:
         # Show doesn't exist so redirect to index
         return HttpResponseRedirect('/')
