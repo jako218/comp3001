@@ -318,7 +318,7 @@ def calendar_data(request):
 
     return HttpResponse(json.dumps(events), content_type="application/json")
 
-def similar_data(request):
+def similarity_data(request):
     
     if(request.method != 'POST'):
         return HttpResponseRedirect('/')
