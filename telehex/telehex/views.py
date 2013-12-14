@@ -185,15 +185,14 @@ def ratings(request, show_title):
     # Pass show variable to template and redirect
     return render(request, 'telehex/ratings.html', { 'show' : show })
 
-#TODO merge with stats
-def stats2(request, show_title):
+def similar(request, show_title):
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
         return render(request, 'telehex/notfound.html', { 'query': show_title })
 
     # Pass show variable to template and redirect
-    return render(request, 'telehex/stats2.html', { 'show' : show })
+    return render(request, 'telehex/similar.html', { 'show' : show })
 
 def subscribe(request):
     user = users.get_current_user()
@@ -319,13 +318,13 @@ def calendar_data(request):
 
     return HttpResponse(json.dumps(events), content_type="application/json")
 
-def show_children(request):
+def similar_data(request):
     
     if(request.method != 'POST'):
         return HttpResponseRedirect('/')
     
     # Get show title out of POST data
-    showid = request.POST.__getitem__("showid")
+    showid = request.POST.__getitem__("show_id")
     
     # Get the show object for this stats page
     show = TVShow.get_by_key_name(showid)

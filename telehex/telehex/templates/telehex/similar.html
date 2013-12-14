@@ -1,7 +1,7 @@
 {% include "./telehex/header.html" %}
 
-    <script type="text/javascript" src="http://mbostock.github.io/d3/talk/20111018/d3/d3.js"></script>
-    <script type="text/javascript" src="http://mbostock.github.io/d3/talk/20111018/d3/d3.layout.js"></script>
+    <!-- <script type="text/javascript" src="http://mbostock.github.io/d3/talk/20111018/d3/d3.js"></script>
+    <script type="text/javascript" src="http://mbostock.github.io/d3/talk/20111018/d3/d3.layout.js"></script> -->
     <style type="text/css">
 
 
@@ -40,7 +40,7 @@ var diagonal = d3.svg.diagonal().projection(function(d) { return [d.x, d.y]; });
 
 var vis = d3.select("#graph").append("svg:svg").attr("width", width).attr("height", height).append("svg:g").attr("transform", "translate(0, 100)");
 
-d3.json("/show_children/")
+d3.json("/similar_data/")
 	.header("X-CSRFToken", $.cookie('csrftoken'))
 	.post("show_id={{ show.key.name }}", function(error, data){
 
