@@ -37,7 +37,7 @@ src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></sc
 
 <body>
     <div id="wrap" class="container-fluid">
-        <div class="navbar" role="navigation" id="headerbar">
+        <div class="navbar" role="navigation" id="headerbar" style="border-radius: 0px">
             <div class="navbar-header">
                 <a href="/"><img src="{% static "img/telehexlogo.png" %}" width="114" height="52" id="headerlogo" title="telehexlogo" alt="Telehex Logo"/></a>
             </div>
@@ -58,4 +58,10 @@ src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></sc
                 <a href="/login?continue={{request.META.PATH_INFO}}" type="submit" class="btn btn-primary">log in</a>
                 {% endif %}
             </div>
+        </div>
+        <div class="container-fluid" style="height:36px; margin-top: -20px;">
+                <form action="/search/" method="post"  id="navsearch"  class="pull-right">
+                {% csrf_token %}
+                    <input autocomplete="off" name="query" type="search" placeholder="find a show">
+                </form>
         </div>

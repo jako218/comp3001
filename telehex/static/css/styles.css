@@ -44,9 +44,7 @@ table, tr, td { height: 100%; }
 }
 
 #headerlogo {
-    position:absolute;
-    left:10px;
-    top:10px;
+    margin: 10px;
 }
 
 #inoutbutton {
@@ -315,4 +313,33 @@ rect:hover {
 
 .list-group-item-text {
     color: #fff;
+}
+
+/* Search Bar */ 
+
+#navsearch input {
+    outline: none;
+    background: #292929 url(../img/search-icon.png) no-repeat 8px center;
+    border: transparent 0px;
+    padding: 8px 8px 8px 30px;
+    cursor: pointer;
+    width: 10px;
+
+    -webkit-border-radius: 0 0 4px 4px;
+    -moz-border-radius: 0 0 4px 4px;
+    border-radius: 0 0 4px 4px;
+
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    transition: all .5s;
+}
+
+#navsearch input[type=search]:hover {
+    background-color: #fff;
+}
+
+#navsearch input[type=search]:focus {
+    width: 250px;
+    background-color: #fff;
+    cursor: auto;
 }
