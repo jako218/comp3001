@@ -343,3 +343,9 @@ rect:hover {
     background-color: #fff;
     cursor: auto;
 }
+
+/* Auto complete */
+
+a.ui-state-focus {
+    background: rgba(192, 57, 43, 0.3) !important;
+}
