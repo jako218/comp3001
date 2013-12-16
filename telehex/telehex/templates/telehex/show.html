@@ -106,7 +106,10 @@
                                             <td>{% if episode.desc %}<span class="balloon"><a class="episode">{{ episode.name }}</a>
                                             <span class="ep-desc" style="display: none">
                                                 <div class="media">
-                                                    <img class="pull-left media-object img-rounded" alt="48x48" src="http://thetvdb.com/banners/{{episode.thumb}}" style="width: 100px; height: 100px;">
+                                                    {% if episode.thumb %}
+                                                    <img class="pull-left media-object img-rounded" alt="48x48" src="http://thetvdb.com/banners/{{episode.thumb}}" 
+                                                    style="width: 100px; height: 100px;">
+                                                    {% endif %}
                                                     <div class="media-body">
                                                     <h4 class="media-heading">{{ episode.name }}</h4>
                                                     <p>{{episode.desc}}</p>
