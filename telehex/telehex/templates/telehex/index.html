@@ -62,13 +62,6 @@ body { background: url('static/img/mainbg.png') repeat #263544; }
             $(this).css({'border-color':'', 'border-width':''});
         });
 
-
-        $('body').append('<div id="loading-overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>');
-        $('#loading-overlay').hide();
-        $('.load-on-click').click(function() {
-            $('#loading-overlay').show();
-        });
-
     });
 
   </script>

@@ -6,5 +6,17 @@
         <img src="{% static "img/telehexfooter.png" %}" title="telehexlogo" alt="Telehex Footer Logo"/>
     </div>
 
+<script>
+    $(document).ready(function() {
+        $('body').append('<div id="loading-overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>');
+
+        $('#loading-overlay').hide();
+
+        $('.load-on-click').click(function() {
+            $('#loading-overlay').show();
+        });
+    });
+</script>
+
 </body>
 </html>

@@ -65,3 +65,9 @@ src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></sc
                     <input autocomplete="off" name="query" type="search" placeholder="find a tv show">
                 </form>
         </div>
+
+        <script>
+            $('#navsearch').submit(function() {
+                $('#loading-overlay').show();
+            });
+        </script>
