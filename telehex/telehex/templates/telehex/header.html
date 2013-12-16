@@ -27,6 +27,7 @@ src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></sc
     <script src="{% static "js/fullcalendar.js" %}"></script>
     <script src="{% static "js/jquery.jrumble.1.3.js" %}"></script>
     <script src="{% static "js/jquery.tablesorter.js" %}"></script>
+    <script src="{% static "js/search.js" %}"></script>
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -60,14 +61,8 @@ src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></sc
             </div>
         </div>
         <div class="container-fluid" style="height:36px; margin-top: -20px;">
-                <form action="/search/" method="post"  id="navsearch"  class="pull-right">
+                <form action="/search/" method="post" onsubmit="return isValidSearch('small-search')" id="navsearch"  class="pull-right search-form">
                 {% csrf_token %}
-                    <input autocomplete="off" name="query" type="search" placeholder="find a tv show">
+                 	<input type="search" name="query" placeholder="find a tv show" class="form-control search" id="small-search">
                 </form>
         </div>
-
-        <script>
-            $('#navsearch').submit(function() {
-                $('#loading-overlay').show();
-            });
-        </script>
