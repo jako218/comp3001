@@ -36,7 +36,7 @@
                 <td><a href="/show/{{ show.url_string }}">{{ show.title }}</a></td>
                 <td>{% if subs_counts|get_item:show.key.name %}{{ subs_counts|get_item:show.key.name }}{% else %}0{% endif %}</td>
                 <td>{{ show.last_scraped }}</td>
-                <td><a href="/scrape/{{show.key.name}}?force=1">Rescrape</a></td>
+                <td><a href="/scrape/{{show.key.name}}?force=1" class="load-on-click">Rescrape</a></td>
             </tr>
             {% endfor %}
         </table>
