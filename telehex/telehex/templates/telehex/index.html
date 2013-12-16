@@ -1,3 +1,4 @@
+{% load staticfiles %}
 {% include "./telehex/header.html" %}
 
 <style>
@@ -14,7 +15,7 @@ body { background: url('static/img/mainbg.png') repeat #263544; }
             </div>
         </div>
         <div class="col-xs-12 col-sm-8 col-sm-offset-2  col-md-4 col-md-offset-4">
-            <button type="submit" class="btn btn-lg btn-danger" id="searchbutton">search</button>
+            <button type="submit" class="btn btn-lg btn-danger load-on-click" id="searchbutton">search</button>
         </div>
     </form>
 </div>
@@ -30,6 +31,7 @@ body { background: url('static/img/mainbg.png') repeat #263544; }
                 delay: 200,
                 select : function(event, ui){ 
                     $("#searchtext").val(ui.item.label);
+                    $('#overlay').show()
                     $("#mainsearchform").submit();
                 }
             });
@@ -56,6 +58,13 @@ body { background: url('static/img/mainbg.png') repeat #263544; }
 
         input.keypress(function(){
             $(this).css({'border-color':'', 'border-width':''});
+        });
+
+
+        $('body').append('<div id="overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>');
+        $('#overlay').hide();
+        $('.load-on-click').click(function() {
+            $('#overlay').show();
         });
 
     });
