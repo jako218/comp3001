@@ -325,9 +325,9 @@ rect:hover {
     cursor: pointer;
     width: 10px;
 
-    -webkit-border-radius: 0 0 4px 4px;
-    -moz-border-radius: 0 0 4px 4px;
-    border-radius: 0 0 4px 4px;
+    -webkit-border-radius: 0 0 0 4px;
+    -moz-border-radius: 0 0 0 4px;
+    border-radius: 0 0 0 4px;
 
     -webkit-transition: all .5s;
     -moz-transition: all .5s;
