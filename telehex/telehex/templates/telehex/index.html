@@ -20,7 +20,16 @@
   
     $(document).ready(function(){
         $.get( "/search_tags/", function( data ) {
-            $( "#searchtext" ).autocomplete({appendTo: "#someElem", minLength: 2, source: data.tags });
+            $( "#searchtext" ).autocomplete({
+                appendTo: "#someElem", 
+                minLength: 2, 
+                source: data.tags, 
+                delay: 200,
+                select : function(event, ui){ 
+                    $("#searchtext").val(ui.item.label);
+                    $("#mainsearchform").submit();
+                }
+            });
         });
 
         
