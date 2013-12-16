@@ -44,7 +44,7 @@ body { background: url('static/img/mainbg.png') repeat #263544; }
 
         $('#mainsearchform').submit(function() {
             if( !input.val()  ) {
-                input.attr('placeholder', 'we\'re good, but we\'ve yet to implement mind reading - enter a search term!');
+                input.attr('placeholder', 'type something!');
                 input.css({'border-color':'#c0392b', 'border-width':'2px'}).focus();
                 
                 var demoTimeout;
