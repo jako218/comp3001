@@ -33,24 +33,24 @@ You can now access the site at [http://localhost:8080](http://localhost:8080) or
 |----------------------|----------------------------|-----------------|
 | `/`                  | Home/Search                | `index.html`    |
 | `/admin`             | Admin Panel                | `admin.html`    |
-| `/calendar_data`     | Calendar Data (for AJAX)   | *N/A*           |
-| `/hexagons/12345`    | Hexagons                   | *N/A*           |
-| `/login`             | Login                      | *N/A*           |
-| `/logout`            | Logout                     | *N/A*           |
+| `/calendar_data`     | Calendar Data (for AJAX)   |                 |
+| `/hexagons/12345`    | Hexagons                   |                 |
+| `/login`             | Login                      |                 |
+| `/logout`            | Logout                     |                 |
 | `/profile/calendar`  | User Calendar              | `calendar.html` |
 | `/profile`           | User Profile               | `profile.html`  |
 | `/ratings/show_slug` | Ratings Graphs             | `ratings.html`  |
-| `/ratings_data`      | Ratings Data (for AJAX)    | *N/A*           |
-| `/scrape`            | Scrape                     | *N/A*           |
-| `/search_tags`       | Offline Search Fallback    | *N/A*           |
+| `/ratings_data`      | Ratings Data (for AJAX)    |                 |
+| `/scrape`            | Scrape                     |                 |
+| `/search_tags`       | Offline Search Fallback    |                 |
 | `/search`            | Search Results             | `search.html`   |
 | `/show/show_slug`    | Show Info                  | `show.html`     |
 | `/similar/show_slug` | Similarity Graph           | `similar.html`  |
-| `/similarity_data`   | Similarity Data (for AJAX) | *N/A*           |
+| `/similarity_data`   | Similarity Data (for AJAX) |                 |
 | `/stats/show_slug`   | Show Stats/Graphs          | `stats.html`    |
-| `/subscribe`         | Subscribe                  | *N/A*           |
-| `/togglescraping`    | Toggle Scraping            | *N/A*           |
-| `/unsubscribe`       | Unsubscribe                | *N/A*           |
-| *(Every Page)*       | Footer                     | `footer.html`   |
-| *(Every Page)*       | Header                     | `header.html`   |
-| *N/A*                | Show Not Found             | `notfound.html` |
+| `/subscribe`         | Subscribe                  |                 |
+| `/togglescraping`    | Toggle Scraping            |                 |
+| `/unsubscribe`       | Unsubscribe                |                 |
+|                      | Footer                     | `footer.html`   |
+|                      | Header                     | `header.html`   |
+|                      | Show Not Found             | `notfound.html` |
