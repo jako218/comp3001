@@ -1,6 +1,7 @@
 {% load staticfiles %}
 {% include "./telehex/header.html" %}
 
+<script src="{% static "js/jquery.balloon.js" %}"></script>
 <div class="container">
     <div class="row">
         <!-- Hexagon Image -->
@@ -102,7 +103,16 @@
                                         {% for episode in episodes %}
                                         <tr id="s{{season|stringformat:'02d'}}e{{episode.ep_number|stringformat:'02d'}}">
                                             <td>{{ episode.ep_number }}</td>
-                                            <td>{{ episode.name }}</td>
+                                            <td>{% if episode.desc %}<span class="balloon"><a class="episode">{{ episode.name }}</a>
+                                            <span class="ep-desc" style="display: none">
+                                                <div class="media">
+                                                    <img class="pull-left media-object img-rounded" alt="48x48" src="http://thetvdb.com/banners/{{episode.thumb}}" style="width: 100px; height: 100px;">
+                                                    <div class="media-body">
+                                                    <h4 class="media-heading">{{ episode.name }}</h4>
+                                                    <p>{{episode.desc}}</p>
+                                                </div>
+                                            </span></span>
+                                            {% else %}{{ episode.name }}{% endif %} </td>
                                             {% if episode.airdate %}
                                             <td>{{ episode.airdate }}</td>
                                             {% else %}
@@ -147,6 +157,34 @@
 
         $('.seasontable').tablesorter({
             sortList: [[0,0]]
+        });
+
+        $('.balloon').each(function() {
+            
+            var shown = false;
+            $(this).on("click", function(){
+                shown ? $(this).hideBalloon() : $(this).showBalloon();
+                shown = !shown;
+            }).showBalloon({
+                contents : $(this).children(".ep-desc").html(), 
+                tipSize: 5,
+                position: "bottom right",
+                css: {
+                    width: '400px',
+                    border: 'solid 2px #c0392b',
+                    padding: '10px',
+                    backgroundColor: '#fff',
+                    color: 'black',
+                    opacity: '1',
+                    'box-shadow': 'none'
+                },
+                hideDuration: 600
+            }).hideBalloon();
+
+            $(this).mouseleave(function(){
+                $(this).hideBalloon();
+                shown = false;
+            });
         });
     });
 </script>
