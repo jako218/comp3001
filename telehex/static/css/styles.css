@@ -73,7 +73,7 @@ table, tr, td { height: 100%; }
 
 /* End homepage styles */
 
-#overlay {
+#loading-overlay {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -84,7 +84,7 @@ table, tr, td { height: 100%; }
     text-align: center;
 }
 
-#overlay img {
+#loading-overlay img {
     position: absolute;
     top: 30%;
     left: calc(50% - 150px);

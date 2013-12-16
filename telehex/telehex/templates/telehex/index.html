@@ -31,7 +31,7 @@ body { background: url('static/img/mainbg.png') repeat #263544; }
                 delay: 200,
                 select : function(event, ui){ 
                     $("#searchtext").val(ui.item.label);
-                    $('#overlay').show()
+                    $('#loading-overlay').show()
                     $("#mainsearchform").submit();
                 }
             });
@@ -55,7 +55,7 @@ body { background: url('static/img/mainbg.png') repeat #263544; }
                 return false;
             }
 
-            $('#overlay').show();
+            $('#loading-overlay').show();
         });
 
         input.keypress(function(){
@@ -63,10 +63,10 @@ body { background: url('static/img/mainbg.png') repeat #263544; }
         });
 
 
-        $('body').append('<div id="overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>');
-        $('#overlay').hide();
+        $('body').append('<div id="loading-overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>');
+        $('#loading-overlay').hide();
         $('.load-on-click').click(function() {
-            $('#overlay').show();
+            $('#loading-overlay').show();
         });
 
     });

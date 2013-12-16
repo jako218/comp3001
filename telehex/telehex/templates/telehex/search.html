@@ -23,12 +23,12 @@
 
 <script>
     $(document).ready(function() {
-            $('body').append('<div id="overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>');
+            $('body').append('<div id="loading-overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>');
 
-        $('#overlay').hide();
+        $('#loading-overlay').hide();
 
         $('.load-on-click').click(function() {
-            $('#overlay').show();
+            $('#loading-overlay').show();
         });
     });
 </script>
