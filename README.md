@@ -29,22 +29,28 @@ You can now access the site at [http://localhost:8080](http://localhost:8080) or
 
 ## Pages on the site
 
-| Name                     | URL (relative)          | Template        |
-|--------------------------|-------------------------|-----------------|
-| Home/Search              | `/`                     | `index.html`    |
-| Search Results           | `/search`               | `search.html`   |
-| Show Info                | `/show/show_slug`       | `show.html`     |
-| Show Stats/Graphs        | `/stats/show_slug`      | `stats.html`    |
-| User Profile             | `/profile`              | `profile.html`  |
-| User Calendar            | `/profile/calendar`     | `calendar.html` |
-| Show Not Found           | *N/A*                   | `notfound.html` |
-| Header                   | *(Every Page)*          | `header.html`   |
-| Footer                   | *(Every Page)*          | `footer.html`   |
-| Login                    | `/login`                | *N/A*           |
-| Logout                   | `/logout`               | *N/A*           |
-| Subscribe                | `/subscribe`            | *N/A*           |
-| Unsubscribe              | `/unsubscribe`          | *N/A*           |
-| Scrape                   | `/scrape`               | *N/A*           |
-| Hexagons                 | `/hexagons/12345`       | *N/A*           |
-| Calendar Data (for AJAX) | `/calendar_data`        | *N/A*           |
-| Graph Data (for AJAX)    | `/graph_data/show_slug` | *N/A*           |
+| URL (relative)       | Name                       | Template        |
+|----------------------|----------------------------|-----------------|
+| `/`                  | Home/Search                | `index.html`    |
+| `/admin`             | Admin Panel                | `admin.html`    |
+| `/calendar_data`     | Calendar Data (for AJAX)   | *N/A*           |
+| `/hexagons/12345`    | Hexagons                   | *N/A*           |
+| `/login`             | Login                      | *N/A*           |
+| `/logout`            | Logout                     | *N/A*           |
+| `/profile/calendar`  | User Calendar              | `calendar.html` |
+| `/profile`           | User Profile               | `profile.html`  |
+| `/ratings/show_slug` | Ratings Graphs             | `ratings.html`  |
+| `/ratings_data`      | Ratings Data (for AJAX)    | *N/A*           |
+| `/scrape`            | Scrape                     | *N/A*           |
+| `/search_tags`       | Offline Search Fallback    | *N/A*           |
+| `/search`            | Search Results             | `search.html`   |
+| `/show/show_slug`    | Show Info                  | `show.html`     |
+| `/similar/show_slug` | Similarity Graph           | `similar.html`  |
+| `/similarity_data`   | Similarity Data (for AJAX) | *N/A*           |
+| `/stats/show_slug`   | Show Stats/Graphs          | `stats.html`    |
+| `/subscribe`         | Subscribe                  | *N/A*           |
+| `/togglescraping`    | Toggle Scraping            | *N/A*           |
+| `/unsubscribe`       | Unsubscribe                | *N/A*           |
+| *(Every Page)*       | Footer                     | `footer.html`   |
+| *(Every Page)*       | Header                     | `header.html`   |
+| *N/A*                | Show Not Found             | `notfound.html` |
