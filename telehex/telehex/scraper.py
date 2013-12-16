@@ -87,10 +87,7 @@ class Scraper:
                     ep_rating = float(ratings[int(episode.SeasonNumber.text)][int(episode.EpisodeNumber.text)])
                 if episode.Overview.text: overview = episode.Overview.text
 
-                if episode.EpisodeName.text :
-                    epname = episode.EpisodeName.text
-                else:
-                    epname = "Not Available"
+                epname = episode.EpisodeName.text if episode.EpisodeName.text else "Not Available"
 
                 TVEpisode(  parent = self.series_key,
                             key_name = episode.id.text,
@@ -113,8 +110,13 @@ class Scraper:
             xml = urllib2.urlopen("http://omdbapi.com/?i={0}&r=xml".format(imdb_id))
             soup = BeautifulSoup(xml.read(), 'xml')
             tv_show = soup.find('movie')
-            rating = tv_show['imdbRating'] if tv_show else -1
+            try:
+                rating = float(tv_show['imdbRating']) if tv_show else -1
+            except ValueError:
+                rating = -1
+
             return rating
+
         return -1
 
 class Search:
@@ -144,7 +146,4 @@ class Search:
                     'desc': desc,
                 })
 
-
-
         return results
-
