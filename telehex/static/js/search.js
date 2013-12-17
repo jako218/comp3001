@@ -19,6 +19,7 @@ function isValidSearch(search_input_id) {
             return false;
         }
         else {
+        	console.log(input);
         	$('#loading-overlay').show();
         	return true;
         }
@@ -37,7 +38,14 @@ $(document).ready(function(){
 	        select : function(event, ui){ 
 	                 	$(".search").val(ui.item.label);
 	                    $('#loading-overlay').show();
-	                    $(".search-form").submit();
+	                    /* 
+	                     * The autocomplete suggestions already exist in the database so we can direct
+	                     * straight to the show page for the selected entry. Have to replace spaces with
+	                     * underscores and all uppercase to lowercase.
+	                     */
+	                    var url_string = ui.item.label.toLowerCase(); 
+	                    url_string = url_string.split(' ').join('_');
+	                    window.location.replace("/show/" + url_string); 
 	                }
 	            });
 	});
