@@ -2,6 +2,13 @@
 {% include "./telehex/header.html" %}
 
 <script src="{% static "js/jquery.balloon.js" %}"></script>
+
+<style>
+	.episode {
+		cursor: pointer;
+	}
+</style>
+
 <div class="container">
     <div class="row">
         <!-- Hexagon Image -->
@@ -177,10 +184,10 @@
                 position: "bottom right",
                 css: {
                     width: '400px',
-                    border: 'solid 2px #c0392b',
+                    border: 'solid 2px #292929',
                     padding: '10px',
-                    backgroundColor: '#fff',
-                    color: 'black',
+                    backgroundColor: '#292929',
+                    color: 'white',
                     opacity: '1',
                     'box-shadow': 'none'
                 },
