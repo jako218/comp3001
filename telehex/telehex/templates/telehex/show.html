@@ -89,7 +89,7 @@
                                     <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse{{season}}">Season {{season}}</a>
                                 </h3>
                             </div>
-                            <div id="collapse{{season}}" class="panel-collapse {% if forloop.first %}in{% else %}collapse{% endif %}" style="height: auto;">
+                            <div id="collapse{{season}}" class="panel-collapse collapse" style="height: auto;">
                                 <div class="panel-body">
                                     <table class="table seasontable">
                                         <thead style="font-weight: bold;">
@@ -151,6 +151,9 @@
             $(location.hash).closest('.panel-collapse').removeClass("collapse").addClass("in");
             $(location.hash).css('background-color', '#2986b9');
             $(location.hash).animate({'background-color': "transparent"}, 4000);
+        }
+        else {
+            $('#accordion').find('.panel-collapse').first().removeClass("collapse").addClass("in");
         }
 
         $(".rating-col").each(function() {
