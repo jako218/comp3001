@@ -47,6 +47,9 @@ def admin(request):
     return render(request, 'telehex/admin.html', template_values)
 
 def calendar(request):
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
     return render(request, 'telehex/calendar.html')
 
 def index(request):
