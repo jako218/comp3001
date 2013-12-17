@@ -1,0 +1,4 @@
+cron:
+- description: weekly show update
+  url: /tasks/email_update
+  schedule: every sunday 22:00

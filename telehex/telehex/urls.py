@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from telehex.views import *
+from telehex.tasks import email_update
 
 urlpatterns = patterns('',
     (r'^$', index),
@@ -21,4 +22,6 @@ urlpatterns = patterns('',
     (r'^subscribe/$', subscribe),
     (r'^togglescraping/$', togglescraping),
     (r'^unsubscribe/$', unsubscribe),
+    (r'^tasks/email_update$', email_update),
+    (r'^receive_updates/$', receive_email_updates),
 )

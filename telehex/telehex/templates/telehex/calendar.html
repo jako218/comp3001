@@ -5,6 +5,11 @@
     <h1>{{user.nickname}}'s Calendar</h1>
     <br>
     <div id='calendar'></div>
+    <br>
+    <div>
+        Receive email updates:
+        <input id="updates_check" type="checkbox" {% if email_updates %} checked="checked" {% endif %}>
+    </div>
 </div>
 
 <script>
@@ -23,6 +28,13 @@ $(document).ready(function() {
                 element.addClass("oldclass");
         }
 	});
+
+    var emailUpdates = $("#updates_check");
+
+    emailUpdates.change(function(){
+        var data = $.get("/receive_updates/");
+    });
+
 });
 
 </script>

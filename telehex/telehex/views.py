@@ -50,7 +50,10 @@ def calendar(request):
     user = users.get_current_user()
     if not user:
         return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
-    return render(request, 'telehex/calendar.html')
+    
+    user_entry = User.get_by_key_name(user.user_id())
+
+    return render(request, 'telehex/calendar.html', {"email_updates" : user_entry})
 
 def index(request):
     template_values = {}
@@ -408,3 +411,19 @@ def hexagon(request, show_id):
     response = HttpResponse(mimetype="image/png")
     response.write(hex_blob.image)
     return response
+
+def receive_email_updates(request):
+    # Check a logged in user has issued this request
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/')
+
+    user_entry = User.get_by_key_name(user.user_id())
+
+    # If user already exists remove their email from table - otherwise add their email
+    if user_entry:
+        user_entry.delete()
+        return HttpResponse(False)
+    else:
+        User(key_name=user.user_id(), email= user.email()).put()
+        return HttpResponse(True)
