@@ -19,7 +19,6 @@ function isValidSearch(search_input_id) {
             return false;
         }
         else {
-            console.log(input);
             $('#loading-overlay').show();
             return true;
         }
