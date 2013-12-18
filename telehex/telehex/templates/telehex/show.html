@@ -43,7 +43,7 @@
                     </form>
                     {% endif %}
                     {% if is_admin %}
-                    <a href="/scrape/{{show.key.name}}?force=1" class="load-on-click" style="color: #c0392b" />rescrape this show</a><br>
+                    <a href="/scrape/{{show.key.name}}?force=1" class="load-on-click" />rescrape this show</a><br>
                     {% endif %}
                     <a href="/ratings/{{ show.url_string }}">graph this show</a><br>
                     <a href="/similar/{{ show.url_string }}">find similar shows</a><br>
