@@ -1,5 +1,8 @@
 {% load apptags %}
+{% load staticfiles %}
 {% include "./telehex/header.html" %}
+
+<script src="{% static "js/jquery.tablesorter.js" %}"></script>
 
 <div class="container">
     {% if is_admin %}
