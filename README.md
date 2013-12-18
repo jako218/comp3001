@@ -29,28 +29,29 @@ You can now access the site at [http://localhost:8080](http://localhost:8080) or
 
 ## Pages on the site
 
-| URL (relative)       | Name                       | Template        |
-|----------------------|----------------------------|-----------------|
-| `/`                  | Home/Search                | `index.html`    |
-| `/admin`             | Admin Panel                | `admin.html`    |
-| `/calendar_data`     | Calendar Data (for AJAX)   |                 |
-| `/hexagons/12345`    | Hexagons                   |                 |
-| `/login`             | Login                      |                 |
-| `/logout`            | Logout                     |                 |
-| `/profile/calendar`  | User Calendar              | `calendar.html` |
-| `/profile`           | User Profile               | `profile.html`  |
-| `/ratings/show_slug` | Ratings Graphs             | `ratings.html`  |
-| `/ratings_data`      | Ratings Data (for AJAX)    |                 |
-| `/scrape`            | Scrape                     |                 |
-| `/search_tags`       | Offline Search Fallback    |                 |
-| `/search`            | Search Results             | `search.html`   |
-| `/show/show_slug`    | Show Info                  | `show.html`     |
-| `/similar/show_slug` | Similarity Graph           | `similar.html`  |
-| `/similarity_data`   | Similarity Data (for AJAX) |                 |
-| `/stats/show_slug`   | Show Stats/Graphs          | `stats.html`    |
-| `/subscribe`         | Subscribe                  |                 |
-| `/togglescraping`    | Toggle Scraping            |                 |
-| `/unsubscribe`       | Unsubscribe                |                 |
-|                      | Footer                     | `footer.html`   |
-|                      | Header                     | `header.html`   |
-|                      | Show Not Found             | `notfound.html` |
+| URL (relative)          | Name                        | Template        |
+|-------------------------|-----------------------------|-----------------|
+| `/`                     | Home/Search                 | `index.html`    |
+| `/admin`                | Admin Panel                 | `admin.html`    |
+| `/admin/togglescraping` | Toggle Scraping On/Off      |                 |
+| `/data/calendar`        | Calendar Data (for AJAX)    |                 |
+| `/data/ratings`         | Ratings Data (for AJAX)     |                 |
+| `/data/similarity`      | Similarity Data (for AJAX)  |                 |
+| `/hexagons/12345`       | Hexagon Images (fanart)     |                 |
+| `/login`                | Login                       |                 |
+| `/logout`               | Logout                      |                 |
+| `/profile`              | User Profile                | `profile.html`  |
+| `/profile/calendar`     | User Calendar               | `calendar.html` |
+| `/ratings/show_slug`    | Ratings Graphs              | `ratings.html`  |
+| `/receive_updates`      | Toggle Users' Email Updates |                 |
+| `/scrape`               | Scrape Show Data            |                 |
+| `/search`               | Search Results              | `search.html`   |
+| `/search_tags`          | Offline Search Fallback     |                 |
+| `/show/show_slug`       | Show Info                   | `show.html`     |
+| `/similar/show_slug`    | Similarity Graph            | `similar.html`  |
+| `/subscribe`            | Subscribe to Show           |                 |
+| `/tasks/email_update`   | Email Update Cron Job       |                 |
+| `/unsubscribe`          | Unsubscribe from Show       |                 |
+|                         | Footer                      | `footer.html`   |
+|                         | Header                      | `header.html`   |
+|                         | Show Not Found              | `notfound.html` |
