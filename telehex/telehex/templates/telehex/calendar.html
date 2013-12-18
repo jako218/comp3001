@@ -1,6 +1,9 @@
 {% load staticfiles %}
 {% include "./telehex/header.html" %}
 
+<link rel='stylesheet' href="{% static "css/fullcalendar.css" %}" media="screen">
+<script src="{% static "js/fullcalendar.js" %}"></script>
+
 <div class="container">
     <h1>{{user.nickname}}'s Calendar</h1>
     <br>
