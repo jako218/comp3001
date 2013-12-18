@@ -107,27 +107,39 @@
                                                 <th class="sortable">Rating</th>
                                             </tr>
                                         </thead>
+
                                         {% for episode in episodes %}
                                         <tr id="s{{season|stringformat:'02d'}}e{{episode.ep_number|stringformat:'02d'}}">
+
                                             <td>{{ episode.ep_number }}</td>
-                                            <td>{% if episode.desc %}<span class="balloon"><a class="episode">{{ episode.name }}</a>
-                                            <span class="ep-desc" style="display: none">
-                                                <div class="media">
-                                                    {% if episode.thumb %}
-                                                    <img class="pull-left media-object img-rounded" src="http://thetvdb.com/banners/{{episode.thumb}}" 
-                                                    style="width: 120px; height: 90px;">
-                                                    {% endif %}
-                                                    <div class="media-body">
-                                                    <h4 class="media-heading">{{ episode.name }}</h4>
-                                                    <p>{{episode.desc}}</p>
-                                                </div>
-                                            </span></span>
-                                            {% else %}{{ episode.name }}{% endif %} </td>
+
+                                            <td>
+                                                {% if episode.desc %}
+                                                <span class="balloon">
+                                                    <a class="episode">{{ episode.name }}</a>
+                                                    <span class="ep-desc" style="display: none">
+                                                        <div class="media">
+                                                            {% if episode.thumb %}
+                                                            <img class="pull-left media-object img-rounded" src="http://thetvdb.com/banners/{{episode.thumb}}" style="width: 120px; height: 90px;">
+                                                            {% endif %}
+                                                            <div class="media-body">
+                                                                <h4 class="media-heading">{{ episode.name }}</h4>
+                                                                <p>{{episode.desc}}</p>
+                                                            </div>
+                                                        </div>
+                                                    </span>
+                                                </span>
+                                                {% else %}
+                                                {{ episode.name }}
+                                                {% endif %}
+                                            </td>
+
                                             {% if episode.airdate %}
                                             <td>{{ episode.airdate }}</td>
                                             {% else %}
                                             <td>N/A</td>
                                             {% endif %}
+
                                             {% if episode.rating < 0 %}
                                             <td>N/A</td>
                                             {% else %}
@@ -138,8 +150,10 @@
                                                 </div>
                                             </td>
                                             {% endif %}
+
                                         </tr>
                                         {% endfor %}
+
                                     </table>
                                 </div>
                             </div>
