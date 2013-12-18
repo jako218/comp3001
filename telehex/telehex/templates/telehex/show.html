@@ -135,7 +135,7 @@
                                             </td>
 
                                             {% if episode.airdate %}
-                                            <td>{{ episode.airdate }}</td>
+                                            <td data-sort-value="{{ episode.airdate|date:'Ymd' }}">{{ episode.airdate }}</td>
                                             {% else %}
                                             <td>N/A</td>
                                             {% endif %}
@@ -183,7 +183,18 @@
         });
 
         $('.seasontable').tablesorter({
-            sortList: [[0,0]]
+            /* Sort the first column in ascending order, by default.
+            sortList: [[0,0]],
+
+            /* Make jQuery TableSort use the data-sort-value attribute, if available
+               Otherwise, just fall back to the text in the table cell. */
+            textExtraction: function(node) {
+                var attr = $(node).attr('data-sort-value');
+                if(typeof attr !== 'undefined' && attr !== false) {
+                    return attr;
+                }
+                return $(node).text();
+            }
         });
 
         $('.balloon').each(function() {
