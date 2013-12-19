@@ -251,7 +251,7 @@ def show(request, show_title):
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
-        return render(request, 'telehex/notfound.html', {'query': show_title})
+	raise Http404
 
     # Determine if the user is subscribed
     user = users.get_current_user()
@@ -307,7 +307,7 @@ def ratings(request, show_title):
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
-        return render(request, 'telehex/notfound.html', {'query': show_title})
+	raise Http404
 
     # Pass show variable to template and redirect
     return render(request, 'telehex/ratings.html', {'show': show})
@@ -326,7 +326,7 @@ def similar(request, show_title):
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
-        return render(request, 'telehex/notfound.html', {'query': show_title})
+	raise Http404
 
     # Pass show variable to template and redirect
     return render(request, 'telehex/similar.html', {'show': show})
