@@ -1,3 +1,19 @@
+"""
+:mod:`views` -- Generates the views for the site
+================================================
+
+.. module:: views
+   :synopsis: Deals responses for requests issued by Django
+
+.. moduleauthor:: Miles Armstrong <mhha1g11@ecs.soton.ac.uk>
+.. moduleauthor:: Simon Bidwell <sab3g11@ecs.soton.ac.uk>
+.. moduleauthor:: Will Buss <wjb1g11@ecs.soton.ac.uk>
+.. moduleauthor:: Jamie Davies <jagd1g11@ecs.soton.ac.uk>
+.. moduleauthor:: Hayden Eskriett <hpe1g11@ecs.soton.ac.uk>
+.. moduleauthor:: Jack Flann <jof1g11@ecs.soton.ac.uk>
+.. moduleauthor:: Chantel Spencer-Bowdage <csb1g11@ecs.soton.ac.uk>
+"""
+
 # Django imports
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render
@@ -7,30 +23,42 @@ from django.conf import settings
 from google.appengine.ext import db
 from google.appengine.api import users
 
+# Telehex Imports
+from models import *
+from scraper import Scraper, Search
+
 # Other Imports
 from collections import Counter
 from datetime import datetime, timedelta, date, MAXYEAR
 import json
 
-# Telehex Imports
-from models import *
-from telehex.scraper import Scraper, Search
-
-
+# If a page is visited, this is the number of days which must have
+# passed since the last scrape, before a re-scrape occurs
 RESCRAPE_AFTER = 7
 
-########## PAGES ##########
 
 def admin(request):
+    """
+    Returns the admin page HttpResponse if an admin user is logged in. If no user is logged in the user is redirected
+    to the login page. If the user is logged in and not an admin they are redirected to a 404 page.
+
+    :param request: The request object for this page.
+    :returns: A HttpResponse Object
+    :raises: Http404:
+    """
+
     # Check if the current user is logged in
     if not users.get_current_user():
         return HttpResponseRedirect('/login?continue=/admin')
-        # Check if the current user is an admin
+
+    # Check if the current user is an admin
     if not users.is_current_user_admin():
         raise Http404
-        # Get all the TVShows
+
+    # Get all the TVShows
     q = db.GqlQuery("SELECT * FROM TVShow")
     show_iterator = q.run()
+
     # Get all the subscriptions
     q = db.GqlQuery("SELECT * FROM UserShow")
     subs_iterator = q.run()
@@ -38,11 +66,21 @@ def admin(request):
     # Count the number of times a show has been subscribed to
     subs_counts = Counter([str(show.show_id) for show in subs_iterator])
 
+    # Create a dictionary containing the variables required in the Django template
     template_values = {'show_iterator': show_iterator, 'subs_counts': subs_counts, 'is_scraping': settings.SCRAPING}
     return render(request, 'telehex/admin.html', template_values)
 
 
 def calendar(request):
+    """
+    Deals with the calendar page requests. First checks if a user is logged in, if not, they're redirected to a login
+    page, otherwise a response object is generated containing the calendar page
+
+    :param request: The request object for this page.
+    :return:  A HttpResponse Object
+    """
+
+    # Check if a user is logged in - if not redirect them to the login screen
     user = users.get_current_user()
     if not user:
         return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
@@ -53,11 +91,24 @@ def calendar(request):
 
 
 def index(request):
-    template_values = {}
-    return render(request, 'telehex/index.html', template_values)
+    """
+    Return the index page of the site
+    :param request: The request object for the index page. Used to generate the HttpResponse
+    :return: A HttpResponse Object built from the `index.html` template.
+    """
+    return render(request, 'telehex/index.html')
 
 
 def login(request):
+    """
+    Handles the logging in of users. If user is already logged in, they're redirected to the index of the site
+    The actual logging in of users is handled by the Google App Engine (GAE)
+
+    :param request: The request object for the login page.
+    :return: A HttpResponseRedirect Object
+    """
+
+    # Ascertain whether a user is logged in, if not return the login screen, if they are, redirect to the index of site
     user = users.get_current_user()
     if not user:
         if 'continue' in request.GET:
@@ -69,6 +120,13 @@ def login(request):
 
 
 def logout(request):
+    """
+    Handles the logging out of users. The actual logging out of a user is handle by the Google App Engine (GAE).
+
+    :param request: The request object for the logout page.
+    :return: A HttpResponseRedirect Object
+    """
+
     user = users.get_current_user()
     if user:
         if 'continue' in request.GET:
@@ -80,18 +138,29 @@ def logout(request):
 
 
 def profile(request):
+    """
+    Returns the profile page for a specific user. The profile page allows a user to see which shows they have
+    subscribed to and tells them how many days are left until a show airs.
+
+    :param request: The request object for the profile page.
+    :return: HttpResponse Object
+    """
+
+    # Check if a user is currently logged in - if not redirect to login screen
     user = users.get_current_user()
     if not user:
         return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
 
+    # Retrieve all the show ids this user is subscribed to
     q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
     show_ids = [str(showid.show_id) for showid in q.run()]
 
     template_values = {}
 
-    # Get the subscribed TVShows based on the show id
+    # Get the subscribed TVShows based on the show ids
     subscribed_tv_shows = TVShow.get_by_key_name(show_ids)
 
+    # Determine the next episode yet to air. If all episodes have aired, get the latest aired episode
     subs_next_episodes = []
     for ids in subscribed_tv_shows:
         q = db.GqlQuery("SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1",
@@ -102,21 +171,39 @@ def profile(request):
         else:
             subs_next_episodes.append(None)
 
+        # Generate the template values. Have to zip the two lists so iteration is possible in Django. The shows list
+        # is ordered based on closest episode of a continuing show. Ended shows latest episodes are given a max possible
+        # date so that they appear at the end of the list
         template_values = {'shows': sorted(zip(subscribed_tv_shows, subs_next_episodes),
                                            key=lambda x: x[1].airdate if x[1] else date(MAXYEAR, 12, 31))}
+
     return render(request, 'telehex/profile.html', template_values)
 
 
 def scrape(request, tvdb_id):
+    """
+    Takes a scrape request, constructs a Scraper object and performs a scrape for the show if it hasn't been scraped
+    before or hasn't been scraped within the last :math:`x` days (where :math:`x` is the number of days specified by
+    RESCRAPE_AFTER). Otherwise if the show exists and has been scraped within the last :math:`x` days redirect to the
+    appropriate show page
+
+    :param request: A Scrape request object.
+    :param tvdb_id: The id of the tv show to be scraped (or shown)
+    :return: A HttpResponse Object containing the page of the show requested.
+    """
+
+    # Determine if the show already exists in the datastore
     q = TVShow.get_by_key_name(tvdb_id)
 
     if users.is_current_user_admin() and 'force' in request.GET and request.GET['force'] == '1':
         s = Scraper(tvdb_id)
         return HttpResponseRedirect("/show/{0}".format(s.get_url_slug()))
 
+    # Check if the show has been scraped before and if that scrape was in the last x days specified by RESCRAPE_AFTER
     if q and q.last_scraped > datetime.now() - timedelta(days=RESCRAPE_AFTER):
         url_slug = q.url_string
     else:
+        # If scraping is switched on then scrape the show
         if settings.SCRAPING:
             s = Scraper(tvdb_id)
             url_slug = s.get_url_slug()
@@ -127,13 +214,21 @@ def scrape(request, tvdb_id):
 
 
 def search(request):
+    """
+    Performs a search for a given string. A page with appropriate search results is returned
+
+    :param request: A Search HttpRequest Object
+    :return: A HttpResponse Object
+    """
+
+    # Check if this request has POST data - if not redirect to the home page, otherwise get the query
     if request.method != 'POST':
         return HttpResponseRedirect('/')
     else:
         query = request.POST.get('query')
 
     # Get the results from this query
-    results = Search().search_tvdb(query)
+    results = Search().search_tvdb(query) if query else []
 
     # If one result go straight to the show page
     if len(results) == 1:
