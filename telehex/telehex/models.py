@@ -28,3 +28,6 @@ class HexImages(db.Model):
 class UserShow(db.Model):
     user_id = db.StringProperty(required=True)
     show_id = db.IntegerProperty(required=True) 
+
+class User(db.Model):
+    email = db.EmailProperty()

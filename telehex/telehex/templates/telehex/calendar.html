@@ -1,19 +1,33 @@
-{% load staticfiles %}
-{% include "./telehex/header.html" %}
+{% extends "base.html" %}
 
-<div class="container">
+{% block title %}- Calendar{% endblock %}
+
+{% block css %}<link rel='stylesheet' href="{% static "css/fullcalendar.css" %}" media="screen">
+	<style>
+	    .oldclass {
+	        opacity: 0.3;
+	    }
+	</style>{% endblock %}
+{% block js %}<script src="{% static "js/fullcalendar.js" %}"></script>{% endblock %}
+
+{%block content %}<div class="container">
     <h1>{{user.nickname}}'s Calendar</h1>
     <br>
     <div id='calendar'></div>
-</div>
+    <br>
+    <div>
+        Receive email updates:
+        <input id="updates_check" type="checkbox" {% if email_updates %} checked="checked" {% endif %}>
+    </div>
+</div>{% endblock %}
 
-<script>
+{% block scripts %}<script>
 $(document).ready(function() {
 
     $('#calendar').fullCalendar({
         theme: true,
         header: {left: 'prev,next today', center: 'title', right: 'month,basicWeek'},
-        events: "/calendar_data/",
+        events: "/data/calendar/",
         firstDay: 1,
         weekMode: "variable",
         eventRender: function(calevent, element) {
@@ -23,15 +37,16 @@ $(document).ready(function() {
                 element.addClass("oldclass");
         }
 	});
+
+    var emailUpdates = $("#updates_check");
+
+    emailUpdates.change(function(){
+        var data = $.get("/receive_updates/");
+    });
+
 });
 
-</script>
-
-<style>
-    .oldclass {
-        opacity: 0.3;
-    }
-</style>
+</script>{% endblock %}
 
 
-{% include "./telehex/footer.html" %}
+

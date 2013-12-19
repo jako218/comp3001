@@ -73,7 +73,7 @@ table, tr, td { height: 100%; }
 
 /* End homepage styles */
 
-#overlay {
+#loading-overlay {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -82,9 +82,10 @@ table, tr, td { height: 100%; }
     background: rgba(0, 0, 0, 0.75);
     z-index: 99999;
     text-align: center;
+    display: none;
 }
 
-#overlay img {
+#loading-overlay img {
     position: absolute;
     top: 30%;
     left: calc(50% - 150px);
@@ -203,6 +204,38 @@ th.headerSortDown:after {
     padding-left: 5px;
     font-size: 0.8em;
 }
+
+.sidebar .nav-container {
+	width: 50%;
+	margin-left: 25%;
+}
+                		
+.sidebar .nav-list {
+	background: #292929;
+	padding: 0px;
+}
+                		
+.sidebar .nav-header {
+	border-bottom: 1px solid;
+	border-bottom-color: #252525;	
+}
+                		
+.sidebar .nav-list-panel li a{
+	padding-top: 15px;
+	color: #2986b9;
+	border-bottom: 1px solid;
+	border-bottom-color: #252525;	
+}
+                		
+.sidebar .nav-list-panel li a:hover, .sidebar .nav-list-panel a:focus, .sidebar .nav-list-panel a:active{
+	color: #2986b9;
+	background: #252525;
+ 	opacity: 1;
+}
+
+.episode {
+		cursor: pointer;
+	}
 
 /* End show information page styles */
 
@@ -325,9 +358,9 @@ rect:hover {
     cursor: pointer;
     width: 10px;
 
-    -webkit-border-radius: 0 0 4px 4px;
-    -moz-border-radius: 0 0 4px 4px;
-    border-radius: 0 0 4px 4px;
+    -webkit-border-radius: 0 0 0 4px;
+    -moz-border-radius: 0 0 0 4px;
+    border-radius: 0 0 0 4px;
 
     -webkit-transition: all .5s;
     -moz-transition: all .5s;
@@ -342,4 +375,11 @@ rect:hover {
     width: 250px;
     background-color: #fff;
     cursor: auto;
+}
+
+/* Auto complete */
+
+a.ui-state-focus {
+    background: rgb(192, 57, 43) !important;
+    color: #fff !important;
 }

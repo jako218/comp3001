@@ -1,8 +1,8 @@
-{% include "./telehex/header.html" %}
+{% extends "base.html" %}
 
-<div class="container">
+{%block title%}- Oh man, we can't find that!{% endblock %}
+
+{%block content %}<div class="container">
     <h1>Ooops!</h1>
     <p>It appears that the show you're looking for doesn't exist. Try <a href="/">searching</a> for the show instead.</a>
-</div>
-
-{% include "./telehex/footer.html" %}
+</div>{% endblock %}

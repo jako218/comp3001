@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 from google.appengine.ext import db
 from models import TVEpisode, TVShow, HexImages
 from hexagon import Hexagon
+from httplib import HTTPException
+from google.appengine.api import urlfetch
 import urllib2
 from datetime import datetime
 import re
@@ -20,6 +22,9 @@ class Scraper:
 
     # Scraper Constructor
     def __init__(self, tvdb_id):
+        # Increase the timeout for fetching a url
+        urlfetch.set_default_fetch_deadline(60)
+
         self.tvdb_id = tvdb_id
         self.tvdbxml = urllib2.urlopen("http://thetvdb.com/api/{0}/series/{1}/all/en.xml".format(API_KEY, self.tvdb_id))
         self.tvdbsoup = BeautifulSoup(self.tvdbxml.read(), 'xml')
@@ -65,18 +70,23 @@ class Scraper:
     def get_episode_info(self):
         ratings = collections.defaultdict(dict)
         if self.tvdbsoup.IMDB_ID.text:
-            imdbhtml = urllib2.urlopen("http://www.imdb.com/title/{0}/epdate".format(self.tvdbsoup.IMDB_ID.text))
-            imdbsoup = BeautifulSoup(imdbhtml.read())
-            if imdbsoup.select('#tn15content table'):
-                ratingrows = imdbsoup.select('#tn15content table')[0].select('tr')[1:]
-                for ratingrow in ratingrows:
-                    tdlist = ratingrow.find_all('td')
-                    rating = tdlist[2].text
-                    sep = tdlist[0].text.split('&')[0].split('.')
-                    try:
-                        ratings[int(sep[0])][int(sep[1])] = rating
-                    except ValueError:
-                        continue
+            try:
+                imdbhtml = urllib2.urlopen("http://www.imdb.com/title/{0}/epdate".format(self.tvdbsoup.IMDB_ID.text))
+                imdbsoup = BeautifulSoup(imdbhtml.read())
+                if imdbsoup.select('#tn15content table'):
+                    ratingrows = imdbsoup.select('#tn15content table')[0].select('tr')[1:]
+                    for ratingrow in ratingrows:
+                        tdlist = ratingrow.find_all('td')
+                        rating = tdlist[2].text
+                        sep = tdlist[0].text.split('&')[0].split('.')
+                        try:
+                            ratings[int(sep[0])][int(sep[1])] = rating
+                        except ValueError:
+                            continue
+            except HTTPException:
+                # Failed to scrape the ratings. This is normally caused by a timeout when attempting to scrape
+                # large pages. Ratings not essential, so just skip collecting them
+                pass
 
         episodes = self.tvdbsoup.find_all('Episode')
 
@@ -87,10 +97,7 @@ class Scraper:
                     ep_rating = float(ratings[int(episode.SeasonNumber.text)][int(episode.EpisodeNumber.text)])
                 if episode.Overview.text: overview = episode.Overview.text
 
-                if episode.EpisodeName.text :
-                    epname = episode.EpisodeName.text
-                else:
-                    epname = "Not Available"
+                epname = episode.EpisodeName.text if episode.EpisodeName.text else "Not Available"
 
                 TVEpisode(  parent = self.series_key,
                             key_name = episode.id.text,
@@ -113,8 +120,13 @@ class Scraper:
             xml = urllib2.urlopen("http://omdbapi.com/?i={0}&r=xml".format(imdb_id))
             soup = BeautifulSoup(xml.read(), 'xml')
             tv_show = soup.find('movie')
-            rating = tv_show['imdbRating'] if tv_show else -1
+            try:
+                rating = float(tv_show['imdbRating']) if tv_show else -1
+            except ValueError:
+                rating = -1
+
             return rating
+
         return -1
 
 class Search:
@@ -144,7 +156,4 @@ class Search:
                     'desc': desc,
                 })
 
-
-
         return results
-

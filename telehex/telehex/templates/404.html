@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Oh man, we can't find that.{% endblock %}
+
+{%block css %}<style>
+	h1, p {text-align: center }
+</style>{% endblock %}
+
+{%block content %}<div class="container">
+    <h1>Oopsie! 404 - Page not Found</h1>
+    <p>Sorry, but the page you are looking for has not been found.</p>
+    <p>Please try again, or go back to the <a href="/">home page</a>.</p>
+    <div class="hex-wrapper">
+    	<img id="hex" src="{% static "img/sadhex.png" %}" class="img-responsive" alt="No Show Image">
+    </div>
+</div>{% endblock %}

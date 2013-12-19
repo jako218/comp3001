@@ -1,6 +1,8 @@
-{% load staticfiles %}
-{% include "./telehex/header.html" %}
+{% extends "base.html" %}
 
+{% block title %}- Profile{% endblock %}
+
+{%block content %}
 <div class="container">
     <h1>Hello, {{user.nickname}}</h1>
 
@@ -9,9 +11,9 @@
         {% for show, next in shows %}
         <li>
             <p>{{ show.title }}  {% if next.name %}-- {{ next.name }} {% endif %} {% if next.name %}-- {{ next.airdate }} {% endif %}</p>
-            {% if show.fanart %}
+           
             <div class="hex-im-cont">
-                <a href="/show/{{show.url_string}}"><img src="/hexagons/{{ show.key.name }}" class="hex-im img-responsive" alt="{{show.name}} hex image"></a>
+                <a href="/show/{{show.url_string}}"><img {% if show.fanart %} src="/hexagons/{{ show.key.name }}" {% else %} src="{% static "img/errorhex.png" %}" {% endif %} class="hex-im img-responsive" alt="{{show.name}} hex image"></a>
                 {% if next.airdate %}
                     <span style="display: none" class="airdate">{{ next.airdate }}</span>
                     <h2 class="days-left" style="display: none"> On in </h2>
@@ -25,9 +27,6 @@
                     <h2 class="days-left" style="display: none"> Next airdate to be confirmed </h2>
                 {% endif %}
             </div>
-            {% else %}
-            <img src="{% static "img/errorhex.png" %}" class="hex-im-error img-responsive" alt="No Show Image">
-            {% endif %} 
         </li>
         {% endfor %}
     <ul>
@@ -35,8 +34,9 @@
     <p>It doesn't look like you've subscribed to any shows. Try <a href="/">searching</a> for some and subscribing to them!</p>
     {% endif %}
 </div>
+{% endblock %}
 
-
+{%block scripts %}
 <script>
 
 function daysUntil(dateString){
@@ -89,6 +89,4 @@ $(document).ready(function(){
 
 
 </script>
-
-
-{% include "./telehex/footer.html" %}
+{% endblock %}

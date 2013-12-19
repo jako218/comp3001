@@ -1,6 +1,6 @@
-{% include "./telehex/header.html" %}
-
-<style type="text/css">
+{% extends "base.html" %}
+{% block title %}- Similar Shows{% endblock %}
+{% block css %}<style type="text/css">
 
 .node polygon {
   cursor: pointer;
@@ -27,9 +27,11 @@ path.link {
   stroke-width: 1.5px;
 }
 
-</style>
+</style>{% endblock %}
 
-<div class="container">
+{%block js %}<script src="http://d3js.org/d3.v3.min.js"></script>{% endblock %}
+
+{%block content %}<div class="container">
     <div class="row">
         <h2>Similar shows to {{ show.title }}</h2>
         <a href="/show/{{show.url_string}}">&larr; back to show information</a>
@@ -37,9 +39,9 @@ path.link {
     <div id="graph" class="row">
       
     </div>
-</div>
+</div>{% endblock %}
 
-    <script>
+{% block scripts %}<script>
 
 var i = 0, width = 980,  height = 800,     root;
 
@@ -49,7 +51,7 @@ var diagonal = d3.svg.diagonal().projection(function(d) { return [d.x, d.y]; });
 
 var vis = d3.select("#graph").append("svg:svg").attr("width", width).attr("height", height).append("svg:g").attr("transform", "translate(0, 100)");
 
-d3.json("/similarity_data/")
+d3.json("/data/similarity/")
 	.header("X-CSRFToken", $.cookie('csrftoken'))
 	.post("show_id={{ show.key.name }}", function(error, data){
 
@@ -178,5 +180,4 @@ function toggle(d) {
   }
 }
 
-    </script>
-{% include "./telehex/footer.html" %}
+    </script>{% endblock %}

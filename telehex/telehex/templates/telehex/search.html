@@ -1,8 +1,8 @@
+{% extends "base.html" %}
 
-{% load staticfiles %}
-{% include "./telehex/header.html" %}
+{% block title %}- Search Results{% endblock %}
 
-<div class="container">
+{% block content %}<div class="container">
     <h1>Results</h1>
 
     <div class="list-group">
@@ -19,18 +19,4 @@
         {% endfor %}
     {% endif %}
     </div>
-</div>
-
-<script>
-    $(document).ready(function() {
-            $('body').append('<div id="overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>');
-
-        $('#overlay').hide();
-
-        $('.load-on-click').click(function() {
-            $('#overlay').show();
-        });
-    });
-</script>
-    
-{% include "./telehex/footer.html" %}
+</div>{% endblock %}

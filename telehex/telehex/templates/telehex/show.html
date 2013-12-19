@@ -1,6 +1,12 @@
-{% load staticfiles %}
-{% include "./telehex/header.html" %}
+{% extends "base.html" %}
+{% block title %}- {{ show.title }}{% endblock %}
 
+{% block js %}
+<script src="{% static "js/jquery.balloon.js" %}"></script>
+<script src="{% static "js/jquery.tablesorter.js" %}"></script>
+{% endblock %}
+
+{% block content %}
 <div class="container">
     <div class="row">
         <!-- Hexagon Image -->
@@ -19,39 +25,46 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="row" style="text-align: center">
+            <div class="row">
                 <div class="container sidebar">
-                    {% if subscribed %}
-                    <form action="/unsubscribe/" method="post" >
-                        {% csrf_token %}
-                        <input type="hidden" name="show_id" value="{{ show.key.name }}" />
-                        <input class="btn btn-danger" type="submit" value="unsubscribe" />
-                    </form>
-                    {% else %}
-                    <form action="/subscribe/" method="post" >
-                        {% csrf_token %}
-                        <input type="hidden" name="show_id" value="{{ show.key.name }}" />
-                        <input class="btn btn-success" type="submit" value="subscribe" />
-                    </form>
-                    {% endif %}
-                    {% if is_admin %}
-                    <a href="/scrape/{{show.key.name}}?force=1" />rescrape this show</a><br />
-                    {% endif %}
-                    <a href="/ratings/{{ show.url_string }}">graph this show</a><br>
-                    <a href="/similar/{{ show.url_string }}">find similar shows</a>
+                  <!-- The subscribe button goes here if it's below the hexagon. -->
+                    <div class="nav-container">
+	                    <ul class="nav nav-list nav-list-panel">
+	                    	<li class="nav-header"><h4>Options</h4></li>
+	                    	{% if is_admin %}
+	                    	<li><a href="/scrape/{{show.key.name}}?force=1" class="load-on-click" /><i class="fa fa-refresh fa-fw"></i> rescrape</a></li>
+	                    	{% endif %}
+	                    	<li><a href="/ratings/{{ show.url_string }}"><i class="fa fa-bar-chart-o fa-fw"></i> graph</a></li>
+	                    	<li><a href="/similar/{{ show.url_string }}"><i class="fa fa-sitemap fa-fw"></i> similar shows</a></li>
+	                    	<li><a href="http://www.imdb.com/title/{{ show.imdb_id }}"><i class="fa fa-film fa-fw"></i> IMDB</a></li>
+	                    </ul>
+                    </div>
                 </div>
+            </div>
+            <div class="row">
+            	<div class="container sidebar">
+            		<div class="nav-container">
+	                    <ul class="nav nav-list nav-list-panel">
+	                    	<li class="nav-header"><h4>Share</h4></li>
+	                    	<li><a href="https://twitter.com/share?&url=http%3A%2F%2Ftelehex.com%2Fshow%2F{{ show.url_string }}&text=Check out {{show.title}} on %23telehex" target="_blank"><i class="fa fa-twitter fa-fw"></i> twitter</a></li>
+	                    	<li><a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Ftelehex.com%2Fshow%2F{{ show.url_string }}" target="_blank"><i class="fa fa-facebook fa-fw"></i> facebook</a></li>
+	                    </ul>	
+                    </div>
+            	</div>
             </div>
             {% if viewed_shows|length > 1 %}
             <div class="row">
                 <div class="container sidebar">
-                    <h4>Recently Viewed</h4>
-                    <ul>
-                        {% for vshow in viewed_shows %}
-                        {% ifnotequal vshow.title show.title %}
-                        <li><a href="/show/{{vshow.url_string}}">{{ vshow.title }}</a></li>
-                        {% endifnotequal %}
-                        {% endfor %}
-                    </ul>
+                	<div class="nav-container">
+	                    <ul class="nav nav-list nav-list-panel">
+	                    	<li class="nav-header"><h4>Recently Viewed</h4></li>
+	                    	{% for vshow in viewed_shows %}
+	                        {% ifnotequal vshow.title show.title %}
+	                        <li><a href="/show/{{vshow.url_string}}"><i class="fa fa-bookmark fa-fw"></i> {{ vshow.title }}</a></li>
+	                        {% endifnotequal %}
+	                        {% endfor %}
+	                    </ul>
+                    </div>
                 </div>
             </div>
             {% endif %}
@@ -64,7 +77,20 @@
                     <div id="showtitle">
                         <h1>{{ show.title }}</h1>
                         <h3>{{ show.status }}{% if nextepisode %} - Next airing: {{ nextepisode.airdate }}{% endif %}</h3>
-                    </div>
+                    </div><br>
+                    {% if subscribed %}
+                    <form action="/unsubscribe/" method="post" >
+                        {% csrf_token %}
+                        <input type="hidden" name="show_id" value="{{ show.key.name }}" />
+                        <button class="btn btn-danger" type="submit"><i style="color: #fff" class="fa fa-times"></i> unsubscribe</button>
+                    </form>
+                    {% else %}
+                    <form action="/subscribe/" method="post" >
+                        {% csrf_token %}
+                        <input type="hidden" name="show_id" value="{{ show.key.name }}" />
+                        <button class="btn btn-success" type="submit"><i style="color: #fff" class="fa fa-check"></i> subscribe</button>
+                    </form>
+                    {% endif %}
                 </div>
 
                 <div class="row">
@@ -88,7 +114,7 @@
                                     <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse{{season}}">Season {{season}}</a>
                                 </h3>
                             </div>
-                            <div id="collapse{{season}}" class="panel-collapse {% if forloop.first %}in{% else %}collapse{% endif %}" style="height: auto;">
+                            <div id="collapse{{season}}" class="panel-collapse collapse" style="height: auto;">
                                 <div class="panel-body">
                                     <table class="table seasontable">
                                         <thead style="font-weight: bold;">
@@ -99,15 +125,39 @@
                                                 <th class="sortable">Rating</th>
                                             </tr>
                                         </thead>
+
                                         {% for episode in episodes %}
                                         <tr id="s{{season|stringformat:'02d'}}e{{episode.ep_number|stringformat:'02d'}}">
+
                                             <td>{{ episode.ep_number }}</td>
-                                            <td>{{ episode.name }}</td>
+
+                                            <td>
+                                                {% if episode.desc %}
+                                                <span class="balloon">
+                                                    <a class="episode">{{ episode.name }}</a>
+                                                    <span class="ep-desc" style="display: none">
+                                                        <div class="media">
+                                                            {% if episode.thumb %}
+                                                            <img class="pull-left media-object img-rounded" src="http://thetvdb.com/banners/{{episode.thumb}}" style="width: 120px; height: 90px;">
+                                                            {% endif %}
+                                                            <div class="media-body">
+                                                                <h4 class="media-heading">{{ episode.name }}</h4>
+                                                                <p>{{episode.desc}}</p>
+                                                            </div>
+                                                        </div>
+                                                    </span>
+                                                </span>
+                                                {% else %}
+                                                {{ episode.name }}
+                                                {% endif %}
+                                            </td>
+
                                             {% if episode.airdate %}
-                                            <td>{{ episode.airdate }}</td>
+                                            <td data-sort-value="{{ episode.airdate|date:'Ymd' }}">{{ episode.airdate }}</td>
                                             {% else %}
                                             <td>N/A</td>
                                             {% endif %}
+
                                             {% if episode.rating < 0 %}
                                             <td>N/A</td>
                                             {% else %}
@@ -118,8 +168,10 @@
                                                 </div>
                                             </td>
                                             {% endif %}
+
                                         </tr>
                                         {% endfor %}
+
                                     </table>
                                 </div>
                             </div>
@@ -131,13 +183,18 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
     $(document).ready(function(){
         if(location.hash){
             $(location.hash).closest('.panel-collapse').removeClass("collapse").addClass("in");
             $(location.hash).css('background-color', '#2986b9');
             $(location.hash).animate({'background-color': "transparent"}, 4000);
+        }
+        else {
+            $('#accordion').find('.panel-collapse').first().removeClass("collapse").addClass("in");
         }
 
         $(".rating-col").each(function() {
@@ -146,9 +203,48 @@
         });
 
         $('.seasontable').tablesorter({
-            sortList: [[0,0]]
+            /* Sort the first column in ascending order, by default.
+            sortList: [[0,0]],
+
+            /* Make jQuery TableSort use the data-sort-value attribute, if available
+               Otherwise, just fall back to the text in the table cell. */
+            textExtraction: function(node) {
+                var attr = $(node).attr('data-sort-value');
+                if(typeof attr !== 'undefined' && attr !== false) {
+                    return attr;
+                }
+                return $(node).text();
+            }
+        });
+
+        $('.balloon').each(function() {
+            
+            var shown = false;
+            $(this).on("click", function(){
+                shown ? $(this).hideBalloon() : $(this).showBalloon();
+                shown = !shown;
+            }).showBalloon({
+                contents : $(this).children(".ep-desc").html(), 
+                tipSize: 5,
+                position: "bottom right",
+                css: {
+                    backgroundColor: '#292929',
+                    border: 'solid 2px #292929',
+                    'box-shadow': 'none',
+                    color: 'white',
+                    'font-size': '0.9em',
+                    opacity: '1',
+                    padding: '10px',
+                    width: '400px'
+                },
+                hideDuration: 600
+            }).hideBalloon();
+
+            $(this).mouseleave(function(){
+                $(this).hideBalloon();
+                shown = false;
+            });
         });
     });
 </script>
-
-{% include "./telehex/footer.html" %}
+{% endblock %}
