@@ -497,15 +497,26 @@ def remove_empty_seasons(seasons):
 ############ JSON #############
 
 def calendar_data(request):
+    """
+    A function which returns the JSON required to construct a user's calendar
+
+    :param request: A HttpRequest object
+    :return: A HttpResponse containing the JSON for the similarity graph
+    """
+
+    # Check if the user is logged in - if not redirect them to the home page
     user = users.get_current_user()
     if not user:
         return HttpResponseRedirect('/')
 
+    # Get all the showids of the shows a user is subscribed to
     q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
     show_ids = [str(showid.show_id) for showid in q.run()]
 
+    # Get all the show entities corresponding to the show ids
     subs_shows_entities = TVShow.get_by_key_name(show_ids)
 
+    # Obtains all the events for the date range specified in the url of the request
     events = []
     for entity in subs_shows_entities:
         q = db.GqlQuery("SELECT * FROM TVEpisode WHERE airdate >= :start AND airdate <= :end AND ANCESTOR IS :ancestor",
@@ -513,16 +524,25 @@ def calendar_data(request):
                         end=datetime.fromtimestamp(int(request.GET.get('end'))))
         episode_iterator = q.run()
 
+        # For each episode in the date range, append to the events list
         for episode in episode_iterator:
             events.append({'title': "{0}\n{1}".format(entity.title, episode.name.encode('utf8')),
                            'start': episode.airdate.strftime('%Y-%m-%d'),
                            'url': "/show/{0}#s{1:02d}e{2:02d}".format(entity.url_string, episode.season,
                                                                       episode.ep_number)})
 
+    # Return a JSON response containing all the shows for this date range
     return HttpResponse(json.dumps(events), content_type="application/json")
 
 
 def similarity_data(request):
+    """
+    A function which returns the JSON required to construct the show similarity graph
+
+    :param request: A HttpRequest object
+    :return: A HttpResponse containing the JSON for the similarity graph
+    """
+
     if (request.method != 'POST'):
         return HttpResponseRedirect('/')
 
@@ -550,6 +570,13 @@ def similarity_data(request):
 
 
 def ratings_data(request):
+    """
+    A function which returns the JSON required to construct the rating graphs
+
+    :param request: A HttpRequest object
+    :return: A HttpResponse containing the JSON for the rating graphs
+    """
+
     if (request.method != 'POST'):
         return HttpResponseRedirect('/')
 
@@ -595,6 +622,12 @@ def ratings_data(request):
 
 
 def search_tags(request):
+    """
+    A function which returns the JSON required for the auto-completing search
+
+    :param request: A HttpRequest object
+    :return: A HttpResponse containing the JSON of the tags required for the auto-complete search
+    """
     q = db.GqlQuery('SELECT title FROM TVShow')
     show_names = [s.title for s in q.run()]
     return HttpResponse(json.dumps(dict(tags=show_names)), content_type="application/json")
