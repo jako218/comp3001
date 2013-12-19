@@ -1,20 +1,6 @@
-{% load staticfiles %}    
-        <div id="push"></div>
-    </div>
+<div id="push"></div>
+</div>
 
-    <div id="footerlogo">
+<div id="footerlogo">
         <img src="{% static "img/telehexfooter.png" %}" title="telehexlogo" alt="Telehex Footer Logo"/>
-    </div>
-
-<script>
-    $(document).ready(function() {
-        $('body').append('<div id="loading-overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>');
-
-        $('.load-on-click').click(function() {
-            $('#loading-overlay').css('display', 'block');
-        });
-    });
-</script>
-
-</body>
-</html>
+</div>
