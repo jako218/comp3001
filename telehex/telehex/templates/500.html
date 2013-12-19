@@ -1,17 +1,14 @@
-{% load staticfiles %}
-{% include "./telehex/header.html" %}
-
-<style>
+{% extends "base.html" %}
+{% block title %}Errrr. Looks broken from here chief.{% endblock %}
+{% block css %}<style>
 	h1, p {text-align: center }
-</style>
+</style>{% endblock %}
 
-<div class="container">
+{% block content %}<div class="container">
     <h1>Uh-oh! 500 - Internal Server Error.</h1>
     <p>You've not gone and broken all of our hard work, not at all.</p>
     <p>Move along folks and go back to the <a href="/">home page</a>. Nothing to see here.</p>
     <div class="hex-wrapper">
     	<img id="hex" src="{% static "img/sadhex.png" %}" class="img-responsive" alt="No Show Image">
     </div>
-</div>
-
-{% include "./telehex/footer.html" %}
+</div>{% endblock %}
