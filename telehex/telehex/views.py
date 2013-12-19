@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render
 
 # Increase the timeout for the show
@@ -31,11 +31,12 @@ def admin(request):
     # Check if the current user is logged in
     if not users.get_current_user():
         return HttpResponseRedirect('/login?continue=/admin')
-
+    # Check if the current user is an admin
+    if not users.is_current_user_admin():
+        raise Http404
     # Get all the TVShows
     q = db.GqlQuery("SELECT * FROM TVShow")
     show_iterator = q.run()
-
     # Get all the subscriptions
     q = db.GqlQuery("SELECT * FROM UserShow")
     subs_iterator = q.run()
