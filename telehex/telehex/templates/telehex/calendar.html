@@ -1,10 +1,16 @@
-{% load staticfiles %}
-{% include "./telehex/header.html" %}
+{% extends "base.html" %}
 
-<link rel='stylesheet' href="{% static "css/fullcalendar.css" %}" media="screen">
-<script src="{% static "js/fullcalendar.js" %}"></script>
+{% block title %}Calendar{% endblock %}
 
-<div class="container">
+{% block css %}<link rel='stylesheet' href="{% static "css/fullcalendar.css" %}" media="screen">
+	<style>
+	    .oldclass {
+	        opacity: 0.3;
+	    }
+	</style>{% endblock %}
+{% block js %}<script src="{% static "js/fullcalendar.js" %}"></script>{% endblock %}
+
+{%block content %}<div class="container">
     <h1>{{user.nickname}}'s Calendar</h1>
     <br>
     <div id='calendar'></div>
@@ -13,9 +19,9 @@
         Receive email updates:
         <input id="updates_check" type="checkbox" {% if email_updates %} checked="checked" {% endif %}>
     </div>
-</div>
+</div>{% endblock %}
 
-<script>
+{% block scripts %}<script>
 $(document).ready(function() {
 
     $('#calendar').fullCalendar({
@@ -40,13 +46,7 @@ $(document).ready(function() {
 
 });
 
-</script>
-
-<style>
-    .oldclass {
-        opacity: 0.3;
-    }
-</style>
+</script>{% endblock %}
 
 
-{% include "./telehex/footer.html" %}
+
