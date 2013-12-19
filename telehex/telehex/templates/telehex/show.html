@@ -1,14 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ show.title }}{% endblock %}
 
-{% block css %}
-<style>
-	.episode {
-		cursor: pointer;
-	}
-</style>
-{% endblock %}
-
 {% block js %}
 <script src="{% static "js/jquery.balloon.js" %}"></script>
 <script src="{% static "js/jquery.tablesorter.js" %}"></script>
@@ -33,43 +25,46 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="row" style="text-align: center">
+            <div class="row">
                 <div class="container sidebar">
-                    {% if subscribed %}
-                    <form action="/unsubscribe/" method="post" >
-                        {% csrf_token %}
-                        <input type="hidden" name="show_id" value="{{ show.key.name }}" />
-                        <input class="btn btn-danger" type="submit" value="unsubscribe" />
-                    </form>
-                    {% else %}
-                    <form action="/subscribe/" method="post" >
-                        {% csrf_token %}
-                        <input type="hidden" name="show_id" value="{{ show.key.name }}" />
-                        <input class="btn btn-success" type="submit" value="subscribe" />
-                    </form>
-                    {% endif %}
-                    {% if is_admin %}
-                    <a href="/scrape/{{show.key.name}}?force=1" class="load-on-click" />rescrape this show</a><br>
-                    {% endif %}
-                    <a href="/ratings/{{ show.url_string }}">graph this show</a><br>
-                    <a href="/similar/{{ show.url_string }}">find similar shows</a><br>
-                    <a href="http://www.imdb.com/title/{{ show.imdb_id }}">this show on IMDB</a><br>
-                    Share this show:<br>
-                    <a href="https://twitter.com/share" class="twitter-share-button" data-text="Check out {{show.title}} on #telehex" data-count="none">Tweet</a>
-               		
+                  <!-- The subscribe button goes here if it's below the hexagon. -->
+                    <div class="nav-container">
+	                    <ul class="nav nav-list nav-list-panel">
+	                    	<li class="nav-header"><h4>Options</h4></li>
+	                    	{% if is_admin %}
+	                    	<li><a href="/scrape/{{show.key.name}}?force=1" class="load-on-click" /><i class="fa fa-refresh fa-fw"></i> rescrape</a></li>
+	                    	{% endif %}
+	                    	<li><a href="/ratings/{{ show.url_string }}"><i class="fa fa-bar-chart-o fa-fw"></i> graph</a></li>
+	                    	<li><a href="/similar/{{ show.url_string }}"><i class="fa fa-sitemap fa-fw"></i> similar shows</a></li>
+	                    	<li><a href="http://www.imdb.com/title/{{ show.imdb_id }}"><i class="fa fa-film fa-fw"></i> IMDB</a></li>
+	                    </ul>
+                    </div>
                 </div>
+            </div>
+            <div class="row">
+            	<div class="container sidebar">
+            		<div class="nav-container">
+	                    <ul class="nav nav-list nav-list-panel">
+	                    	<li class="nav-header"><h4>Share</h4></li>
+	                    	<li><a href="https://twitter.com/share?&url=http%3A%2F%2Ftelehex.com%2Fshow%2F{{ show.url_string }}&text=Check out {{show.title}} on %23telehex" target="_blank"><i class="fa fa-twitter fa-fw"></i> twitter</a></li>
+	                    	<li><a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Ftelehex.com%2Fshow%2F{{ show.url_string }}" target="_blank"><i class="fa fa-facebook fa-fw"></i> facebook</a></li>
+	                    </ul>	
+                    </div>
+            	</div>
             </div>
             {% if viewed_shows|length > 1 %}
             <div class="row">
                 <div class="container sidebar">
-                    <h4>Recently Viewed</h4>
-                    <ul>
-                        {% for vshow in viewed_shows %}
-                        {% ifnotequal vshow.title show.title %}
-                        <li><a href="/show/{{vshow.url_string}}">{{ vshow.title }}</a></li>
-                        {% endifnotequal %}
-                        {% endfor %}
-                    </ul>
+                	<div class="nav-container">
+	                    <ul class="nav nav-list nav-list-panel">
+	                    	<li class="nav-header"><h4>Recently Viewed</h4></li>
+	                    	{% for vshow in viewed_shows %}
+	                        {% ifnotequal vshow.title show.title %}
+	                        <li><a href="/show/{{vshow.url_string}}"><i class="fa fa-bookmark fa-fw"></i> {{ vshow.title }}</a></li>
+	                        {% endifnotequal %}
+	                        {% endfor %}
+	                    </ul>
+                    </div>
                 </div>
             </div>
             {% endif %}
@@ -82,7 +77,20 @@
                     <div id="showtitle">
                         <h1>{{ show.title }}</h1>
                         <h3>{{ show.status }}{% if nextepisode %} - Next airing: {{ nextepisode.airdate }}{% endif %}</h3>
-                    </div>
+                    </div><br>
+                    {% if subscribed %}
+                    <form action="/unsubscribe/" method="post" >
+                        {% csrf_token %}
+                        <input type="hidden" name="show_id" value="{{ show.key.name }}" />
+                        <button class="btn btn-danger" type="submit"><i style="color: #fff" class="fa fa-times"></i> unsubscribe</button>
+                    </form>
+                    {% else %}
+                    <form action="/subscribe/" method="post" >
+                        {% csrf_token %}
+                        <input type="hidden" name="show_id" value="{{ show.key.name }}" />
+                        <button class="btn btn-success" type="submit"><i style="color: #fff" class="fa fa-check"></i> subscribe</button>
+                    </form>
+                    {% endif %}
                 </div>
 
                 <div class="row">
@@ -178,28 +186,6 @@
 {% endblock %}
 
 {% block scripts %}
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-
-<script>
-/* Script for the tweet button generated from https://about.twitter.com/resources/buttons#tweet */
-!function(d,s,id){
-	var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
-	if(!d.getElementById(id)){
-		js=d.createElement(s);
-		js.id=id;
-		js.src=p+'://platform.twitter.com/widgets.js';
-		fjs.parentNode.insertBefore(js,fjs);
-		}
-	}
-	(document, 'script', 'twitter-wjs');
-</script>
-
 <script>
     $(document).ready(function(){
         if(location.hash){
