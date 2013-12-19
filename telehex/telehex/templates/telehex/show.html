@@ -1,15 +1,20 @@
-{% load staticfiles %}
-{% include "./telehex/header.html" %}
+{% extends "base.html" %}
+{% block title %}{{ show.title }}{% endblock %}
 
-<script src="{% static "js/jquery.balloon.js" %}"></script>
-<script src="{% static "js/jquery.tablesorter.js" %}"></script>
-
+{% block css %}
 <style>
 	.episode {
 		cursor: pointer;
 	}
 </style>
+{% endblock %}
 
+{% block js %}
+<script src="{% static "js/jquery.balloon.js" %}"></script>
+<script src="{% static "js/jquery.tablesorter.js" %}"></script>
+{% endblock %}
+
+{% block content %}
 <div class="container">
     <div class="row">
         <!-- Hexagon Image -->
@@ -170,7 +175,9 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
@@ -254,5 +261,4 @@
         });
     });
 </script>
-
-{% include "./telehex/footer.html" %}
+{% endblock %}
