@@ -1,9 +1,10 @@
+{% extends "base.html" %}
 {% load apptags %}
-{% load staticfiles %}
-{% include "./telehex/header.html" %}
 
-<script src="{% static "js/jquery.tablesorter.js" %}"></script>
 
+{% block js %}<script src="{% static "js/jquery.tablesorter.js" %}"></script>{% endblock %}
+
+{% block content %}
 <div class="container">
     {% if is_admin %}
     <div class="row">
@@ -48,7 +49,9 @@
     <h1>You're not an admin.</h1>
     {% endif %}
 </div>
+{% endblock %}
 
+{%block scripts %}
 <script>
 $(document).ready(function() {
     $('#scraped-table').tablesorter({
@@ -57,5 +60,4 @@ $(document).ready(function() {
     });
 });
 </script>
-
-{% include "./telehex/footer.html" %}
+{% endblock %}
