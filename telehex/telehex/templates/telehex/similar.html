@@ -1,6 +1,6 @@
-{% include "./telehex/header.html" %}
-
-<style type="text/css">
+{% extends "base.html" %}
+{% block title %}Similar Shows.{% endblock %}
+{% block css %}<style type="text/css">
 
 .node polygon {
   cursor: pointer;
@@ -27,11 +27,11 @@ path.link {
   stroke-width: 1.5px;
 }
 
-</style>
+</style>{% endblock %}
 
-<script src="http://d3js.org/d3.v3.min.js"></script>
+{%block js %}<script src="http://d3js.org/d3.v3.min.js"></script>{% endblock %}
 
-<div class="container">
+{%block content %}<div class="container">
     <div class="row">
         <h2>Similar shows to {{ show.title }}</h2>
         <a href="/show/{{show.url_string}}">&larr; back to show information</a>
@@ -39,9 +39,9 @@ path.link {
     <div id="graph" class="row">
       
     </div>
-</div>
+</div>{% endblock %}
 
-    <script>
+{% block scripts %}<script>
 
 var i = 0, width = 980,  height = 800,     root;
 
@@ -180,5 +180,4 @@ function toggle(d) {
   }
 }
 
-    </script>
-{% include "./telehex/footer.html" %}
+    </script>{% endblock %}
