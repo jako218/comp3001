@@ -1,6 +1,8 @@
-{% load staticfiles %}
-{% include "./telehex/header.html" %}
+{% extends "base.html" %}
 
+{% block title %}Profile{% endblock %}
+
+{%block content %}
 <div class="container">
     <h1>Hello, {{user.nickname}}</h1>
 
@@ -32,8 +34,9 @@
     <p>It doesn't look like you've subscribed to any shows. Try <a href="/">searching</a> for some and subscribing to them!</p>
     {% endif %}
 </div>
+{% endblock %}
 
-
+{%block scripts %}
 <script>
 
 function daysUntil(dateString){
@@ -86,6 +89,4 @@ $(document).ready(function(){
 
 
 </script>
-
-
-{% include "./telehex/footer.html" %}
+{% endblock %}
