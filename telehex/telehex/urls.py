@@ -1,6 +1,8 @@
 from django.conf.urls.defaults import *
 from telehex.views import *
 from telehex.tasks import email_update
+from django.template.loader import add_to_builtins
+add_to_builtins('django.templatetags.static')
 
 urlpatterns = patterns('',
     (r'^$', index),
