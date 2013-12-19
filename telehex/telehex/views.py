@@ -636,6 +636,14 @@ def search_tags(request):
 ########## OTHER ##########
 
 def hexagon(request, show_id):
+    """
+    Retrieves the hexagon image for a particular show from the datastore
+
+    :param request: A HttpRequest Object
+    :param show_id: The show id for the hexagon wishing to be retrieved
+    :return: A HttpResponse object containing the hexagon png
+    """
+
     # Get the image relating to this show from the database
     q = TVShow.get_by_key_name(show_id)
     if q is None:
@@ -650,6 +658,13 @@ def hexagon(request, show_id):
 
 
 def receive_email_updates(request):
+    """
+    A function used to set whether of not a user will receive weekly email updates
+
+    :param request: A HttpRequest Object
+    :return: A HttpResponse specifying whether or not the subscription to email updates failed or not
+    """
+
     # Check a logged in user has issued this request
     user = users.get_current_user()
     if not user:
