@@ -1,17 +1,18 @@
-{% include "./telehex/header.html" %}
+{% extends "base.html" %}
 
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.min.js"></script>
+{% block js %}<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.min.js"></script>{% endblock %}
 
+{% block content %}
 <div class="container">
     <div class="row" id="ratingstitle">
         <h2>Ratings for {{ show.title }}</h2>
         <a href="/show/{{ show.url_string }}">&larr; back to show information</a>
     </div>
     <div class="row" id="ratingsgraphs"></div>
-</div>
+</div>{% endblock %}
 
-<script>
+{% block scripts %}<script>
 var margin = {
     top: 80,
     right: 10,
@@ -145,6 +146,4 @@ d3.json("/data/ratings/")
         }
     }
 });
-</script>
-
-{% include "./telehex/footer.html" %}
+</script>{% endblock %}
