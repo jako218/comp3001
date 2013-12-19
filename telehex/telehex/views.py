@@ -239,6 +239,15 @@ def search(request):
 
 
 def show(request, show_title):
+    """
+    Takes a show title and construct a HttpResponse which contains the information for a specific show. The information
+    include the show rating, the episodes in the show and whether or not the show is continuing.
+
+    :param request: The HttpRequest object for the show page
+    :param show_title: The title of the show in url string form, e.g. Breaking Bad would be breaking_bad
+    :return: A HttpResponse Object
+    """
+
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
@@ -264,9 +273,10 @@ def show(request, show_title):
     for e in episodes:
         seasons[e.season].append(e)
 
-        # Remove any seasons which have no episodes
+    # Remove any seasons which have no episodes
     remove_empty_seasons(seasons)
 
+    # Construct the recently viewed list - achieved by looking at the past shows visited which is stored in the cookie
     viewed_list = []
     if 'telehex_viewed' in request.COOKIES:
         viewed_list = json.loads(request.COOKIES['telehex_viewed'])
@@ -277,15 +287,23 @@ def show(request, show_title):
     template_values = {'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode,
                        'viewed_shows': viewed_list[:11]}
 
-    response = HttpResponse()
     response = render(request, 'telehex/show.html', template_values)
 
+    # Set the cookie of this response
     response.set_cookie('telehex_viewed', json.dumps(viewed_list[:11]))
 
     return response
 
 
 def ratings(request, show_title):
+    """
+    Takes a show title and returns a page which contains graphs of all the episode rating
+
+    :param request: A HttpRequest Object
+    :param show_title: The title of the show in url string form, e.g. Breaking Bad would be breaking_bad
+    :return: A HttpResponse Object
+    """
+
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
@@ -296,6 +314,15 @@ def ratings(request, show_title):
 
 
 def similar(request, show_title):
+    """
+    Takes a show title and generates a page with a graph which identifies similar shows. This is based on which shows
+    other users have subscribed to if they have also subscribed to this show
+
+    :param request: The HttpRequest for the similar show page
+    :param show_title: The title of the show in url string form, e.g. Breaking Bad would be breaking_bad
+    :return: A HttpResponse Object
+    """
+
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
@@ -306,6 +333,14 @@ def similar(request, show_title):
 
 
 def subscribe(request):
+    """
+    Subscribes the currently logged in user to the show specified in the request
+
+    :param request: HttpRequest for subscribe
+    :return: A HttpResponseRedirect object
+    """
+
+    # Determine if the user is logged in, if not redirect to login screen
     user = users.get_current_user()
     if not user:
         return HttpResponseRedirect('/login?continue={0}'.format(request.META['HTTP_REFERER']))
@@ -326,6 +361,13 @@ def subscribe(request):
 
 
 def togglescraping(request):
+    """
+    Takes a request from an admin user to switch scraping on and off across the site
+
+    :param request: A HttpRequest object
+    :return: A HttpResponseRedirect
+    """
+
     if users.is_current_user_admin():
         settings.SCRAPING = not settings.SCRAPING
 
@@ -333,6 +375,14 @@ def togglescraping(request):
 
 
 def unsubscribe(request):
+    """
+    Unsubscribes the currently logged in user from the show specified in the request
+
+    :param request: HttpRequest for subscribe
+    :return: A HttpResponseRedirect object
+    """
+
+    # Determine if a user is logged in - if not redirect them to the login screen
     user = users.get_current_user()
     if not user:
         return HttpResponseRedirect('/login?continue={0}'.format(request.META['HTTP_REFERER']))
@@ -342,6 +392,7 @@ def unsubscribe(request):
 
     tvdb_id = int(request.POST.get('show_id'))
 
+    # Remove the mapping between this user and the show from the UserShow table
     q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id = :id AND show_id = :show", id=user.user_id(), show=tvdb_id)
     usershow = q.fetch(limit=1)[0]
     usershow.delete()
@@ -350,7 +401,21 @@ def unsubscribe(request):
 
 ########## FUNCTIONS ##########
 
-def generate_dict(d, showid, visited, user_shows, depth=4):
+def generate_dict(tree, showid, visited, user_shows, depth=4):
+    """
+    A recursive function to build the similar shows tree. By default the tree can go to a depth of 4. Initially the
+    function is given a showid of a show. It then works by finding all the other shows users have subscribed to who
+    have also subscribed to this show. It then takes the top 6 of these shows (based on number of subscribers),
+    increments the depth and performs this function on each of these shows until a depth of 4 is reached.
+
+    :param tree: The tree dictionary at the current iteration of the recursion
+    :param showid: The showid to find subtrees of and append to the tree dictionary
+    :param visited: A list of the nodes already visited so they don't appear in the tree multiple times
+    :param user_shows: A list of all the subscriptions
+    :param depth: The depth the recursion should go to
+    :return: A list containing the tree and a list of the nodes visited so far
+    """
+
     # Base case, return a null list and the visited list
     if depth == 0:
         return [None, visited]
@@ -376,8 +441,8 @@ def generate_dict(d, showid, visited, user_shows, depth=4):
     # Get the TV show entities from the database
     tv_shows = TVShow.get_by_key_name(top_shows)
 
-    if len(tv_shows) == 0 and 'children' in d:
-        d.pop('children')
+    if len(tv_shows) == 0 and 'children' in tree:
+        tree.pop('children')
 
     # For each show do the same thing!
     for show in tv_shows:
@@ -387,16 +452,24 @@ def generate_dict(d, showid, visited, user_shows, depth=4):
             {"name": "{0}".format(show.title), "url": show.url_string, "showid": showid, "imagelink": imagelink,
              "children": []}, showid, visited, user_shows, depth - 1)
 
+        # Check that children were returned, don't want to append an empty list to the tree
         if children:
-            d['children'].append(children)
+            tree['children'].append(children)
         else:
-            if 'children' in d:
-                d.pop('children')
+            if 'children' in tree:
+                tree.pop('children')
 
-    return [d, visited];
+    return [tree, visited]
 
 
 def get_tv_show(show_title):
+    """
+    A function which queries the datastore for a TVShow entity.
+
+    :param show_title: The url_string of the show to be returned, e.g. Breaking Bad would be breaking_bad
+    :return: TVShow Entity
+    """
+
     # Try get a TVShow entity from the database based on the show_title
     q = db.GqlQuery("SELECT * FROM TVShow WHERE url_string = :1", show_title)
     show = q.run(limit=1)
@@ -407,6 +480,14 @@ def get_tv_show(show_title):
 
 
 def remove_empty_seasons(seasons):
+    """
+    A function which loops through a dictionary containing season-to-episodes mappings and removes any seasons which
+    have no episodes in them
+
+    :param seasons: A dictionary containing Season to Episode mappings
+    :return: A dictionary with all the empty seasons removed
+    """
+
     # Loop through the seasons keys and remove any which have a value of 0
     for key in seasons.keys():
         if len(seasons[key]) == 0:
