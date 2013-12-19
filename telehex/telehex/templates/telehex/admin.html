@@ -6,7 +6,6 @@
 
 {% block content %}
 <div class="container">
-    {% if is_admin %}
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
             <h1>All Scraped Shows</h1>
@@ -45,9 +44,6 @@
             {% endfor %}
         </table>
     </div>
-    {% else %}
-    <h1>You're not an admin.</h1>
-    {% endif %}
 </div>
 {% endblock %}
 
