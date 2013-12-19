@@ -48,7 +48,10 @@
                     {% endif %}
                     <a href="/ratings/{{ show.url_string }}">graph this show</a><br>
                     <a href="/similar/{{ show.url_string }}">find similar shows</a><br>
-                    <a href="http://www.imdb.com/title/{{ show.imdb_id }}">this show on IMDB</a>
+                    <a href="http://www.imdb.com/title/{{ show.imdb_id }}">this show on IMDB</a><br>
+                    Share this show:<br>
+                    <a href="https://twitter.com/share" class="twitter-share-button" data-text="Check out {{show.title}} on #telehex" data-count="none">Tweet</a>
+               		
                 </div>
             </div>
             {% if viewed_shows|length > 1 %}
@@ -167,6 +170,28 @@
         </div>
     </div>
 </div>
+
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<script>
+/* Script for the tweet button generated from https://about.twitter.com/resources/buttons#tweet */
+!function(d,s,id){
+	var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
+	if(!d.getElementById(id)){
+		js=d.createElement(s);
+		js.id=id;
+		js.src=p+'://platform.twitter.com/widgets.js';
+		fjs.parentNode.insertBefore(js,fjs);
+		}
+	}
+	(document, 'script', 'twitter-wjs');
+</script>
 
 <script>
     $(document).ready(function(){
