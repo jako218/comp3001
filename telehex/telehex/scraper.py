@@ -57,7 +57,7 @@ class Scraper:
                 imdb_id = self.tvdbsoup.IMDB_ID.text,
                 url_string = self.slug,
                 last_scraped = datetime.utcfromtimestamp(0),
-                num_seasons = int(self.tvdbsoup.find_all('SeasonNumber')[-1].text)
+                num_seasons = int(self.tvdbsoup.find_all('SeasonNumber')[-1].text) if self.tvdbsoup.find_all('SeasonNumber') else 0
         ).put()
         self.series_key = tv_show # obtain the key for the TV show
 
@@ -106,7 +106,7 @@ class Scraper:
                             desc =  overview,
                             ep_number = int(episode.EpisodeNumber.text),
                             thumb = episode.filename.text,
-                            airdate = datetime.strptime(episode.FirstAired.text,  '%Y-%m-%d').date(),
+                            airdate = datetime.strptime(episode.FirstAired.text,  '%Y-%m-%d').date() if episode.FirstAired.text != "0000-00-00" else datetime.min.date(),
                             rating = ep_rating,
                             imdb_id = episode.IMDB_ID.text
                 ).put()
