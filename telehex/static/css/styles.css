@@ -331,7 +331,8 @@ rect:hover {
 
 /* Results Page */
 .list-group-item {
-    background-color: transparent;
+    background-color: transparent !important;
+    outline: none !important;
     margin-bottom:5px !important;
     border: 0px transparent !important;
 }
