@@ -234,8 +234,18 @@ th.headerSortDown:after {
 }
 
 .episode {
-		cursor: pointer;
-	}
+    cursor: pointer;
+}
+
+@media (max-width: 1100px) {
+    .episode, .episode:hover {
+        color: #fff;
+        cursor: auto;
+        display: inline !important;
+        text-decoration: none;
+    }
+}
+    
 
 /* End show information page styles */
 
