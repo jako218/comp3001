@@ -102,7 +102,7 @@ class Scraper:
                 try:
                     airdate = datetime.strptime(episode.FirstAired.text,  '%Y-%m-%d').date()
                 except ValueError:
-                    airdate = datetime.min.date()
+                    airdate = None
 
                 TVEpisode(  parent = self.series_key,
                             key_name = episode.id.text,
