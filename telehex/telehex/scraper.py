@@ -99,6 +99,11 @@ class Scraper:
 
                 epname = episode.EpisodeName.text if episode.EpisodeName.text else "Not Available"
 
+                try:
+                    airdate = datetime.strptime(episode.FirstAired.text,  '%Y-%m-%d').date()
+                except ValueError:
+                    airdate = datetime.min.date()
+
                 TVEpisode(  parent = self.series_key,
                             key_name = episode.id.text,
                             name = epname,
@@ -106,7 +111,7 @@ class Scraper:
                             desc =  overview,
                             ep_number = int(episode.EpisodeNumber.text),
                             thumb = episode.filename.text,
-                            airdate = datetime.strptime(episode.FirstAired.text,  '%Y-%m-%d').date() if episode.FirstAired.text != "0000-00-00" else datetime.min.date(),
+                            airdate = airdate,
                             rating = ep_rating,
                             imdb_id = episode.IMDB_ID.text
                 ).put()
