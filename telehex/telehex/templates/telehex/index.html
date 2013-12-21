@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block css %}<style>
-body { background: url('static/img/mainbg.png') repeat #263544; }
+/*body { background: url('static/img/mainbg.png') repeat #263544; }*/
 #navsearch { display: none !important; }
 </style>{% endblock %}
 
@@ -18,3 +18,10 @@ body { background: url('static/img/mainbg.png') repeat #263544; }
         </div>
     </form>
 </div>{% endblock %}
+
+{% block scripts %}<script>
+    $(document).ready(function() {
+        var r = Math.floor((Math.random() * 3) + 1);
+        $("body").css("background", "url('static/img/mainbg" + r + ".png') repeat #263544");
+    });
+</script>{% endblock %}
