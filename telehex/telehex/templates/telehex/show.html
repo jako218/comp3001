@@ -28,46 +28,64 @@
             <div class="row">
                 <div class="container sidebar">
                   <!-- The subscribe button goes here if it's below the hexagon. -->
-                    <div class="nav-container">
-                        <ul class="nav nav-list nav-list-panel">
-                            <li class="nav-header"><h4>Options</h4></li>
-                            {% if is_admin %}
-                            <li><a href="/scrape/{{show.key.name}}?force=1" class="load-on-click" /><i class="fa fa-refresh fa-fw"></i> rescrape</a></li>
-                            {% endif %}
-                            <li><a href="/ratings/{{ show.url_string }}"><i class="fa fa-bar-chart-o fa-fw"></i> graph</a></li>
-                            <li><a href="/similar/{{ show.url_string }}"><i class="fa fa-sitemap fa-fw"></i> similar shows</a></li>
-                            <li><a href="http://www.imdb.com/title/{{ show.imdb_id }}"><i class="fa fa-film fa-fw"></i> IMDB</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-            	<div class="container sidebar">
-            		<div class="nav-container">
-                        <ul class="nav nav-list nav-list-panel">
-                            <li class="nav-header"><h4>Share</h4></li>
-                            <li><a href="https://twitter.com/share?&url=http%3A%2F%2Ftelehex.com%2Fshow%2F{{ show.url_string }}&text=Check out {{show.title}} on %23telehex" target="_blank"><i class="fa fa-twitter fa-fw"></i> twitter</a></li>
+                	<div class="nav-container">
+                		<!--Nav for Options Modified from: http://getbootstrap.com/examples/navbar/ -->
+                    	<div class="navbar navbar-default">
+					        <div class="navbar-header">
+						        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#options">
+						            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+						        </button>
+					        	<h4>Options</h4>
+					        </div>
+					        <div class="navbar-collapse collapse" id="options">
+					          <ul class="nav nav-list nav-list-panel">
+					            {% if is_admin %}
+	                            <li><a href="/scrape/{{show.key.name}}?force=1" class="load-on-click" /><i class="fa fa-refresh fa-fw"></i> rescrape</a></li>
+	                            {% endif %}
+	                            <li><a href="/ratings/{{ show.url_string }}"><i class="fa fa-bar-chart-o fa-fw"></i> graph</a></li>
+	                            <li><a href="/similar/{{ show.url_string }}"><i class="fa fa-sitemap fa-fw"></i> similar shows</a></li>
+	                            <li><a href="http://www.imdb.com/title/{{ show.imdb_id }}"><i class="fa fa-film fa-fw"></i> IMDB</a></li>
+					          </ul>
+					        </div>
+						</div>
+						<!-- Nav for Share -->
+                    	<div class="navbar navbar-default">
+					        <div class="navbar-header">
+						        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#share">
+						            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+						        </button>
+					        	<h4>Share</h4>
+					        </div>
+					        <div class="navbar-collapse collapse" id="share">
+					          <ul class="nav nav-list nav-list-panel">
+					            <li><a href="https://twitter.com/share?&url=http%3A%2F%2Ftelehex.com%2Fshow%2F{{ show.url_string }}&text=Check out {{show.title}} on %23telehex" target="_blank"><i class="fa fa-twitter fa-fw"></i> twitter</a></li>
                             <li><a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Ftelehex.com%2Fshow%2F{{ show.url_string }}" target="_blank"><i class="fa fa-facebook fa-fw"></i> facebook</a></li>
-                        </ul>	
-                    </div>
-            	</div>
-            </div>
-            {% if viewed_shows|length > 1 %}
-            <div class="row">
-                <div class="container sidebar">
-                    <div class="nav-container">
-                        <ul class="nav nav-list nav-list-panel">
-                            <li class="nav-header"><h4>Recently Viewed</h4></li>
-                            {% for vshow in viewed_shows %}
-                            {% ifnotequal vshow.title show.title %}
-                            <li><a href="/show/{{vshow.url_string}}"><i class="fa fa-bookmark fa-fw"></i> {{ vshow.title }}</a></li>
-                            {% endifnotequal %}
-                            {% endfor %}
-                        </ul>
-                    </div>
+					          </ul>
+					        </div>
+						</div>
+						<!-- Nav for Recently Viewed -->
+            			{% if viewed_shows|length > 1 %}
+                    	<div class="navbar navbar-default">
+					        <div class="navbar-header">
+						        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#recently-viewed">
+						            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+						        </button>
+					        	<h4>Recently Viewed</h4>
+					        </div>
+					        <div class="navbar-collapse collapse" id="recently-viewed">
+					          <ul class="nav nav-list nav-list-panel">
+					            {% for vshow in viewed_shows %}
+	                            {% ifnotequal vshow.title show.title %}
+	                            <li><a href="/show/{{vshow.url_string}}"><i class="fa fa-bookmark fa-fw"></i> {{ vshow.title }}</a></li>
+	                            {% endifnotequal %}
+	                            {% endfor %}
+					          </ul>
+					        </div>
+						</div>
+						{% endif %}
+                    </div>             
                 </div>
             </div>
-            {% endif %}
         </div>
 
         <!-- Description -->
