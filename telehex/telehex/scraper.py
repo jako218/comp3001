@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 """
 TV show Scraper Class
@@ -46,13 +47,15 @@ class Scraper:
         fanart_url = None
         if self.tvdbsoup.fanart.text:
             fanart_url = TVDB_BANNER_URL + self.tvdbsoup.fanart.text;
+        genres = self.tvdbsoup.Genre.text.split("|")
 
         tv_show = TVShow( key_name = self.tvdb_id,
                 title = self.tvdbsoup.SeriesName.text,
                 desc = self.tvdbsoup.Overview.text,
                 rating = float(self.get_imdb_rating(self.tvdbsoup.IMDB_ID.text)),
                 fanart = fanart_url,
-                genre = self.tvdbsoup.Genre.text,
+                genre = genres[1],
+                subgenre = genres[2],
                 status = self.tvdbsoup.Status.text,
                 imdb_id = self.tvdbsoup.IMDB_ID.text,
                 url_string = self.slug,

@@ -399,6 +399,23 @@ def unsubscribe(request):
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
+def genre(request, genre_type):
+    """
+    TODO
+
+    :param request: A Genre request object.
+    :param genre_type: The Genre to display all shows from
+    :return: A HttpResponse Object containing the page of the genre requested.
+    """
+
+    q = db.GqlQuery("SELECT * FROM TVShow WHERE genre = :genre", genre=genre_type)
+    results = q.run()
+    q = db.GqlQuery("SELECT * FROM TVShow WHERE subgenre = :genre", genre=genre_type)
+    results2 = q.run()
+
+    template_values = {'results': results, 'results2': results2, 'genre': genre_type}
+    return render(request, 'telehex/genre.html', template_values)    
+
 ########## FUNCTIONS ##########
 
 def generate_dict(tree, showid, visited, user_shows, depth=4):

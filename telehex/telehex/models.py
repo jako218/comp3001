@@ -40,6 +40,7 @@ class TVShow(db.Model):
     rating = db.FloatProperty()
     fanart = db.StringProperty()
     genre = db.StringProperty()
+    subgenre = db.StringProperty()
     status = db.StringProperty(choices={"Ended", "Continuing", "On Hiatus", "Other"})
     imdb_id = db.StringProperty()
     url_string = db.StringProperty(required=True)
