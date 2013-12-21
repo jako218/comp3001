@@ -44,11 +44,11 @@ src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></sc
 	{% block content %}{% endblock %}
 
 	{% include "./telehex/footer.html" %}
+
+    <div id="loading-overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>
 	
 <script>
     $(document).ready(function() {
-        $('body').append('<div id="loading-overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>');
-
         $('.load-on-click').click(function() {
             $('#loading-overlay').css('display', 'block');
         });
