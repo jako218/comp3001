@@ -229,12 +229,12 @@ def search(request):
 
     # Get the results from this query
     results = Search().search_tvdb(query) if query else []
-
+    
     # If one result go straight to the show page
     if len(results) == 1:
         return scrape(request, results[0]['tvdb_id'])
 
-    template_values = {'results': results}
+    template_values = {'results': results, 'query': query}
     return render(request, 'telehex/search.html', template_values)
 
 
