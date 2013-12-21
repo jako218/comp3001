@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}- {{ genre }}{% endblock %}
+
+{% block content %}<div class="container">
+    <h1>{{ genre }}</h1>
+
+    <div class="list-group">
+    {% if results|length < 1  %}
+        {% if results2|length < 1  %}
+    	   <p>We're sorry your search did not return any results, please try another <a href="/search/">search</a> to try again!</p>
+        {% endif %}
+    {% else %}
+        {% for series in results %}
+            <div class="results-list">
+            	<a class="list-group-item load-on-click" href="/show/{{series.url_string}}">
+                    <h4 class="list-group-item-heading">{{ series.title }}</h4>
+                    <p class="list-group-item-text">{{series.desc}}</p>
+                </a>
+            </div>
+        {% endfor %}
+        {% for series in results2 %}
+            <div class="results-list">
+                <a class="list-group-item load-on-click" href="/show/{{series.url_string}}">
+                    <h4 class="list-group-item-heading">{{ series.title }}</h4>
+                    <p class="list-group-item-text">{{series.desc}}</p>
+                </a>
+            </div>
+        {% endfor %}
+    {% endif %}
+    </div>
+</div>{% endblock %}
