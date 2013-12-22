@@ -387,8 +387,8 @@ rect:hover {
     text-align: center;
 }
 
-.step-links{
-    display: inline-block;
+.step-links .current{
+    padding: 0px 8px 0px 8px;
 }
 
 /* Search Bar */ 
