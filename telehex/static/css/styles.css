@@ -367,7 +367,7 @@ rect:hover {
     background-color: transparent !important;
     outline: none !important;
     margin-bottom:5px !important;
-    border: 0px transparent !important;
+    border: none !important;
 }
 
 .list-group-item:hover {
@@ -380,6 +380,15 @@ rect:hover {
 
 .list-group-item-text {
     color: #fff;
+}
+
+.pagination{
+    display: block;
+    text-align: center;
+}
+
+.step-links{
+    display: inline-block;
 }
 
 /* Search Bar */ 

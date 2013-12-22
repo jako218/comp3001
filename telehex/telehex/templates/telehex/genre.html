@@ -7,9 +7,7 @@
 
     <div class="list-group">
     {% if results|length < 1  %}
-        {% if results2|length < 1  %}
-    	   <p>We're sorry your search did not return any results, please try another <a href="/search/">search</a> to try again!</p>
-        {% endif %}
+    	<p>We're sorry your search did not return any results, please try another <a href="/search/">search</a> to try again!</p>
     {% else %}
         {% for series in results %}
             <div class="results-list">
@@ -19,14 +17,21 @@
                 </a>
             </div>
         {% endfor %}
-        {% for series in results2 %}
-            <div class="results-list">
-                <a class="list-group-item load-on-click" href="/show/{{series.url_string}}">
-                    <h4 class="list-group-item-heading">{{ series.title }}</h4>
-                    <p class="list-group-item-text">{{series.desc}}</p>
-                </a>
-            </div>
-        {% endfor %}
     {% endif %}
     </div>
+</div>
+<div class="pagination">
+    <span class="step-links">
+        {% if results.has_previous %}
+            <a href="?page={{ results.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ results.number }} of {{ results.paginator.num_pages }}.
+        </span>
+
+        {% if results.has_next %}
+            <a href="?page={{ results.next_page_number }}">next</a>
+        {% endif %}
+    </span>
 </div>{% endblock %}

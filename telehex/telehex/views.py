@@ -31,10 +31,15 @@ from scraper import Scraper, Search
 from collections import Counter
 from datetime import datetime, timedelta, date, MAXYEAR
 import json
+from itertools import chain
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # If a page is visited, this is the number of days which must have
 # passed since the last scrape, before a re-scrape occurs
 RESCRAPE_AFTER = 7
+
+# The number of results to diaply per page
+RESULTS_PER_PAGE = 5
 
 
 def admin(request):
@@ -409,11 +414,27 @@ def genre(request, genre_type):
     """
 
     q = db.GqlQuery("SELECT * FROM TVShow WHERE genre = :genre", genre=genre_type)
-    results = q.run()
+    r1 = q.run()
     q = db.GqlQuery("SELECT * FROM TVShow WHERE subgenre = :genre", genre=genre_type)
-    results2 = q.run()
+    r2 = q.run()
+    results_list = []
+    for r in r1:
+        results_list.append(r)
+    for r in r2:
+        results_list.append(r)
+    paginator = Paginator(results_list, RESULTS_PER_PAGE)
 
-    template_values = {'results': results, 'results2': results2, 'genre': genre_type}
+    page = request.GET.get('page')
+    try:
+        results = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        results = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        results = paginator.page(paginator.num_pages)
+
+    template_values = {'results': results, 'genre': genre_type}
     return render(request, 'telehex/genre.html', template_values)    
 
 ########## FUNCTIONS ##########
