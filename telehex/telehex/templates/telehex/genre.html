@@ -12,7 +12,7 @@
         {% for series in results %}
             <div class="results-list">
             	<a class="list-group-item load-on-click" href="/show/{{series.url_string}}">
-                    <h4 class="list-group-item-heading">{{ series.title }}</h4>
+                    <h4 class="list-group-item-heading">{{ series.title }} {{ series.subscribed}}</h4>
                     <p class="list-group-item-text">{{series.desc}}</p>
                 </a>
             </div>

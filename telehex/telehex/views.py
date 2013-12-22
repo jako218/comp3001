@@ -418,10 +418,21 @@ def genre(request, genre_type):
     q = db.GqlQuery("SELECT * FROM TVShow WHERE subgenre = :genre", genre=genre_type)
     r2 = q.run()
     results_list = []
+
+    # Get all the subscriptions
+    q = db.GqlQuery("SELECT * FROM UserShow")
+    subs_iterator = q.run()
+
+    # Count the number of times a show has been subscribed to
+    subs_counts = Counter([str(show.show_id) for show in subs_iterator])
+
     for r in r1:
+        r.subscribed = subs_counts[str(r.key().name())]
         results_list.append(r)
     for r in r2:
+        r.subscribed = subs_counts[str(r.key().name())]
         results_list.append(r)
+    results_list.sort(key=lambda x: x.subscribed, reverse=True)
     paginator = Paginator(results_list, RESULTS_PER_PAGE)
 
     page = request.GET.get('page')
