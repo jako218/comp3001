@@ -9,6 +9,9 @@ This is where the title page will go
 
 \newpage
 \section{Description of prototype functionality}
+What have we built?
+Why did we build it?
+What does the product do? - Feature list.
 
 \newpage
 \section{List of tools and techniques used}
@@ -16,7 +19,9 @@ Python Libraries:
 \begin{itemize}
 \item Beautiful Soup
 \item Django
-\item etc.
+\item PIL
+\item Basically the contents of requirements.txt + Django
+\item The weird library used by hayden to comment the python
 \end{itemize}
 
 Javascript Libraries:
@@ -24,23 +29,69 @@ Javascript Libraries:
 \item jQuery
 \item jQuery UI
 \item jRumble
-\item etc..
+\item d3.js
+\item Calendar stuff
+\item jQuery Cookies
 \end{itemize}
 
-Bootstrap
+Development Tools:
+\begin{itemize}
+\item Git
+\item GitHub
+\item Chrome/Firefox/Safari/IE for testing
+\item Firebug for testing in Firefox
+\item VIM/Sublime/Eclipse as IDE's
+\item TexMaker for this document
+\item JsHint for Javascript coding style
+\item Google App Engine Local Launcher
+\end{itemize}
 
-etc.
+HTML/JS/CSS libraries:
+\begin{itemize}
+\item Bootstrap
+\item Bootflat
+\end{itemize}
+
+Techniques:
+\begin{itemize}
+\item AGILE software development - some bs about SCRUM or something
+\item Pair Programming
+\item Code tested locally using GAE launcher rather than on a live site
+\item Communicated through facebook, github issues and meetings.
+\end{itemize}
 
 \newpage
 \section{Relevant statistics}
 
 When the project is complete this will include things such as number of lines of codes, num of commits, etc.
 
+Use the github statistics page visualisations here to show number of commits etc.
+
+Need to show the lines of code in our project. Can have a table with the Headings: Language, Total Lines, Lines of Comments, Blank Lines, Lines of Code and then sum the rows to get total lines of code at the bottom.
+
+Need to talk about how much of our code is ours, how much has been adapted from elsewhere and what external sources have been used. Maybe have a pie chart to show the composition of our code from ours/adapted code/external code and a pie chart to visualise how the total lines of code is shared between the different languages used.
+
 
 \newpage
 \section{Brief overview of design and implementation, including key design decisions}
+Python Backend - we used django - why did we use django? It's considered a heavyweight solution for short tasks as it adds overheads with the settings.py files etc but members of the group had used it before and it's template processing library is pretty damn good, its also pretty good abstraction for handling pages (views) etc. NoSQL used for storage - Hayden or jamie know about this bit. Cron jobs and other python files outside of django used for scraping. 
+
+Perhaps we could have a nice graphic that shows the different processes in our system?
+
+JS/HTML/CSS front end using a variety of external sources. Chose to use jQuery as it is very robust for interacting with HTML elements and better than straight up javascript. d3 was used as a graphing library as it's awesome. Bootstrap used as it provides really fast prototyping of responsive websites - bootflat used as an extension for bootstrap as it's pretty.
 
 \newpage	
 \section{Critical evaluation of the prototype submitted}
+Mention the group dynamics in the section - did we work well together or did hayden do everything? etc. How would we solve disagreements? We totally held regular meetings and did votes and shit. 
+
+What went well?
+The product built is pretty rad and i'd actually use it.
+
+What went wrong?
+Didn't plan well enough, didnt share work out well enough, meant we had to do a lot of work remotely over christmas whilst group members had other concerns too.
+
+What would we do differently?
+Better planning - rather than diving straight into coding we couldve made lots of wireframes and a list of functionality and set deadlines and come up with class diagrams etc before implementing the program.
+
 
 \end{document}
