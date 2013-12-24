@@ -38,8 +38,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # passed since the last scrape, before a re-scrape occurs
 RESCRAPE_AFTER = 7
 
-# The number of results to diaply per page
-RESULTS_PER_PAGE = 5
+# The number of results to display per page
+GENRE_RESULTS_PER_PAGE = 5
+SEARCH_RESULTS_PER_PAGE = 10
 
 
 def admin(request):
@@ -227,19 +228,32 @@ def search(request):
     """
 
     # Check if this request has POST data - if not redirect to the home page, otherwise get the query
-    if request.method != 'POST':
-        return HttpResponseRedirect('/')
-    else:
-        query = request.POST.get('query')
-
+    if request.method == 'POST':
+        search_string = request.POST.get('query')
+        page_num = 1
+    elif request.method == 'GET':
+        search_string = request.GET.get('query')
+        page_num = request.GET.get('p')
+    
     # Get the results from this query
-    results = Search().search_tvdb(query) if query else []
+    results = Search().search_tvdb(search_string) if search_string else []
     
     # If one result go straight to the show page
     if len(results) == 1:
         return scrape(request, results[0]['tvdb_id'])
 
-    template_values = {'results': results, 'query': query}
+    paginator = Paginator(results, SEARCH_RESULTS_PER_PAGE)
+
+    try:
+        results = paginator.page(page_num)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        results = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        results = paginator.page(paginator.num_pages)
+
+    template_values = {'results': results, 'query': search_string }
     return render(request, 'telehex/search.html', template_values)
 
 
@@ -433,7 +447,7 @@ def genre(request, genre_type):
         r.subscribed = subs_counts[str(r.key().name())]
         results_list.append(r)
     results_list.sort(key=lambda x: x.subscribed, reverse=True)
-    paginator = Paginator(results_list, RESULTS_PER_PAGE)
+    paginator = Paginator(results_list, GENRE_RESULTS_PER_PAGE)
 
     page = request.GET.get('page')
     try:
