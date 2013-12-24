@@ -45,7 +45,10 @@ src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></sc
 
 	{% include "./telehex/footer.html" %}
 
-    <div id="loading-overlay"><img src="{% static "img/loader.gif" %}" alt="Loading..." /></div>
+    <div id="loading-overlay">
+        <img src="{% static "img/loader.gif" %}" alt="Loading..." />
+        <p id="loading-message"></p> 
+    </div>
 	
 	{% block scripts %}{% endblock %}
 

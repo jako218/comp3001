@@ -36,8 +36,24 @@ function isValidSearch(search_input_id) {
  * The code is a bit funky to ensure compatibility with safari's rendering engine, the solution was found:
  * http://stackoverflow.com/questions/14149038/jquery-show-function-is-not-executed-in-safari-if-submit-handler-returns-true
  */
+
+var verbs = ['calibrating', 'fueling', 'enlarging', 'charging', 'locking', 'acquiring', 'degaussing',
+             'recalculating', 'spinning up', 'releasing', 'enumerating', 'starting', 'testing', 'mounting',
+             'compiling', 'linking', 'connecting', 'deleting', 'fabricating', 'upgrading', 'looping'];
+var adjectives = ['big', 'tiny', 'flashing', 'required', 'tired', 'shiny', 'sparkling', 'radiant', 'spline',
+                  'laser', 'cached', 'plasma', 'lava', 'fast', 'slow'];
+var nouns = ['server', 'capacitors', 'circuits', 'batteries', 'hamster', 'gerbil', 'music', 'electrodes',
+             'RAM', 'CPU', 'goatherd', 'Hayden', 'disk', 'conductor', 'prototypes', 'future', 'ozone', 'cloud',
+             'screen', 'universe', 'loop'];
+
 function show_loading_overlay() {
 	//$('loading-overlay').css('display', 'block'); for if the .show() still doesnt work with the below fix.
+    $('#loading-message').text(function() {
+        verb = verbs[Math.floor(Math.random() * verbs.length)];
+        adjective = adjectives[Math.floor(Math.random() * adjectives.length)]; 
+        noun = nouns[Math.floor(Math.random() * nouns.length)];
+        return verb + " " + adjective + " " + noun + "...";
+    });
 	var show_loading = function() { $('#loading-overlay').show() };
     setTimeout(show_loading, 0);
 }

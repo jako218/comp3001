@@ -87,8 +87,21 @@ table, tr, td { height: 100%; }
 
 #loading-overlay img {
     position: absolute;
+    width:300px;
+    height:400px;
     top: 30%;
-    left: calc(50% - 150px);
+    left:50%;
+    margin-left:-150px;
+}
+
+#loading-message{
+    position: absolute;
+    width:300px;
+    top: 70%;
+    left:50%;
+    margin-left:-150px;
+    font-size: 20px;
+    text-align:center;
 }
 
 /* Show information page styles */
