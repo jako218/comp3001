@@ -14,13 +14,17 @@
 .. moduleauthor:: Chantel Spencer-Bowdage <csb1g11@ecs.soton.ac.uk>
 """
 
+# Django Imports
 from django.conf.urls.defaults import *
+from django.template.loader import add_to_builtins
+
+# Telehex Imports
 from telehex.views import *
 from telehex.tasks import email_update
-from django.template.loader import add_to_builtins
 
 add_to_builtins('django.templatetags.static')
 
+# Specify the valid URL patterns for the site
 urlpatterns = patterns('',
                        (r'^$', index),
                        (r'^admin/$', admin),

@@ -14,10 +14,9 @@
 .. moduleauthor:: Chantel Spencer-Bowdage <csb1g11@ecs.soton.ac.uk>
 """
 
+from PIL import Image, ImageOps, ImageDraw
 from StringIO import StringIO
 import urllib2
-
-from PIL import Image, ImageOps, ImageDraw
 
 
 class Hexagon:

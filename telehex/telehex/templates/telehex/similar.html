@@ -43,141 +43,194 @@ path.link {
 
 {% block scripts %}<script>
 
-var i = 0, width = 980,  height = 800,     root;
+var i = 0,
+width = 980,
+height = 800,
+root;
 
 var tree = d3.layout.tree().size([width, height]);
 
-var diagonal = d3.svg.diagonal().projection(function(d) { return [d.x, d.y]; });
+var diagonal = d3.svg.diagonal().projection(function (d) {
+    return [d.x, d.y];
+});
 
 var vis = d3.select("#graph").append("svg:svg").attr("width", width).attr("height", height).append("svg:g").attr("transform", "translate(0, 100)");
 
 d3.json("/data/similarity/")
-	.header("X-CSRFToken", $.cookie('csrftoken'))
-	.post("show_id={{ show.key.name }}", function(error, data){
+    .header("X-CSRFToken", $.cookie('csrftoken'))
+    .post("show_id={{ show.key.name }}", function (error, data) {
 
-  root = data;
-  
-  // Set where the root node is positioned
-  root.x0 = width / 2;
-  root.y0 = 0;
+        root = data;
 
-  function toggleAll(d) {
-    if (d.children) {
-      d.children.forEach(toggleAll);
-      toggle(d);
-    }
-  }
+        // Set where the root node is positioned
+        root.x0 = width / 2;
+        root.y0 = 0;
 
-  // Initialize the display to show a few nodes.
-  root.children.forEach(toggleAll);
+        function toggleAll(d) {
+            if (d.children) {
+                d.children.forEach(toggleAll);
+                toggle(d);
+            }
+        }
 
-  update(root);
-});
+        // Initialize the display to show a few nodes.
+        root.children.forEach(toggleAll);
+
+        update(root);
+    });
 
 function update(source) {
-  var duration = 300;
+    var duration = 300;
 
-  // Runs tree layout and return array of nodes associated with root
-  var nodes = tree.nodes(root).reverse();
+    // Runs tree layout and return array of nodes associated with root
+    var nodes = tree.nodes(root).reverse();
 
-  // Specify where each node appears based on its depth
-  nodes.forEach(function(d) { 
-    d.y = d.depth * 150;
-  });
+    // Specify where each node appears based on its depth
+    nodes.forEach(function (d) {
+        d.y = d.depth * 150;
+    });
 
-  // Select all the nodes and update them
-  var node = vis.selectAll("g.node").data(nodes, function(d) { 
-    // Return the id or create it if it's not been set
-    return d.id || (d.id = ++i);
-  });
+    // Select all the nodes and update them
+    var node = vis.selectAll("g.node").data(nodes, function (d) {
+        // Return the id or create it if it's not been set
+        return d.id || (d.id = ++i);
+    });
 
-  // Enter any new nodes at the parent's previous position.
-  var nodeEnter = node.enter().append("svg:g")
-      .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + source.x0 + "," + source.y0 + ")"; });
+    // Enter any new nodes at the parent's previous position.
+    var nodeEnter = node.enter().append("svg:g")
+        .attr("class", "node")
+        .attr("transform", function (d) {
+            return "translate(" + source.x0 + "," + source.y0 + ")";
+        });
 
-  hex_width = 1e-6;
-  hex_height = Math.sqrt(3)/2 * 1e-6;
+    var hex_width = 1e-6;
+    var hex_height = Math.sqrt(3) / 2 * 1e-6;
 
-  nodeEnter.append("svg:polygon").attr("points", [[hex_width, 0],[hex_width/2,hex_height],[-hex_width/2,hex_height],[-hex_width,0],[-hex_width/2,-hex_height],[hex_width/2,-hex_height]]).attr("fill", "url(#image)").style("stroke", function(d) { return d._children ? "red" : "#fff"; });;
-    
-  nodeEnter.append("svg:image")
-    .attr("xlink:href", function(d){ return d.imagelink; })
-    .attr("width", 1e-6).attr("height", 1e-6)
-    .attr("transform", "translate(-50, -50)").on("oncontextmenu", function(d) { window.location = "/show/" + d.url; }).on("click", function(d) { toggle(d); update(d); });
+    nodeEnter.append("svg:polygon").attr("points", [
+        [hex_width, 0],
+        [hex_width / 2, hex_height],
+        [-hex_width / 2, hex_height],
+        [-hex_width, 0],
+        [-hex_width / 2, -hex_height],
+        [hex_width / 2, -hex_height]
+    ]).attr("fill", "url(#image)").style("stroke", function (d) {
+        return d._children ? "red" : "#fff";
+    });
 
-  nodeEnter
-      .append("svg:a")
-      .attr("xlink:href", function(d){ return "/show/" + d.url; })
-      .append("svg:text")
-      .attr("x", "0")
-      .attr("dy", "-50")
-      .attr("text-anchor", "middle")
-      .text(function(d) { return d.name; })
-      .style("fill-opacity", 1e-6);
+    nodeEnter.append("svg:image")
+        .attr("xlink:href", function (d) {
+            return d.imagelink;
+        })
+        .attr("width", 1e-6).attr("height", 1e-6)
+        .attr("transform", "translate(-50, -50)").on("oncontextmenu", function (d) {
+            window.location = "/show/" + d.url;
+        }).on("click", function (d) {
+            toggle(d);
+            update(d);
+        });
 
-  // Transition nodes to their new position.
-  var nodeUpdate = node.transition().duration(duration).attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    nodeEnter
+        .append("svg:a")
+        .attr("xlink:href", function (d) {
+            return "/show/" + d.url;
+        })
+        .append("svg:text")
+        .attr("x", "0")
+        .attr("dy", "-50")
+        .attr("text-anchor", "middle")
+        .text(function (d) {
+            return d.name;
+        })
+        .style("fill-opacity", 1e-6);
 
-  hex_width = 50;
-  hex_height = Math.sqrt(3)/2 * hex_width;
+    // Transition nodes to their new position.
+    var nodeUpdate = node.transition().duration(duration).attr("transform", function (d) {
+        return "translate(" + d.x + "," + d.y + ")";
+    });
 
-  nodeUpdate.select("polygon").attr("points", [[hex_width, 0],[hex_width/2,hex_height],[-hex_width/2,hex_height],[-hex_width,0],[-hex_width/2,-hex_height],[hex_width/2,-hex_height]]).style("stroke", function(d) {
-     return d._children ? "red" : "#fff"; 
-   });
-  nodeUpdate.select("image").attr("width", 100).attr("height", 100);
+    hex_width = 50;
+    hex_height = Math.sqrt(3) / 2 * hex_width;
 
-  nodeUpdate.select("text").style("fill-opacity", 1);
+    nodeUpdate.select("polygon").attr("points", [
+        [hex_width, 0],
+        [hex_width / 2, hex_height],
+        [-hex_width / 2, hex_height],
+        [-hex_width, 0],
+        [-hex_width / 2, -hex_height],
+        [hex_width / 2, -hex_height]
+    ]).style("stroke", function (d) {
+        return d._children ? "red" : "#fff";
+    });
+    nodeUpdate.select("image").attr("width", 100).attr("height", 100);
 
-  // Transition exiting nodes to the parent's new position.
-  var nodeExit = node.exit().transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + source.x + "," + source.y + ")"; })
-      .remove();
+    nodeUpdate.select("text").style("fill-opacity", 1);
 
-  hex_width = 1e-6;
-  hex_height = Math.sqrt(3)/2 * hex_width;
-  
-  // Change the size of the hexagon on exit
-  nodeExit.select("polygon").attr("points", [[hex_width, 0],[hex_width/2,hex_height],[-hex_width/2,hex_height],[-hex_width,0],[-hex_width/2,-hex_height],[hex_width/2,-hex_height]]);
-  nodeExit.select("image").attr("width", 1e-6).attr("height", 1e-6).attr("transform", "translate(-50, -50)");
+    // Transition exiting nodes to the parent's new position.
+    var nodeExit = node.exit().transition()
+        .duration(duration)
+        .attr("transform", function (d) {
+            return "translate(" + source.x + "," + source.y + ")";
+        })
+        .remove();
 
-  // Update the links…
-  var link = vis.selectAll("path.link").data(tree.links(nodes), function(d) { return d.target.id; });
+    hex_width = 1e-6;
+    hex_height = Math.sqrt(3) / 2 * hex_width;
 
-  // Enter any new links at the parent's previous position.
-  link.enter().insert("svg:path", "g")
-      .attr("class", "link")
-      .attr("d", function(d) {
-        var o = {x: source.x0, y: source.y0};
-        return diagonal({source: o, target: o});
-      })
-      .transition()
-      .duration(duration)
-      .attr("d", diagonal);
+    // Change the size of the hexagon on exit
+    nodeExit.select("polygon").attr("points", [
+        [hex_width, 0],
+        [hex_width / 2, hex_height],
+        [-hex_width / 2, hex_height],
+        [-hex_width, 0],
+        [-hex_width / 2, -hex_height],
+        [hex_width / 2, -hex_height]
+    ]);
+    nodeExit.select("image").attr("width", 1e-6).attr("height", 1e-6).attr("transform", "translate(-50, -50)");
 
-  // Transition links to their new position.
-  link.transition().duration(duration).attr("d", diagonal);
+    // Update the links…
+    var link = vis.selectAll("path.link").data(tree.links(nodes), function (d) {
+        return d.target.id;
+    });
 
-  // Transition exiting nodes to the parent's new position.
-  link.exit().remove();
+    // Enter any new links at the parent's previous position.
+    link.enter().insert("svg:path", "g")
+        .attr("class", "link")
+        .attr("d", function (d) {
+            var o = {
+                x: source.x0,
+                y: source.y0
+            };
+            return diagonal({
+                source: o,
+                target: o
+            });
+        })
+        .transition()
+        .duration(duration)
+        .attr("d", diagonal);
 
-  // Stash the old positions for transition.
-  nodes.forEach(function(d) {
-    d.x0 = d.x;
-    d.y0 = d.y;
-  });
+    // Transition links to their new position.
+    link.transition().duration(duration).attr("d", diagonal);
+
+    // Transition exiting nodes to the parent's new position.
+    link.exit().remove();
+
+    // Stash the old positions for transition.
+    nodes.forEach(function (d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
+    });
 }
 
 // Toggle children.
 function toggle(d) {
-  if (d.children) {
-    d._children = d.children;
-    d.children = null;
-  } else {
-    d.children = d._children;
-    d._children = null;
-  }
+    if (d.children) {
+        d._children = d.children;
+        d.children = null;
+    } else {
+        d.children = d._children;
+        d._children = null;
+    }
 }
 
     </script>{% endblock %}

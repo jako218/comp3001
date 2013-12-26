@@ -18,6 +18,7 @@
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render
 from django.conf import settings
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # GAE Imports
 from google.appengine.ext import db
@@ -31,8 +32,6 @@ from scraper import Scraper, Search
 from collections import Counter
 from datetime import datetime, timedelta, date, MAXYEAR
 import json
-from itertools import chain
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # If a page is visited, this is the number of days which must have
 # passed since the last scrape, before a re-scrape occurs
@@ -95,6 +94,49 @@ def calendar(request):
 
     return render(request, 'telehex/calendar.html', {"email_updates": user_entry})
 
+def genre(request, genre_type):
+    """
+
+
+    :param request: A Genre request object.
+    :param genre_type: The Genre to display all shows from
+    :return: A HttpResponse Object containing the page of the genre requested.
+    """
+
+    q = db.GqlQuery("SELECT * FROM TVShow WHERE genre = :genre", genre=genre_type)
+    r1 = q.run()
+    q = db.GqlQuery("SELECT * FROM TVShow WHERE subgenre = :genre", genre=genre_type)
+    r2 = q.run()
+    results_list = []
+
+    # Get all the subscriptions
+    q = db.GqlQuery("SELECT * FROM UserShow")
+    subs_iterator = q.run()
+
+    # Count the number of times a show has been subscribed to
+    subs_counts = Counter([str(show.show_id) for show in subs_iterator])
+
+    for r in r1:
+        r.subscribed = subs_counts[str(r.key().name())]
+        results_list.append(r)
+    for r in r2:
+        r.subscribed = subs_counts[str(r.key().name())]
+        results_list.append(r)
+    results_list.sort(key=lambda x: x.subscribed, reverse=True)
+    paginator = Paginator(results_list, GENRE_RESULTS_PER_PAGE)
+
+    page = request.GET.get('page')
+    try:
+        results = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        results = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        results = paginator.page(paginator.num_pages)
+
+    template_values = {'results': results, 'genre': genre_type}
+    return render(request, 'telehex/genre.html', template_values)
 
 def index(request):
     """
@@ -234,10 +276,10 @@ def search(request):
     elif request.method == 'GET':
         search_string = request.GET.get('query')
         page_num = request.GET.get('p')
-    
+
     # Get the results from this query
     results = Search().search_tvdb(search_string) if search_string else []
-    
+
     # If one result go straight to the show page
     if len(results) == 1:
         return scrape(request, results[0]['tvdb_id'])
@@ -270,7 +312,7 @@ def show(request, show_title):
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
-	raise Http404
+        raise Http404
 
     # Determine if the user is subscribed
     user = users.get_current_user()
@@ -326,7 +368,7 @@ def ratings(request, show_title):
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
-	raise Http404
+        raise Http404
 
     # Pass show variable to template and redirect
     return render(request, 'telehex/ratings.html', {'show': show})
@@ -345,7 +387,7 @@ def similar(request, show_title):
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
-	raise Http404
+        raise Http404
 
     # Pass show variable to template and redirect
     return render(request, 'telehex/similar.html', {'show': show})
@@ -418,50 +460,6 @@ def unsubscribe(request):
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
-def genre(request, genre_type):
-    """
-    TODO
-
-    :param request: A Genre request object.
-    :param genre_type: The Genre to display all shows from
-    :return: A HttpResponse Object containing the page of the genre requested.
-    """
-
-    q = db.GqlQuery("SELECT * FROM TVShow WHERE genre = :genre", genre=genre_type)
-    r1 = q.run()
-    q = db.GqlQuery("SELECT * FROM TVShow WHERE subgenre = :genre", genre=genre_type)
-    r2 = q.run()
-    results_list = []
-
-    # Get all the subscriptions
-    q = db.GqlQuery("SELECT * FROM UserShow")
-    subs_iterator = q.run()
-
-    # Count the number of times a show has been subscribed to
-    subs_counts = Counter([str(show.show_id) for show in subs_iterator])
-
-    for r in r1:
-        r.subscribed = subs_counts[str(r.key().name())]
-        results_list.append(r)
-    for r in r2:
-        r.subscribed = subs_counts[str(r.key().name())]
-        results_list.append(r)
-    results_list.sort(key=lambda x: x.subscribed, reverse=True)
-    paginator = Paginator(results_list, GENRE_RESULTS_PER_PAGE)
-
-    page = request.GET.get('page')
-    try:
-        results = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        results = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        results = paginator.page(paginator.num_pages)
-
-    template_values = {'results': results, 'genre': genre_type}
-    return render(request, 'telehex/genre.html', template_values)    
-
 ########## FUNCTIONS ##########
 
 def generate_dict(tree, showid, visited, user_shows, depth=4):
@@ -469,14 +467,15 @@ def generate_dict(tree, showid, visited, user_shows, depth=4):
     A recursive function to build the similar shows tree. By default the tree can go to a depth of 4. Initially the
     function is given a showid of a show. It then works by finding all the other shows users have subscribed to who
     have also subscribed to this show. It then takes the top 6 of these shows (based on number of subscribers),
-    increments the depth and performs this function on each of these shows until a depth of 4 is reached.
+    increments the depth and performs this function on each of these shows until a depth of 4 is reached and a similarity
+    tree is built.
 
     :param tree: The tree dictionary at the current iteration of the recursion
     :param showid: The showid to find subtrees of and append to the tree dictionary
     :param visited: A list of the nodes already visited so they don't appear in the tree multiple times
     :param user_shows: A list of all the subscriptions
     :param depth: The depth the recursion should go to
-    :return: A list containing the tree and a list of the nodes visited so far
+    :return: A list containing the tree dictionary and a list of the nodes visited so far
     """
 
     # Base case, return a null list and the visited list
