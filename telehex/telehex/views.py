@@ -97,7 +97,8 @@ def calendar(request):
 
 def genre(request, genre_type):
     """
-    Deals with displaying all the shows of a similar genre.
+    Produces a list of all shows with the same genre ordered on the number of subscribed users it also checks the sub
+    genre that are the same.
 
     :param request: A Genre request object.
     :param genre_type: The Genre to display all shows from
