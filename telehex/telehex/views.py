@@ -32,6 +32,7 @@ from scraper import Scraper, Search
 from collections import Counter
 from datetime import datetime, timedelta, date, MAXYEAR
 import json
+from urllib import quote, unquote
 
 # If a page is visited, this is the number of days which must have
 # passed since the last scrape, before a re-scrape occurs
@@ -96,12 +97,15 @@ def calendar(request):
 
 def genre(request, genre_type):
     """
-
+    Deals with displaying all the shows of a similar genre.
 
     :param request: A Genre request object.
     :param genre_type: The Genre to display all shows from
     :return: A HttpResponse Object containing the page of the genre requested.
     """
+
+    # Decode the genre_type
+    genre_type = unquote(genre_type)
 
     q = db.GqlQuery("SELECT * FROM TVShow WHERE genre = :genre", genre=genre_type)
     r1 = q.run()
@@ -345,8 +349,11 @@ def show(request, show_title):
     viewed_list = [d for d in viewed_list if d['title'] != show.title]
     viewed_list.insert(0, {'title': show.title, 'url_string': show.url_string})
 
+    show_genre = quote(show.genre) if show.genre else None
+    show_subgenre = quote(show.subgenre) if show.subgenre else None
+
     template_values = {'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode,
-                       'viewed_shows': viewed_list[:11]}
+                       'viewed_shows': viewed_list[:11], 'genre': show_genre, 'subgenre': show_subgenre}
 
     response = render(request, 'telehex/show.html', template_values)
 

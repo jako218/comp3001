@@ -84,7 +84,7 @@ class Scraper:
         fanart_url = TVDB_BANNER_URL + self.tvdbsoup.fanart.text if self.tvdbsoup.fanart.text else None
 
         # Identify the show genres
-        genres = self.tvdbsoup.Genre.text.split("|")
+        genres = self.tvdbsoup.Genre.text.strip('|').split('|')
 
         # Put the scraped information into the GAE datastore
         tv_show = TVShow(key_name=self.tvdb_id,
@@ -92,8 +92,8 @@ class Scraper:
                          desc=self.tvdbsoup.Overview.text,
                          rating=float(self.get_imdb_rating(self.tvdbsoup.IMDB_ID.text)),
                          fanart=fanart_url,
-                         genre=genres[1],
-                         subgenre=genres[2],
+                         genre=genres[0] if len(genres) > 0 else None,
+                         subgenre=genres[1] if len(genres) > 1 else None,
                          status=self.tvdbsoup.Status.text,
                          imdb_id=self.tvdbsoup.IMDB_ID.text,
                          url_string=self.slug,

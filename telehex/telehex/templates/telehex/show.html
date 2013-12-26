@@ -94,7 +94,7 @@
                 <div class="row">
                     <div id="showtitle">
                         <h1>{{ show.title }}</h1>
-                        <h3><a href="/genre/{{ show.genre }}">{{ show.genre }}</a> {% if show.subgenre %}<a href="/genre/{{ show.subgenre }}">{{ show.subgenre }}</a> {% endif %}{{ show.status }}{% if nextepisode %} - Next airing: {{ nextepisode.airdate }}{% endif %}</h3>
+                        <h3><a href="/genre/{{ genre }}">{{ show.genre }}</a> {% if show.subgenre %}<a href="/genre/{{ subgenre }}">{{ show.subgenre }}</a> {% endif %}{{ show.status }}{% if nextepisode %} - Next airing: {{ nextepisode.airdate }}{% endif %}</h3>
                     </div><br>
                     {% if subscribed %}
                     <form action="/unsubscribe/" method="post" >
