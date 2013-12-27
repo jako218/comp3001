@@ -15,27 +15,9 @@
     <!-- don't allow them to view stats if they have not subscribed to any shows -->
     {% if shows %}
     <!-- create the options bar to take you to statistics -->
-    <div class="row">
-        <div class="container sidebar">
-            <div class="nav-container">
-                <!--Nav for Options Modified from: http://getbootstrap.com/examples/navbar/ -->
-                <div class="navbar navbar-default">
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#options">
-                            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-                        </button>
-                        <h4>Options</h4>
-                    </div>
-                    <div class="navbar-collapse collapse" id="options">
-                      <ul class="nav nav-list nav-list-panel">
-                        <li><a href="/profile/stats"><i class="fa fa-bar-chart-o fa-fw"></i> user statistics </a></li>
-                      </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="caption-styling">
+        <div class="caption-styling show_padding">
             <h2>Your Subscribed Shows</h2>
+            <a href="/profile/stats" class="stats_link"> View your user statistics </a>
         </div>
     <!-- hexagons and descriptions inside thumbnails -->
     <div class="bf-example">

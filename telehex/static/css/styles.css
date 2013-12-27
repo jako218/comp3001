@@ -470,4 +470,7 @@ a.ui-state-focus {
 
 .color_change{ color: rgba(192, 57, 43, 1) !important;}
 
+.stats_link{ color: #2986b9; }
+
+.show_padding{ padding-bottom:20px; }
 
