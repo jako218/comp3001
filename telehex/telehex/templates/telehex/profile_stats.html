@@ -135,7 +135,7 @@ text {
                   .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
                   .attr("dy", ".25em")
                   .style("text-anchor", "middle")
-                  .text(function(d) { return  d.data.Attr ; }).attr("color", "#fff");;
+                  .text(function(d) { return  d.data.Attr ; }).attr("color", "#fff");
             }
         );
     })();
@@ -247,10 +247,10 @@ text {
         .attr("transform", transform)
         .attr("dy", ".35em")
         .style("opacity", function(d) { return d.dx * ky > 12 ? 1 : 0; })
-        .text(function(d) { return d.name; })
+        .text(function(d) { return d.name; });
 
     d3.select(window)
-        .on("click", function() { click(root); })
+        .on("click", function() { click(root); });
 
     /* append a graph zoom when any rectangle is clicked*/
     function click(d) {
