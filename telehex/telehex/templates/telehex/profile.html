@@ -1,37 +1,86 @@
 {% extends "base.html" %}
+{% load staticfiles %}
+{% load ratings_helper %}
+{% include "./telehex/header.html" %}
+
 
 {% block title %}- {{ user.nickname }}'s Profile{% endblock %}
 
 {%block content %}
 <div class="container">
-    <h1>Hello, {{user.nickname}}</h1>
-
+    <!-- heading title -->
+    <div class="profile-title-styling">
+        <h1>Hello, {{user.nickname}}</h1>
+    </div>
+    <!-- don't allow them to view stats if they have not subscribed to any shows -->
     {% if shows %}
-    <ul>
-        {% for show, next in shows %}
-        <li>
-            <p>{{ show.title }}  {% if next.name %}-- {{ next.name }} {% endif %} {% if next.name %}-- {{ next.airdate }} {% endif %}</p>
-           
-            <div class="hex-im-cont">
-                <a href="/show/{{show.url_string}}"><img {% if show.fanart %} src="/hexagons/{{ show.key.name }}" {% else %} src="{% static "img/errorhex.png" %}" {% endif %} class="hex-im img-responsive" alt="{{show.name}} hex image"></a>
-                {% if next.airdate %}
-                    <span style="display: none" class="airdate">{{ next.airdate }}</span>
-                    <h2 class="days-left" style="display: none"> On in </h2>
-                {% elif show.status == "On Hiatus" %}
-                    <h2 class="days-left" style="display: none"> On Hiatus </h2>
-                {% elif show.status == "Ended" %}
-                    <h2 class="days-left" style="display: none"> Ended </h2>
-                {% elif show.status == "Other" %}
-                    <h2 class="days-left" style="display: none"> Unknown </h2>
-                {% elif show.status == "Continuing" %}
-                    <h2 class="days-left" style="display: none"> Next airdate to be confirmed </h2>
-                {% endif %}
+    <!-- create the options bar to take you to statistics -->
+    <div class="row">
+        <div class="container sidebar">
+            <div class="nav-container">
+                <!--Nav for Options Modified from: http://getbootstrap.com/examples/navbar/ -->
+                <div class="navbar navbar-default">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#options">
+                            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+                        </button>
+                        <h4>Options</h4>
+                    </div>
+                    <div class="navbar-collapse collapse" id="options">
+                      <ul class="nav nav-list nav-list-panel">
+                        <li><a href="/profile/stats"><i class="fa fa-bar-chart-o fa-fw"></i> user statistics </a></li>
+                      </ul>
+                    </div>
+                </div>
             </div>
-        </li>
-        {% endfor %}
-    <ul>
+        </div>
+        <div class="caption-styling">
+            <h2>Your Subscribed Shows</h2>
+        </div>
+    <!-- hexagons and descriptions inside thumbnails -->
+    <div class="bf-example">
+            {% for show, next in shows %}
+                <div class="col-sm-4">
+                    {% if show.fanart %}
+                        <div class="hex-im-cont thumbnail thumbnail-styling">
+                            <a href="/show/{{show.url_string}}"><img src="/hexagons/{{ show.key.name }}" class="hex-im img-responsive" alt="{{show.name}} hex image"></a>
+                            {% if next.airdate %}
+                                <span style="display: none" class="airdate">{{ next.airdate }}</span>
+                                <h2 class="days-left" style="display: none"> On in </h2>
+                            {% elif show.status == "On Hiatus" %}
+                                <h2 class="days-left" style="display: none"> On Hiatus </h2>
+                            {% elif show.status == "Ended" %}
+                                <h2 class="days-left" style="display: none"> Ended </h2>
+                            {% elif show.status == "Other" %}
+                                <h2 class="days-left" style="display: none"> Unknown </h2>
+                            {% elif show.status == "Continuing" %}
+                                <h2 class="days-left" style="display: none"> Next airdate to be confirmed </h2>
+                            {% endif %}
+                        </div>
+
+                        <div class="caption caption-styling">
+                            <div class="title-styling">{{ show.title }}</div>
+                            <p>{% if next.name %} {{ next.name }} <br> {% else %} -<br> {% endif %}
+                            {% if next.name %} {{ next.airdate }} <br> {% else %} -<br> {% endif %}
+                            {% if show.rating %} 
+                                <div class="hex_styling">
+                                    {{show.rating|to_num_hex}}
+                                </div>
+                                <br> 
+                            {% else %}
+                                <br> 
+                            {% endif %}</p>
+
+                        </div>
+
+                    {% else %}
+                        <img src="{% static "img/errorhex.png" %}" class="hex-im-error img-responsive" alt="No Show Image">
+                    {% endif %} 
+                </div>
+            {% endfor %}
+    </div>
     {% else %}
-    <p>It doesn't look like you've subscribed to any shows. Try <a href="/">searching</a> for some and subscribing to them!</p>
+        <p>It doesn't look like you've subscribed to any shows. Try <a href="/">searching</a> for some and subscribing to them!</p>
     {% endif %}
 </div>
 {% endblock %}
