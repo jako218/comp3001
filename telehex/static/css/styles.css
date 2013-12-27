@@ -395,6 +395,7 @@ rect:hover {
     color: #fff;
 }
 
+<<<<<<< Updated upstream
 .pagination{
     display: block;
     text-align: center;
@@ -439,3 +440,34 @@ a.ui-state-focus {
     background: rgb(192, 57, 43) !important;
     color: #fff !important;
 }
+
+/*profile styles*/
+.thumbnail-styling{
+    background-color: rgba(41, 134, 185, 0);
+    text-align:center;
+    color:#fff !important;
+    border: 0px transparent !important;
+}
+
+.caption-styling{
+   color:#c0392b !important; 
+   text-align: center;
+}
+
+.profile-title-styling{
+    padding-bottom: 30px;
+}
+
+.hex_styling{
+    color: #fff !important;
+}
+
+.title-styling{
+    color:#2986b9;
+}
+
+.tree_center{ margin-left:auto; margin-right: auto;}
+
+.color_change{ color: rgba(192, 57, 43, 1) !important;}
+
+
