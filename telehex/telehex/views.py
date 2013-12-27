@@ -631,32 +631,31 @@ def profile_stats_data(request):
     # Get all the show entities corresponding to the show ids
     subs_shows_entities = TVShow.get_by_key_name(show_ids)
 
-    #gets all shows associated with this user, converts to a JSON object in a recursive format
+    # gets all shows associated with this user, converts to a JSON object in a recursive format
     events = []
     for show in subs_shows_entities:
         subEvents = []
         q = db.GqlQuery('SELECT * FROM TVEpisode WHERE ANCESTOR IS :ancestor ORDER BY season, ep_number', ancestor=show)
         episode_iterator = q.run()
 
-        #for each element in the list, get the ratings and name of episode
+        # for each element in the list, get the ratings and name of episode
         seasons = {key: [] for key in range(1, show.num_seasons + 1)}
 
-        #for each episode, add it to the dictionary entry for it's corresponding season
+        # for each episode, add it to the dictionary entry for it's corresponding season
         for episode in episode_iterator:
-            rat = { episode.rating }
-            if (rat.pop() > 0):
+            if (episode.rating > 0):
                 seasons[episode.season].append({"name" : "{0}".format(episode.name.encode('utf8')),
                                                 "size" : episode.rating })
 
-        #for each season add it to its corresponding show
+        # for each season add it to its corresponding show
         for season in seasons:
             subEvents.append({"name" : season , "children" :  seasons[ season ] })
 
-        #add each show to a main object
-        events.append({"name" : { show.title }.pop() , "children" : subEvents})
+        # add each show to a main object
+        events.append({"name" : show.title  , "children" : subEvents})
 
-    #add the root name
-    jsonEvents = {"name" : "Ordered by ratings" , "children" : events}
+    # add the root name
+    jsonEvents = {"name" : "Your shows" , "children" : events}
     return HttpResponse(json.dumps(jsonEvents), content_type="application/json")
 
 def profile_stats_pie_genre(request):
@@ -691,7 +690,7 @@ def profile_stats_pie_genre(request):
 
         #for each element in the list, get the genre, total the frequency of each genre
         for show in show_iterator:
-            genre = "{0}".format({ show.subgenre }.pop())
+            genre = "{0}".format(show.subgenre)
             if (genre):
                 if (genre in genre_dict):
                     genre_dict[genre] += 1
@@ -736,7 +735,7 @@ def profile_stats_pie_ratings(request):
 
         #for each element in the list, get the rating, total the frequency of each rating
         for show in show_iterator:
-            rating = "{0}".format({ show.rating }.pop())
+            rating = "{0}".format(show.rating)
             if (rating > 0):
                 if (rating in rating_dict):
                     rating_dict[rating] += 1
@@ -782,7 +781,7 @@ def profile_stats_pie_status(request):
 
         #for each element in the list, get the status, total the frequency of each status
         for show in show_iterator:
-            status = "{0}".format({ show.status }.pop())
+            status = "{0}".format(show.status)
             if (status):
                 if (status in status_dict):
                     status_dict[status] += 1
