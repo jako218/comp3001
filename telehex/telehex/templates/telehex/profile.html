@@ -20,7 +20,7 @@
             <a href="/profile/stats" class="stats_link"> View your user statistics </a>
         </div>
     <!-- hexagons and descriptions inside thumbnails -->
-    <div class="bf-example">
+    <div>
             {% for show, next in shows %}
                 <div class="col-sm-4">
                     {% if show.fanart %}
@@ -41,18 +41,17 @@
                         </div>
 
                         <div class="caption caption-styling">
-                            <div class="title-styling">{{ show.title }}</div>
-                            <p>{% if next.name %} {{ next.name }} <br> {% else %} -<br> {% endif %}
-                            {% if next.name %} {{ next.airdate }} <br> {% else %} -<br> {% endif %}
+                            <div class="title-styling"><a href="/show/{{show.url_string}}">{{ show.title }}</a></div>
                             {% if show.rating %} 
-                                <div class="hex_styling">
-                                    {{show.rating|to_num_hex}}
-                                </div>
-                                <br> 
-                            {% else %}
-                                <br> 
-                            {% endif %}</p>
-
+                            <div class="hex_styling">
+                                {{show.rating|to_num_hex}}
+                            </div> 
+                            {% endif %}
+                            <p>
+                            {% if next.name %}Next Episode: {{ next.name }}{% endif %}<br> 
+                            {% if next.name %}Airdate: {{ next.airdate }}{% endif %}<br>
+                            </p>
+                            <br>
                         </div>
 
                     {% else %}

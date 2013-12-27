@@ -395,7 +395,6 @@ rect:hover {
     color: #fff;
 }
 
-<<<<<<< Updated upstream
 .pagination{
     display: block;
     text-align: center;
@@ -442,35 +441,39 @@ a.ui-state-focus {
 }
 
 /*profile styles*/
-.thumbnail-styling{
+.thumbnail-styling {
     background-color: rgba(41, 134, 185, 0);
     text-align:center;
     color:#fff !important;
     border: 0px transparent !important;
 }
 
-.caption-styling{
+.caption-styling {
    color:#c0392b !important; 
    text-align: center;
 }
 
-.profile-title-styling{
+.profile-title-styling {
     padding-bottom: 30px;
 }
 
-.hex_styling{
+.hex_styling {
     color: #fff !important;
 }
 
-.title-styling{
-    color:#2986b9;
+.title-styling {
+    color: #fff;
+    font-weight: bold;
 }
 
-.tree_center{ margin-left:auto; margin-right: auto;}
+.title-styling a {
+    text-decoration: none;
+}
 
-.color_change{ color: rgba(192, 57, 43, 1) !important;}
+.tree_center { margin-left:auto; margin-right: auto;}
 
-.stats_link{ color: #2986b9; }
+.color_change { color: rgba(192, 57, 43, 1) !important;}
 
-.show_padding{ padding-bottom:20px; }
+.stats_link { color: #2986b9; }
 
+.show_padding { padding-bottom:20px; }
