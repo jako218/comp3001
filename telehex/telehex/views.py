@@ -30,6 +30,8 @@ from scraper import Scraper, Search
 
 # Other Imports
 from collections import Counter
+from collections import OrderedDict
+import csv
 from datetime import datetime, timedelta, date, MAXYEAR
 import json
 from urllib import quote, unquote
@@ -231,6 +233,11 @@ def profile(request):
                                            key=lambda x: x[1].airdate if x[1] else date(MAXYEAR, 12, 31))}
 
     return render(request, 'telehex/profile.html', template_values)
+
+
+
+def profile_stats(request):
+    return render(request, 'telehex/profile_stats.html')
 
 
 def scrape(request, tvdb_id):
@@ -603,6 +610,191 @@ def calendar_data(request):
 
     # Return a JSON response containing all the shows for this date range
     return HttpResponse(json.dumps(events), content_type="application/json")
+
+def profile_stats_data(request):
+    """
+    A function which returns the JSON required to construct a user's stats page
+
+    :param request: A HttpRequest object
+    :return: A HttpResponse containing the JSON for the tree map
+    """
+
+    # Check if the user is logged in - if not redirect them to login
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
+
+    # Get all the showids of the shows a user is subscribed to
+    q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
+    show_ids = [str(showid.show_id) for showid in q.run()]
+
+    # Get all the show entities corresponding to the show ids
+    subs_shows_entities = TVShow.get_by_key_name(show_ids)
+
+    #gets all shows associated with this user, converts to a JSON object in a recursive format
+    events = []
+    for show in subs_shows_entities:
+        subEvents = []
+        q = db.GqlQuery('SELECT * FROM TVEpisode WHERE ANCESTOR IS :ancestor ORDER BY season, ep_number', ancestor=show)
+        episode_iterator = q.run()
+
+        #for each element in the list, get the ratings and name of episode
+        seasons = {key: [] for key in range(1, show.num_seasons + 1)}
+
+        #for each episode, add it to the dictionary entry for it's corresponding season
+        for episode in episode_iterator:
+            rat = { episode.rating }
+            if (rat.pop() > 0):
+                seasons[episode.season].append({"name" : "{0}".format(episode.name.encode('utf8')),
+                                                "size" : episode.rating })
+
+        #for each season add it to its corresponding show
+        for season in seasons:
+            subEvents.append({"name" : season , "children" :  seasons[ season ] })
+
+        #add each show to a main object
+        events.append({"name" : { show.title }.pop() , "children" : subEvents})
+
+    #add the root name
+    jsonEvents = {"name" : "Ordered by ratings" , "children" : events}
+    return HttpResponse(json.dumps(jsonEvents), content_type="application/json")
+
+def profile_stats_pie_genre(request):
+    """
+    A function which returns a CSV required to construct a pie chart on user's stats page
+
+    :param request: A HttpRequest object
+    :return: A HttpResponse containing the JSON for the tree map
+    """
+
+    # Check if the user is logged in - if not redirect them to login
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
+
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="genre_data.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['Attr', 'Size'])
+
+    # Get all the showids of the shows a user is subscribed to
+    q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
+    show_ids = [str(showid.show_id) for showid in q.run()]
+    subs_shows_entities = TVShow.get_by_key_name(show_ids)
+
+    genre_dict = {}
+
+    for show_id in subs_shows_entities:
+        q = db.GqlQuery('SELECT * FROM TVShow WHERE ANCESTOR IS :ancestor', ancestor=show_id)
+        show_iterator = q.run()
+
+        #for each element in the list, get the genre, total the frequency of each genre
+        for show in show_iterator:
+            genre = "{0}".format({ show.subgenre }.pop())
+            if (genre):
+                if (genre in genre_dict):
+                    genre_dict[genre] += 1
+                else:
+                    genre_dict[genre] = 1
+  
+    #add a row for each genre and frequency
+    for genre in genre_dict:
+        writer.writerow([genre, genre_dict[genre]])
+
+    return response
+
+def profile_stats_pie_ratings(request):
+    """
+    A function which returns a CSV required to construct a pie chart on user's stats page
+
+    :param request: A HttpRequest object
+    :return: A HttpResponse containing the JSON for the tree map
+    """
+
+    # Check if the user is logged in - if not redirect them to login
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
+
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="ratings_data.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['Attr', 'Size'])
+
+     # Get all the showids of the shows a user is subscribed to
+    q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
+    show_ids = [str(showid.show_id) for showid in q.run()]
+    subs_shows_entities = TVShow.get_by_key_name(show_ids)
+
+    rating_dict = {}
+
+    for show_id in subs_shows_entities:
+        q = db.GqlQuery('SELECT * FROM TVShow WHERE ANCESTOR IS :ancestor', ancestor=show_id)
+        show_iterator = q.run()
+
+        #for each element in the list, get the rating, total the frequency of each rating
+        for show in show_iterator:
+            rating = "{0}".format({ show.rating }.pop())
+            if (rating > 0):
+                if (rating in rating_dict):
+                    rating_dict[rating] += 1
+                else:
+                    rating_dict[rating] = 1
+  
+    #add a row for each rating type and frequency
+    for rating in rating_dict:
+        writer.writerow([rating, rating_dict[rating]])
+
+    return response
+
+def profile_stats_pie_status(request):
+    """
+    A function which returns a CSV required to construct a pie chart on user's stats page
+
+    :param request: A HttpRequest object
+    :return: A HttpResponse containing the JSON for the tree map
+    """
+
+    # Check if the user is logged in - if not redirect them to login
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
+
+
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="status_data.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['Attr', 'Size'])
+
+    # Get all the showids of the shows a user is subscribed to
+    q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
+    show_ids = [str(showid.show_id) for showid in q.run()]
+    subs_shows_entities = TVShow.get_by_key_name(show_ids)
+
+    status_dict = {}
+
+    for show_id in subs_shows_entities:
+        q = db.GqlQuery('SELECT * FROM TVShow WHERE ANCESTOR IS :ancestor', ancestor=show_id)
+        show_iterator = q.run()
+
+        #for each element in the list, get the status, total the frequency of each status
+        for show in show_iterator:
+            status = "{0}".format({ show.status }.pop())
+            if (status):
+                if (status in status_dict):
+                    status_dict[status] += 1
+                else:
+                    status_dict[status] = 1
+  
+    #add a row for each status type and frequency
+    for status in status_dict:
+        writer.writerow([status, status_dict[status]])
+
+    return response
+
 
 
 def similarity_data(request):
