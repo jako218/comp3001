@@ -37,7 +37,6 @@ function isValidSearch(search_input_id) {
  * The code is a bit funky to ensure compatibility with safari's rendering engine, the solution was found:
  * http://stackoverflow.com/questions/14149038/jquery-show-function-is-not-executed-in-safari-if-submit-handler-returns-true
  */
-
 function show_loading_overlay() {
     
     var verbs = ['calibrating', 'fueling', 'enlarging', 'charging', 'locking', 'acquiring', 'degaussing',

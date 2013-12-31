@@ -237,6 +237,25 @@ def profile(request):
 
 
 def profile_stats(request):
+    """
+    Displays the profile stats page if a user is logged in and has subscribe to some shows
+
+    :param request: The HTTP request for this page.
+    :return: A HttpResponse Object containing the profile stats for this user
+    """
+
+    # Check if the user is logged in - if not redirect them to login
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
+    
+    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id=:id", id=user.user_id())
+    q.run()
+
+    # If a user has no shows they shouldn't be able to view this page, redirect back to their profile page
+    if q.count() == 0:
+        return render(request, 'telehex/profile.html')        
+
     return render(request, 'telehex/profile_stats.html')
 
 
@@ -663,31 +682,44 @@ def profile_stats_data(request):
     # Get all the show entities corresponding to the show ids
     subs_shows_entities = TVShow.get_by_key_name(show_ids)
 
-    # Gets all shows associated with this user, converts to a JSON object
-    events = []
+    show_children = []
     for show in subs_shows_entities:
-        subEvents = []
-        q = db.GqlQuery('SELECT * FROM TVEpisode WHERE ANCESTOR IS :ancestor ORDER BY season, ep_number', ancestor=show)
-        episode_iterator = q.run()
+        season_children = []
 
-        # For each element in the list, get the ratings and name of episode
+        # Get all the TVEpisodes for a show
+        q = db.GqlQuery("SELECT * FROM TVEpisode WHERE ANCESTOR IS :ancestor ORDER BY season, ep_number", ancestor=show)
+        episode_iterator = q.run()
+        number_episodes = q.count()
+
+        # Create a dictionary to hold the seasons - keyed by season number
         seasons = {key: [] for key in range(1, show.num_seasons + 1)}
 
         # For each episode, add it to the dictionary entry for it's corresponding season
         for episode in episode_iterator:
-            if (episode.rating > 0):
-                seasons[episode.season].append({"name" : "{0}".format(episode.name.encode('utf8')),
-                                                "size" : episode.rating })
-
-        # For each season add it to its corresponding show
+            if episode.rating > 0:
+                seasons[episode.season].append({"name" : episode.name,
+                                                "rating" : episode.rating,
+                                                "url_string" : "/show/{0}#s{1:02d}e{2:02d}".format(show.url_string, 
+                                                    episode.season, episode.ep_number)})
+            else:
+                seasons[episode.season].append({"name" : episode.name,
+                                                "rating" : 0,
+                                                "url_string" : "/show/{0}#s{1:02d}e{2:02d}".format(show.url_string, 
+                                                    episode.season, episode.ep_number)})
+        
+        # Calculate the rating based on how many episodes are in the season
         for season in seasons:
-            subEvents.append({"name" : season , "children" :  seasons[ season ] })
+            for episodes in seasons[season]:
+                episodes['rating'] = episodes['rating'] / (number_episodes * len(seasons[season]))
+            # Append each episode the the season list 
+            season_children.append({"name" : season , "children" :  seasons[season] })
 
-        # Add each show to a main object
-        events.append({"name" : show.title  , "children" : subEvents})
+        # Append the show to the show list
+        show_children.append({"name" : show.title, "children" : season_children})
 
-    # add the root name
-    jsonEvents = {"name" : "Your shows" , "children" : events}
+    # Add the root name
+    jsonEvents = {"name" : "Your shows" , "children" : show_children}
+
     return HttpResponse(json.dumps(jsonEvents), content_type="application/json")
 
 
