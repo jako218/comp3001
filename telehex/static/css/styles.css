@@ -330,6 +330,10 @@ th.headerSortDown:after {
     padding-bottom:70px !important;
 }
 
+#ratingsgraphs rect {
+    cursor: pointer;
+}
+
 rect:hover {
     fill: #2986b9;
 }
