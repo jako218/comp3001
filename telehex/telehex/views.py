@@ -350,8 +350,8 @@ def show(request, show_title):
         Scraper(show.key().name())
 
     # Check if an episode has aired since the last scrape, if so rescrape
-    q = db.GqlQuery("SELECT name FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2",
-                    show.last_scraped, show)
+    q = db.GqlQuery("SELECT name FROM TVEpisode WHERE airdate >= :1 AND airdate < :2 AND ANCESTOR IS :3",
+                    show.last_scraped, date.today() ,show)
 
     q.run()
     if q.count() > 0:
