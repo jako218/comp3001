@@ -86,7 +86,6 @@ function daysUntil(dateString){
 }
 
 function changeDaysLeftFontSize(){
-    console.log("window resized");
     // Check the width of the window, if a particular size than a certain size reduce days left font size
     if($(window).width() <  976 && $(window).width() > 752)
         $('.days-left').css({"font-size": "20px", "top" : "35%"});
