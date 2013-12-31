@@ -345,6 +345,18 @@ def show(request, show_title):
     if not show:
         raise Http404
 
+    # Check if the show has been scraped within the last 7 days
+    if (datetime.today() - show.last_scraped).days > RESCRAPE_AFTER:
+        Scraper(show.key().name())
+
+    # Check if an episode has aired since the last scrape, if so rescrape
+    q = db.GqlQuery("SELECT name FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2",
+                    show.last_scraped, show)
+
+    q.run()
+    if q.count() > 0:
+        Scraper(show.key().name())
+
     # Determine if the user is subscribed
     user = users.get_current_user()
     is_user_sub = UserShow.get_by_key_name("{0}{1}".format(user.user_id(), show.key().name())) if user else None
