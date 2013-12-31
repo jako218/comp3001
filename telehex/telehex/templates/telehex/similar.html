@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}- Shows Similar to {{ show.title }}{% endblock %}
 
-{%block js %}<script src="http://d3js.org/d3.v3.min.js"></script>{% endblock %}
+{%block js %}<script src="{% static "js/d3.v3.min.js" %}"></script>{% endblock %}
 
 {%block content %}<div class="container">
     <div id="show_key_name" class="hidden">{{ show.key.name }}</div>
