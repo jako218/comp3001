@@ -90,7 +90,7 @@ function createPartionLayout() {
         .append("svg:svg").attr("width", w).attr("height", h);
 
     // Construct a partition layout object, with the values to construct the graph 
-    // specifed by the ratings for each data item
+    // specifed by the ratings for each data item, default sort order is descending
     var partition = d3.layout.partition().value(function (d) {
         return d.rating;
     });
