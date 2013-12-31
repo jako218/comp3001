@@ -1,38 +1,52 @@
-//common variables which are shared between all three pie charts
+// Common variables which are shared between all three pie charts
 var width = 250,
     height = 250,
     radius = Math.min(width, height) / 2;
 
+// Colours are an ordinal scale that map an input to an output
+// If there are fewer elements in the range than the domain, values are recycled
 var colour = d3.scale.ordinal().range(["#e74c3c", "#34495e", "#2980b9", "#c0392b", "#3498db", "#2c3e50", "#ecf0f1"]);
 
+// Create a new arc generator
 var arc = d3.svg.arc().outerRadius(radius - 10).innerRadius(0);
 
-var pie = d3.layout.pie().sort(null).value(function (d) {
-    return d.Size;
+// Creates a new pie function layout, with sorting disables
+// The size of the data is extracted for the pie chart
+var pie = d3.layout.pie().sort(null).value(function (data) {
+    return data.Size;
 });
 
-// functions generate the proper closure to prevent the graphs from interferring 
-(function () { /* function to generate the genre pie chart, takes a CSV object */
-    var svg = d3.select("#genre_pie").append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+// Functions generate the proper closure to prevent the graphs from interferring 
+(function () { 
+    // Function to generate the genre pie chart, takes a CSV object
+    var svg = d3.select("#genre_pie").append("svg").attr("width", width).attr("height", height)
+        .append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-    /* make a CSV object from the data found at /stats_data, created in views.py */
+    // Make a CSV object from the data found at /stats_data, created in views.py
     d3.csv("../stats_pie_genre", function (error, data) {
 
+        // Loop through each row of the csv file
         data.forEach(function (d) {
+            // Convert "size" column to number
             d.Size = +d.Size;
         });
 
-        var g_genre = svg.selectAll(".arc").data(pie(data)).enter().append("g").attr("class", "arc");
+        // Select all the arcs and join them with the pie chart data
+        // Append the 'g', group object, with a class of arc to the selection
+        var genre_graph = svg.selectAll(".arc").data(pie(data)).enter().append("g").attr("class", "arc");
 
-        g_genre.append("path").attr("d", arc).style("fill", function (d) {
-            return colour(d.data.Attr);
+        genre_graph.append("path").attr("d", arc).style("fill", function (d) {
+            // Return a colour based on the genre
+            return colour(d.data.genre);
         });
 
-        /*add the pie chart text*/
-        g_genre.append("text").attr("transform", function (d) {
+        // Add the pie chart text 
+        genre_graph.append("text").attr("transform", function (d) {
+            // Specify the locaiton of the text
             return "translate(" + arc.centroid(d) + ")";
         }).attr("dy", ".25em").style("text-anchor", "middle").text(function (d) {
-            return d.data.Attr;
+            // Specify the text 
+            return d.data.genre;
         }).attr("color", "#fff");
     });
 })();
@@ -50,14 +64,14 @@ var pie = d3.layout.pie().sort(null).value(function (d) {
         var g = svg.selectAll(".arc").data(pie(data)).enter().append("g").attr("class", "arc");
 
         g.append("path").attr("d", arc).style("fill", function (d) {
-            return colour(d.data.Attr);
+            return colour(d.data.rating);
         });
 
         /*add the pie chart text*/
         g.append("text").attr("transform", function (d) {
             return "translate(" + arc.centroid(d) + ")";
         }).attr("dy", ".25em").style("text-anchor", "middle").text(function (d) {
-            return d.data.Attr;
+            return d.data.rating;
         });
     });
 })();
@@ -75,14 +89,14 @@ var pie = d3.layout.pie().sort(null).value(function (d) {
         var g = svg.selectAll(".arc").data(pie(data)).enter().append("g").attr("class", "arc");
 
         g.append("path").attr("d", arc).style("fill", function (d) {
-            return colour(d.data.Attr);
+            return colour(d.data.status);
         });
 
         /*add the pie chart text*/
         g.append("text").attr("transform", function (d) {
             return "translate(" + arc.centroid(d) + ")";
         }).attr("dy", ".25em").style("text-anchor", "middle").text(function (d) {
-            return d.data.Attr;
+            return d.data.status;
         });
     });
 })();
