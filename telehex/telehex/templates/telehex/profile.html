@@ -26,9 +26,14 @@
                 <div class="row">
                 {% endif %}
                     <div class="col-sm-4 col-md-4 col-lg-4">
-                        {% if show.fanart %}
                             <div class="hex-im-cont thumbnail thumbnail-styling">
-                                <a href="/show/{{show.url_string}}"><img src="/hexagons/{{ show.key.name }}" class="hex-im img-responsive" alt="{{show.name}} hex image"></a>
+                                <a href="/show/{{show.url_string}}">
+                                    {% if show.fanart %}
+                                        <img src="/hexagons/{{ show.key.name }}" class="hex-im img-responsive" alt="{{show.name}} hex image">
+                                    {% else %}
+                                        <img src="{% static "img/errorhex.png" %}" class="hex-im img-responsive" alt="No Show Image">
+                                    {% endif %} 
+                                </a>
                                 {% if next.airdate %}
                                     <span style="display: none" class="airdate">{{ next.airdate }}</span>
                                     <h2 class="days-left" style="display: none"> On in </h2>
@@ -56,10 +61,6 @@
                                 </p>
                                 <br>
                             </div>
-
-                        {% else %}
-                            <img src="{% static "img/errorhex.png" %}" class="hex-im-error img-responsive" alt="No Show Image">
-                        {% endif %} 
                     </div>
                 {% if forloop.counter|divisibleby:3 %}
                 </div>
