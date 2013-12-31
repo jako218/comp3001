@@ -669,7 +669,8 @@ def create_profile_pie_data(request, attribute):
     writer = csv.writer(response)
     writer.writerow([attribute, 'Size'])
     for k, v in counter_dict.items():
-        writer.writerow([k, v])
+        if k > 0:
+            writer.writerow([str(k), v])
 
     # Return the response containing the csv data
     return response
