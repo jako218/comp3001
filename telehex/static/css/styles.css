@@ -446,11 +446,13 @@ a.ui-state-focus {
     text-align:center;
     color:#fff !important;
     border: 0px transparent !important;
+    padding: 0;
 }
 
 .caption-styling {
    color:#c0392b !important; 
    text-align: center;
+   min-height: 120px;
 }
 
 .profile-title-styling {
@@ -477,3 +479,24 @@ a.ui-state-focus {
 .stats_link { color: #2986b9; }
 
 .show_padding { padding-bottom:20px; }
+
+/* Profile Stats Graphs and Charts */
+
+.chart {
+  display: block;
+  margin: auto;
+  margin-top: 60px;
+  font-size: 11px;
+}
+
+rect {
+  stroke: #eee;
+  fill: #2986b9;
+  fill-opacity: .8;
+}
+
+rect.parent { cursor: pointer; fill: #c0392b;}
+
+text {  pointer-events: none; }
+
+.arc path {  stroke: #ecf0f1; }

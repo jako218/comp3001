@@ -22,42 +22,48 @@
     <!-- hexagons and descriptions inside thumbnails -->
     <div>
             {% for show, next in shows %}
-                <div class="col-sm-4">
-                    {% if show.fanart %}
-                        <div class="hex-im-cont thumbnail thumbnail-styling">
-                            <a href="/show/{{show.url_string}}"><img src="/hexagons/{{ show.key.name }}" class="hex-im img-responsive" alt="{{show.name}} hex image"></a>
-                            {% if next.airdate %}
-                                <span style="display: none" class="airdate">{{ next.airdate }}</span>
-                                <h2 class="days-left" style="display: none"> On in </h2>
-                            {% elif show.status == "On Hiatus" %}
-                                <h2 class="days-left" style="display: none"> On Hiatus </h2>
-                            {% elif show.status == "Ended" %}
-                                <h2 class="days-left" style="display: none"> Ended </h2>
-                            {% elif show.status == "Other" %}
-                                <h2 class="days-left" style="display: none"> Unknown </h2>
-                            {% elif show.status == "Continuing" %}
-                                <h2 class="days-left" style="display: none"> Next airdate to be confirmed </h2>
-                            {% endif %}
-                        </div>
+                {% if forloop.counter|divisibleby:3 %}
+                <div class="row">
+                {% endif %}
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        {% if show.fanart %}
+                            <div class="hex-im-cont thumbnail thumbnail-styling">
+                                <a href="/show/{{show.url_string}}"><img src="/hexagons/{{ show.key.name }}" class="hex-im img-responsive" alt="{{show.name}} hex image"></a>
+                                {% if next.airdate %}
+                                    <span style="display: none" class="airdate">{{ next.airdate }}</span>
+                                    <h2 class="days-left" style="display: none"> On in </h2>
+                                {% elif show.status == "On Hiatus" %}
+                                    <h2 class="days-left" style="display: none"> On Hiatus </h2>
+                                {% elif show.status == "Ended" %}
+                                    <h2 class="days-left" style="display: none"> Ended </h2>
+                                {% elif show.status == "Other" %}
+                                    <h2 class="days-left" style="display: none"> Unknown </h2>
+                                {% elif show.status == "Continuing" %}
+                                    <h2 class="days-left" style="display: none"> Next airdate to be confirmed </h2>
+                                {% endif %}
+                            </div>
 
-                        <div class="caption caption-styling">
-                            <div class="title-styling"><a href="/show/{{show.url_string}}">{{ show.title }}</a></div>
-                            {% if show.rating %} 
-                            <div class="hex_styling">
-                                {{show.rating|to_num_hex}}
-                            </div> 
-                            {% endif %}
-                            <p>
-                            {% if next.name %}Next Episode: {{ next.name }}{% endif %}<br> 
-                            {% if next.name %}Airdate: {{ next.airdate }}{% endif %}<br>
-                            </p>
-                            <br>
-                        </div>
+                            <div class="caption caption-styling">
+                                <div class="title-styling"><a href="/show/{{show.url_string}}">{{ show.title }}</a></div>
+                                {% if show.rating %} 
+                                <div class="hex_styling">
+                                    {{show.rating|to_num_hex}}
+                                </div> 
+                                {% endif %}
+                                <p>
+                                {% if next.name %}Next Episode: {{ next.name }}{% endif %} 
+                                {% if next.name %}<br>Airdate: {{ next.airdate }}{% endif %}
+                                </p>
+                                <br>
+                            </div>
 
-                    {% else %}
-                        <img src="{% static "img/errorhex.png" %}" class="hex-im-error img-responsive" alt="No Show Image">
-                    {% endif %} 
+                        {% else %}
+                            <img src="{% static "img/errorhex.png" %}" class="hex-im-error img-responsive" alt="No Show Image">
+                        {% endif %} 
+                    </div>
+                {% if forloop.counter|divisibleby:3 %}
                 </div>
+                {% endif %}
             {% endfor %}
     </div>
     {% else %}
@@ -79,8 +85,22 @@ function daysUntil(dateString){
     return days;
 }
 
+function changeDaysLeftFontSize(){
+    console.log("window resized");
+    // Check the width of the window, if a particular size than a certain size reduce days left font size
+    if($(window).width() <  976 && $(window).width() > 752)
+        $('.days-left').css({"font-size": "20px", "top" : "35%"});
+    else
+        $('.days-left').css({"font-size": "", "top" : ""});
+}
+
 // Wait until the document is loaded before doing any jQuery
 $(document).ready(function(){
+    changeDaysLeftFontSize();
+
+    // Change the days-left font size when the window is resized
+    $(window).resize(function(){changeDaysLeftFontSize()});
+
     // Get all the hex-images with airdates
     var images = $(".hex-im-cont").children(".airdate");
 
