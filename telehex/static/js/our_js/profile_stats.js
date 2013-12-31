@@ -116,6 +116,8 @@ function createPartionLayout() {
             return d.dx * ky;
         }).attr("class", function (d) {
             return d.children ? "parent colour_change" : "child colour_change";
+        }).attr("onclick", function (d) {
+            return d.children ? "" : "window.location.href='" + d.url_string + "';";
         });
 
         // Specify the intial position of the text in the rectangles
