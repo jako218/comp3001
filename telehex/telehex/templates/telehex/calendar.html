@@ -21,32 +21,4 @@
     </div>
 </div>{% endblock %}
 
-{% block scripts %}<script>
-$(document).ready(function() {
-
-    $('#calendar').fullCalendar({
-        theme: true,
-        header: {left: 'prev,next today', center: 'title', right: 'month,basicWeek'},
-        events: "/data/calendar/",
-        firstDay: 1,
-        weekMode: "variable",
-        eventRender: function(calevent, element) {
-            currentDate = new Date();
-            currentDate.setDate(currentDate.getDate() - 1);
-            if(calevent.start.getTime() < currentDate)
-                element.addClass("oldclass");
-        }
-	});
-
-    var emailUpdates = $("#updates_check");
-
-    emailUpdates.change(function(){
-        var data = $.get("/receive_updates/");
-    });
-
-});
-
-</script>{% endblock %}
-
-
-
+{% block scripts %}<script src="{% static "js/our_js/calendar.js" %}"></script>{% endblock %}

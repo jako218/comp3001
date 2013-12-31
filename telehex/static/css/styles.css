@@ -489,14 +489,39 @@ a.ui-state-focus {
   font-size: 11px;
 }
 
-rect {
+#layout_graph rect {
   stroke: #eee;
   fill: #2986b9;
   fill-opacity: .8;
 }
 
-rect.parent { cursor: pointer; fill: #c0392b;}
+#layout_graph rect.parent { cursor: pointer; fill: #c0392b;}
 
 text {  pointer-events: none; }
 
 .arc path {  stroke: #ecf0f1; }
+
+.node polygon {
+  cursor: pointer;
+  fill: #fff;
+/*  stroke: #2986b9;*/
+  stroke-width: 3px;
+}
+
+#similarity-graph{
+    width:980px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.node text {
+  font-size: 12px;
+  fill: #fff;
+  font-weight: bold;
+}
+
+path.connection {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}

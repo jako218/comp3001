@@ -48,13 +48,4 @@
 </div>
 {% endblock %}
 
-{%block scripts %}
-<script>
-$(document).ready(function() {
-    $('#scraped-table').tablesorter({
-        headers: { 4: { sorter: false } },
-        sortList: [[1,0]]
-    });
-});
-</script>
-{% endblock %}
+{%block scripts %}<script src="{% static "js/our_js/admin.js" %}"></script>{% endblock %}

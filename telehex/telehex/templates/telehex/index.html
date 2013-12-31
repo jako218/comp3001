@@ -19,9 +19,4 @@
     </form>
 </div>{% endblock %}
 
-{% block scripts %}<script>
-    $(document).ready(function() {
-        var r = Math.floor((Math.random() * 3) + 1);
-        $("body").css("background", "url('static/img/mainbg" + r + ".png') repeat #263544");
-    });
-</script>{% endblock %}
+{% block scripts %}<script src="{% static "js/our_js/index.js" %}"></script>{% endblock %}
