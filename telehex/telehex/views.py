@@ -351,7 +351,7 @@ def scrape(request, tvdb_id):
 
     if users.is_current_user_admin() and 'force' in request.GET and request.GET['force'] == '1':
         s = Scraper(tvdb_id, rescrape=True, options=q.options)
-        return show(request, q.url_string, fromScrape=True)
+        return HttpResponseRedirect('/show/{0}'.format(q.url_string))
 
     # Check if the show has been scraped before and if that scrape was in the last x days specified by RESCRAPE_AFTER
     if q and q.last_scraped > datetime.now() - timedelta(days=RESCRAPE_AFTER):
@@ -364,7 +364,7 @@ def scrape(request, tvdb_id):
         else:
             url_slug = tvdb_id
 
-    return show(request, url_slug, fromScrape=True)
+    return HttpResponseRedirect('/show/{0}'.format(url_slug))
 
 
 def search(request):
@@ -405,7 +405,7 @@ def search(request):
     return render(request, 'telehex/search.html', template_values)
 
 
-def show(request, show_title, fromScrape=False):
+def show(request, show_title):
     """
     Takes a show title and construct a HttpResponse which contains the information for a specific show. The information
     include the show rating, the episodes in the show and whether or not the show is continuing.
@@ -414,14 +414,13 @@ def show(request, show_title, fromScrape=False):
     :param show_title: The title of the show in url string form, e.g. Breaking Bad would be breaking_bad
     :return: A HttpResponse Object
     """
-
     # Get the show based on the show_title
     show = get_tv_show(show_title)
     if not show:
         raise Http404
 
-    # If the show hasn't just been scraped perform some checks
-    if not fromScrape:
+    # Check that show hasn't just been scraped
+    if show.last_scraped != datetime.utcfromtimestamp(0):
         # Check if the show has been scraped within the last 7 days
         if show.last_scraped < datetime.now() - timedelta(days=RESCRAPE_AFTER):
             Scraper(show.key().name(), rescrape=True, options=show.options)
@@ -429,7 +428,6 @@ def show(request, show_title, fromScrape=False):
         # Check if an episode has aired since the last scrape, if so rescrape
         q = db.GqlQuery("SELECT name FROM TVEpisode WHERE airdate >= :1 AND airdate < :2 AND ANCESTOR IS :3",
                         show.last_scraped, date.today() ,show)
-
         q.run()
         if q.count() > 0:
             Scraper(show.key().name(), rescrape=True, options=show.options)

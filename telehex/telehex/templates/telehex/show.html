@@ -154,7 +154,7 @@
                                             <td>{{ episode.ep_number }}</td>
 
                                             <td>
-                                                {% if episode.desc %}
+                                                {% if episode.desc and show.options.5 == "0"%}
                                                 <span class="balloon">
                                                     <a class="episode">{{ episode.name }}</a>
                                                     <span class="ep-desc" style="display: none">

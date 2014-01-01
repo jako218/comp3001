@@ -65,7 +65,7 @@ class Scraper:
                 6. Reserved
                 7. Reserved
         """
-        
+        print "scraping"
         # Determine if this is a new scrape or a rescrape
         self.rescrape = rescrape
 
