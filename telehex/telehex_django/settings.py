@@ -22,9 +22,9 @@ TEMPLATE_DIRS = (os.path.join(ROOT_PATH, "templates"),)
 SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = []
 

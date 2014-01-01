@@ -524,6 +524,7 @@ text {  pointer-events: none; }
   font-size: 12px;
   fill: #fff;
   font-weight: bold;
+  pointer-events: auto;
 }
 
 path.connection {
