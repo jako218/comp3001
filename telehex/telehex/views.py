@@ -97,6 +97,19 @@ def calendar(request):
 
     return render(request, 'telehex/calendar.html', {"email_updates": user_entry})
 
+def edit_show(request, showid):
+    # Check if the current user is logged in
+    if not users.get_current_user():
+        return HttpResponseRedirect('/login?continue=/admin/edit_show')
+
+    # Check if the current user is an admin
+    if not users.is_current_user_admin():
+        raise Http404
+
+    show = TVShow.get_by_key_name(showid)
+
+    return render(request, 'telehex/edit_show.html', {'show' : show})
+
 def genre(request, genre_type):
     """
     Produces a list of all shows with the same genre ordered on the number of subscribed users it also checks the sub
@@ -275,8 +288,8 @@ def scrape(request, tvdb_id):
     q = TVShow.get_by_key_name(tvdb_id)
 
     if users.is_current_user_admin() and 'force' in request.GET and request.GET['force'] == '1':
-        s = Scraper(tvdb_id)
-        return HttpResponseRedirect("/show/{0}".format(s.get_url_slug()))
+        s = Scraper(tvdb_id, rescrape=True, options=q.options)
+        return show(request, q.url_string, fromScrape=True)
 
     # Check if the show has been scraped before and if that scrape was in the last x days specified by RESCRAPE_AFTER
     if q and q.last_scraped > datetime.now() - timedelta(days=RESCRAPE_AFTER):
@@ -289,7 +302,7 @@ def scrape(request, tvdb_id):
         else:
             url_slug = tvdb_id
 
-    return HttpResponseRedirect("/show/{0}".format(url_slug))
+    return show(request, url_slug, fromScrape=True)
 
 
 def search(request):
@@ -330,7 +343,7 @@ def search(request):
     return render(request, 'telehex/search.html', template_values)
 
 
-def show(request, show_title):
+def show(request, show_title, fromScrape=False):
     """
     Takes a show title and construct a HttpResponse which contains the information for a specific show. The information
     include the show rating, the episodes in the show and whether or not the show is continuing.
@@ -345,17 +358,19 @@ def show(request, show_title):
     if not show:
         raise Http404
 
-    # Check if the show has been scraped within the last 7 days
-    if (datetime.today() - show.last_scraped).days > RESCRAPE_AFTER:
-        Scraper(show.key().name())
+    # If the show hasn't just been scraped perform some checks
+    if not fromScrape:
+        # Check if the show has been scraped within the last 7 days
+        if show.last_scraped < datetime.now() - timedelta(days=RESCRAPE_AFTER):
+            Scraper(show.key().name(), rescrape=True, options=show.options)
 
-    # Check if an episode has aired since the last scrape, if so rescrape
-    q = db.GqlQuery("SELECT name FROM TVEpisode WHERE airdate >= :1 AND airdate < :2 AND ANCESTOR IS :3",
-                    show.last_scraped, date.today() ,show)
+        # Check if an episode has aired since the last scrape, if so rescrape
+        q = db.GqlQuery("SELECT name FROM TVEpisode WHERE airdate >= :1 AND airdate < :2 AND ANCESTOR IS :3",
+                        show.last_scraped, date.today() ,show)
 
-    q.run()
-    if q.count() > 0:
-        Scraper(show.key().name())
+        q.run()
+        if q.count() > 0:
+            Scraper(show.key().name(), rescrape=True, options=show.options)
 
     # Determine if the user is subscribed
     user = users.get_current_user()

@@ -41,38 +41,77 @@ class Scraper:
     A Class used to perform the scraping for the TVShows and TVEpisodes
     """
 
-    def __init__(self, tvdb_id):
+    def __init__(self, tvdb_id, rescrape=False, options="00000000"):
         """
         The :class:Scraper class constructor. Takes a tvdb_id and initialises the scraping for the TVShow
         and the TVEpisodes
 
         :param tvdb_id: The tvdb id was the show to be scraped.
+        :param options: 
+            The options param is used to specify options for the scraping and display of a show
+            Each character index of the string represents a specific option. These are
+                0. Disable Scraping:
+                    0 = scraping enabled, 1 = scraping disabled
+                1. Disable Episode Ratings Scraping:
+                    0 = episode scraping enabled, 1 = episode scraping disabled
+                2. Disable Fanart Scraping:
+                    0 = fanart scraping enabled, 1 = fanart scraping disabled
+                3. Disable TVShow Scraping
+                    0 = TVShow scraping enabled, 1 = TVShow scraping disabled
+                4. Disable TVEpisode Scraping
+                    0 = TVEpisode scraping enabled, 1 = TVEpisode scraping disabled
+                5. Disable Episode Description Display
+                    0 = display episode desc, 1 = don't display episode desc
+                6. Reserved
+                7. Reserved
         """
+        
+        # Determine if this is a new scrape or a rescrape
+        self.rescrape = rescrape
 
-        # Increase the timeout for fetching a url - required for large shows
-        urlfetch.set_default_fetch_deadline(60)
+        # If this is a first scrape then set options to default
+        if not self.rescrape:
+            self.options = "00000000"
+        else:
+            self.options = options
 
-        self.tvdb_id = tvdb_id
+        # Create the options array
+        self.options_array = map(int, list(options))
 
-        # Fetch the XML from tvdb and turn into a BeautifulSoup Object
-        self.tvdbxml = urllib2.urlopen("http://thetvdb.com/api/{0}/series/{1}/all/en.xml".format(API_KEY, self.tvdb_id))
-        self.tvdbsoup = BeautifulSoup(self.tvdbxml.read(), 'xml')
+        # Specify the options relevant to the scraping
+        self.disable_scraping = self.options_array[0]
+        self.disable_episode_ratings = self.options_array[1]
+        self.disbable_fanart_scraping = self.options_array[2]
+        self.disbable_TVShow_scraping = self.options_array[3]
+        self.disbable_TVEpisode_scraping = self.options_array[4]
 
-        # Generate the show slug for the show, e.g. Breaking Bad becomes breaking_bad
-        exclude_chars = set(string.punctuation)
-        self.slug = ''.join(char for char in self.tvdbsoup.SeriesName.text if char not in exclude_chars)
-        self.slug = re.sub(r'\W+', '_', self.slug.lower())
+        # If the scraping isn't disable do this
+        if not self.disable_scraping:
+            # Increase the timeout for fetching a url - required for large shows
+            urlfetch.set_default_fetch_deadline(60)
 
-        # Perform the scraping for the TVShow
-        self.get_series_info()
+            self.tvdb_id = tvdb_id
 
-        # Perform the scraping for the TVEpisodes
-        self.get_episode_info()
+            # Fetch the XML from tvdb and turn into a BeautifulSoup Object
+            self.tvdbxml = urllib2.urlopen("http://thetvdb.com/api/{0}/series/{1}/all/en.xml".format(API_KEY, self.tvdb_id))
+            self.tvdbsoup = BeautifulSoup(self.tvdbxml.read(), 'xml')
 
-        # Specify when the show was last scraped
-        q = TVShow.get_by_key_name(self.tvdb_id)
-        q.last_scraped = datetime.now()
-        q.put()
+            # Generate the show slug for the show, e.g. Breaking Bad becomes breaking_bad
+            exclude_chars = set(string.punctuation)
+            self.slug = ''.join(char for char in self.tvdbsoup.SeriesName.text if char not in exclude_chars)
+            self.slug = re.sub(r'\W+', '_', self.slug.lower())
+
+            # Perform the scraping for the TVShow
+            self.get_series_info()
+
+            if not self.disbable_TVEpisode_scraping:
+                # Perform the scraping for the TVEpisodes
+                self.get_episode_info()
+
+            # Specify when the show was last scraped
+            q = TVShow.get_by_key_name(self.tvdb_id)
+            q.last_scraped = datetime.now()
+            q.put()
 
     def get_series_info(self):
         """
@@ -83,30 +122,46 @@ class Scraper:
         # Generate the fanart URL if fanart exists. This is used later to generate the Hexagon image for the show
         fanart_url = TVDB_BANNER_URL + self.tvdbsoup.fanart.text if self.tvdbsoup.fanart.text else None
 
-        # Identify the show genres
-        genres = self.tvdbsoup.Genre.text.strip('|').split('|')
+        if not self.disbable_TVShow_scraping:
+            # Identify the show genres
+            genres = self.tvdbsoup.Genre.text.strip('|').split('|')
 
-        # Put the scraped information into the GAE datastore
-        tv_show = TVShow(key_name=self.tvdb_id,
-                         title=self.tvdbsoup.SeriesName.text,
-                         desc=self.tvdbsoup.Overview.text,
-                         rating=float(self.get_imdb_rating(self.tvdbsoup.IMDB_ID.text)),
-                         fanart=fanart_url,
-                         genre=genres[0] if len(genres) > 0 else None,
-                         subgenre=genres[1] if len(genres) > 1 else None,
-                         status=self.tvdbsoup.Status.text,
-                         imdb_id=self.tvdbsoup.IMDB_ID.text,
-                         url_string=self.slug,
-                         last_scraped=datetime.utcfromtimestamp(0),
-                         num_seasons=int(self.tvdbsoup.find_all('SeasonNumber')[-1].text) if self.tvdbsoup.find_all(
-                             'SeasonNumber') else 0
-        ).put()
+            # Find the number of seasons
+            num_of_seasons = int(self.tvdbsoup.find_all('SeasonNumber')[-1].text) if self.tvdbsoup.find_all('SeasonNumber') else 0
 
-        # Obtain the key for the TVShow
-        self.series_key = tv_show
+            # If this is a new scrape and the number of seasons is greated than 10 disable
+            # episode rating scraping to conserve app engine quota
+            if not self.rescrape and num_of_seasons > 10:
+                self.disable_episode_ratings = 1
+                self.options_array[1] = 1
+
+            # Build the options string
+            self.options = "".join(str(x) for x in self.options_array)
+
+            # Put the scraped information into the GAE datastore
+            tv_show = TVShow(key_name=self.tvdb_id,
+                             title=self.tvdbsoup.SeriesName.text,
+                             desc=self.tvdbsoup.Overview.text,
+                             rating=float(self.get_imdb_rating(self.tvdbsoup.IMDB_ID.text)),
+                             fanart=fanart_url,
+                             genre=genres[0] if len(genres) > 0 else None,
+                             subgenre=genres[1] if len(genres) > 1 else None,
+                             status=self.tvdbsoup.Status.text,
+                             imdb_id=self.tvdbsoup.IMDB_ID.text,
+                             url_string=self.slug,
+                             last_scraped=datetime.utcfromtimestamp(0),
+                             num_seasons=num_of_seasons,
+                             options=self.options,
+            ).put()
+
+            # Obtain the key for the TVShow
+            self.series_key = tv_show
+        else:
+            # Get the series key from the datastore
+            self.series_key = TVShow.get_by_key_name(self.tvdb_id)
 
         # If fanart exists generate a hexagon image and store in the datastore
-        if fanart_url:
+        if not self.disbable_fanart_scraping and fanart_url:
             HexImages(parent=self.series_key,
                       key_name=self.tvdb_id,
                       image=db.Blob(Hexagon(fanart_url).get_hex())
@@ -116,12 +171,12 @@ class Scraper:
         """
         Gets the episode info for a TVShow and puts it into the GAE Datastore.
         """
-
         # Create a ratings dictionary
         ratings = collections.defaultdict(dict)
 
-        # If the show has an IMDB id, try and grab the episode ratings for this show
-        if self.tvdbsoup.IMDB_ID.text:
+        # If episode rating scraping isn't disable and
+        # if the show has an IMDB id, try and grab the episode ratings for this show
+        if not self.disable_episode_ratings and self.tvdbsoup.IMDB_ID.text:
             try:
                 # Turn the IMDB ratings pages into a BeautifulSoup Object, allowing particular page elements to be grabbed
                 imdbhtml = urllib2.urlopen("http://www.imdb.com/title/{0}/epdate".format(self.tvdbsoup.IMDB_ID.text))
@@ -144,7 +199,6 @@ class Scraper:
                         # Try and store the rating into the dictionary - occasionally rating is a string e.g. N/A so
                         # ValueError is caught to allow scraping to continue
                         try:
-                            #
                             ratings[int(sep[0])][int(sep[1])] = rating
                         except ValueError:
                             continue

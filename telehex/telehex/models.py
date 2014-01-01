@@ -47,6 +47,7 @@ class TVShow(db.Model):
     url_string = db.StringProperty(required=True)
     last_scraped = db.DateTimeProperty()
     num_seasons = db.IntegerProperty()
+    options = db.StringProperty(default="00000000")
 
 
 class HexImages(db.Model):
