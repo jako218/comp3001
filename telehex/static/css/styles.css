@@ -514,7 +514,7 @@ text {  pointer-events: none; }
   stroke-width: 3px;
 }
 
-#similarity-graph{
+#similarity-graph {
     width:980px;
     margin-left:auto;
     margin-right:auto;
@@ -530,4 +530,15 @@ path.connection {
   fill: none;
   stroke: #ccc;
   stroke-width: 1.5px;
+}
+
+/* Edit show Page */
+
+#edit_show_form {
+    margin-top: 30px;
+}
+
+.fanart{
+    max-width: 100%;
+    margin-bottom: 30px;
 }

@@ -25,6 +25,7 @@ from google.appengine.ext import db
 from google.appengine.api import users
 
 # Telehex Imports
+from forms import EditTVShowForm
 from models import *
 from scraper import Scraper, Search
 
@@ -32,8 +33,10 @@ from scraper import Scraper, Search
 from collections import Counter
 from collections import OrderedDict
 import csv
-from datetime import datetime, timedelta, date, MAXYEAR
+from datetime import datetime, timedelta, date, MAXYEAR, time
 import json
+import re
+import string
 from urllib import quote, unquote
 
 # If a page is visited, this is the number of days which must have
@@ -98,6 +101,12 @@ def calendar(request):
     return render(request, 'telehex/calendar.html', {"email_updates": user_entry})
 
 def edit_show(request, showid):
+    """
+    Allows an admin to edit a specific show
+
+    :param request: The request object for this page.
+    :return:  A HttpResponse Object
+    """
     # Check if the current user is logged in
     if not users.get_current_user():
         return HttpResponseRedirect('/login?continue=/admin/edit_show')
@@ -106,9 +115,62 @@ def edit_show(request, showid):
     if not users.is_current_user_admin():
         raise Http404
 
+    # Get the TVShow for this id
     show = TVShow.get_by_key_name(showid)
 
-    return render(request, 'telehex/edit_show.html', {'show' : show})
+    # If the form has been submitted check it
+    if request.method == 'POST':
+        form = EditTVShowForm(request.POST)
+        
+        # If the form is valid update the TVShow  
+        if form.is_valid():
+            # Check if the fanart url has changed and update the fanart hex
+            if show.fanart != form.cleaned_data['fanart']:
+                show.fanart = form.cleaned_data['fanart']
+                show.put()
+                
+                # Disable fanart scraping in future
+                form.cleaned_data['disable_fanart_scraping'] = True
+                # Rescrape the fanart
+                Scraper(showid, rescrape=True, options="01011100", update_options=False)
+                
+
+            # Get the updated details
+            for k in form.cleaned_data:
+                if hasattr(show, k) and form.cleaned_data[k] != getattr(show, k):
+                    setattr(show, k, form.cleaned_data[k])
+
+            # Get the options for the show
+            options_array = [0] * 8
+            options_array[0] = form.cleaned_data['disable_scraping']
+            options_array[1] = form.cleaned_data['disable_ep_rating_scraping']
+            options_array[2] = form.cleaned_data['disable_fanart_scraping']
+            options_array[3] = form.cleaned_data['disable_tvshow_scraping']
+            options_array[4] = form.cleaned_data['disable_tvepisode_scraping']
+            options_array[5] = form.cleaned_data['disable_ep_desc_display']
+            show.options = "".join(str(int(x)) for x in options_array)
+
+            # Recreate the url string
+            exclude_chars = set(string.punctuation)
+            url_string = ''.join(char for char in form.cleaned_data['title'] if char not in exclude_chars)
+            show.url_string = re.sub(r'\W+', '_', url_string.lower())
+
+            show.put()
+            return HttpResponseRedirect('/admin/edit_show/{0}'.format(showid))
+    else:
+        # Split the show options into a list of booleans
+        checkboxValues = [bool(int(x)) for x in show.options]
+
+        # Create the form data
+        form_data = {'title' : show.title, 'desc' : show.desc, 'rating' : show.rating,'status' : show.status,
+                    'fanart' : show.fanart, 'genre' : show.genre, 'subgenre' : show.subgenre,
+                    'imdb_id' : show.imdb_id,'num_seasons' : show.num_seasons, 
+                    'disable_scraping' : checkboxValues[0], 'disable_ep_rating_scraping' : checkboxValues[1],
+                    'disable_fanart_scraping' : checkboxValues[2], 'disable_tvshow_scraping' : checkboxValues[3],
+                    'disable_tvepisode_scraping' : checkboxValues [4], 'disable_ep_desc_display' : checkboxValues[5]}
+        form = EditTVShowForm(form_data)
+
+    return render(request, 'telehex/edit_show.html', {'form' : form, 'show' : show})
 
 def genre(request, genre_type):
     """

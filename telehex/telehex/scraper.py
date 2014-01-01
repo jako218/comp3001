@@ -41,7 +41,7 @@ class Scraper:
     A Class used to perform the scraping for the TVShows and TVEpisodes
     """
 
-    def __init__(self, tvdb_id, rescrape=False, options="00000000"):
+    def __init__(self, tvdb_id, rescrape=False, options="00000000", update_options=True):
         """
         The :class:Scraper class constructor. Takes a tvdb_id and initialises the scraping for the TVShow
         and the TVEpisodes
@@ -111,6 +111,8 @@ class Scraper:
             # Specify when the show was last scraped
             q = TVShow.get_by_key_name(self.tvdb_id)
             q.last_scraped = datetime.now()
+            if update_options:
+                q.options = "".join(str(x) for x in self.options_array)
             q.put()
 
     def get_series_info(self):
@@ -119,10 +121,16 @@ class Scraper:
         The information which is scraped includes show rating, show name, show description and show status.
         """
 
-        # Generate the fanart URL if fanart exists. This is used later to generate the Hexagon image for the show
-        fanart_url = TVDB_BANNER_URL + self.tvdbsoup.fanart.text if self.tvdbsoup.fanart.text else None
+        fanart_url = ""
 
         if not self.disbable_TVShow_scraping:
+            if not self.rescrape:
+                # Generate the fanart URL if fanart exists. This is used later to generate the Hexagon image for the show
+                fanart_url = TVDB_BANNER_URL + self.tvdbsoup.fanart.text if self.tvdbsoup.fanart.text else None
+            else:
+                show = TVShow.get_by_key_name(self.tvdb_id)
+                fanart_url = show.fanart
+
             # Identify the show genres
             genres = self.tvdbsoup.Genre.text.strip('|').split('|')
 
@@ -134,9 +142,6 @@ class Scraper:
             if not self.rescrape and num_of_seasons > 10:
                 self.disable_episode_ratings = 1
                 self.options_array[1] = 1
-
-            # Build the options string
-            self.options = "".join(str(x) for x in self.options_array)
 
             # Put the scraped information into the GAE datastore
             tv_show = TVShow(key_name=self.tvdb_id,
@@ -151,7 +156,6 @@ class Scraper:
                              url_string=self.slug,
                              last_scraped=datetime.utcfromtimestamp(0),
                              num_seasons=num_of_seasons,
-                             options=self.options,
             ).put()
 
             # Obtain the key for the TVShow
@@ -159,9 +163,11 @@ class Scraper:
         else:
             # Get the series key from the datastore
             self.series_key = TVShow.get_by_key_name(self.tvdb_id)
+            fanart_url = self.series_key.fanart
 
         # If fanart exists generate a hexagon image and store in the datastore
         if not self.disbable_fanart_scraping and fanart_url:
+            
             HexImages(parent=self.series_key,
                       key_name=self.tvdb_id,
                       image=db.Blob(Hexagon(fanart_url).get_hex())

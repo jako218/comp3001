@@ -28,6 +28,7 @@ add_to_builtins('django.templatetags.static')
 urlpatterns = patterns('',
                        (r'^$', index),
                        (r'^admin/$', admin),
+                       (r'^admin/edit_show/([0-9]+)$', edit_show),
                        (r'^admin/togglescraping/$', togglescraping),
                        (r'^data/calendar/$', calendar_data),
                        (r'^data/ratings/', ratings_data),

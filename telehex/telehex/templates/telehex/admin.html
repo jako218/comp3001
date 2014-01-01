@@ -32,6 +32,7 @@
                     <th class="sortable">Users Subscribed</th>
                     <th class="sortable">Last Scraped</th>
                     <th>&nbsp;</th>
+                    <th>&nbsp;</th>
                 </tr>
             </thead>
             {% for show in show_iterator %}
@@ -41,6 +42,7 @@
                 <td>{% if subs_counts|get_item:show.key.name %}{{ subs_counts|get_item:show.key.name }}{% else %}0{% endif %}</td>
                 <td>{{ show.last_scraped }}</td>
                 <td><a href="/scrape/{{show.key.name}}?force=1" class="load-on-click">Rescrape</a></td>
+                <td><a href="/admin/edit_show/{{show.key.name}}" class="load-on-click">Edit Show</a></td>
             </tr>
             {% endfor %}
         </table>
