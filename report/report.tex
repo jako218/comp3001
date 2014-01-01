@@ -1,28 +1,65 @@
 \documentclass[12pt, a4paper]{article}
 
 \usepackage{parskip}
+\usepackage{titling}
+
+% Define a subtitle
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}}%
+}
+
+
+\title{\Huge COMP3001 - Scripting Coursework}
+\subtitle{\textbf{Telehex - The Television Show Tracker}\\[2em] \Large Team A}
+\author{
+  Miles Armstrong\\
+  \texttt{mhha1g11@ecs.soton.ac.uk}
+  \and 
+  Simon Bidwell\\
+  \texttt{sab3g11@ecs.soton.ac.uk}
+  \and 
+  Will Buss\\
+  \texttt{wjb1g11@ecs.soton.ac.uk}
+  \and  
+  Jamie Davies\\
+  \texttt{jagd1g11@ecs.soton.ac.uk}
+  \and  
+  Hayden Eskriett\\
+  \texttt{hpe1g11@ecs.soton.ac.uk}
+  \and
+  Jack Flann\\
+  \texttt{jof1g11@ecs.soton.ac.uk}
+  \and
+  Chantel Spencer-Bowdage\\
+  \texttt{csb1g11@ecs.soton.ac.uk}\\[2em]
+}
 
 \begin{document}
-
-Skeleton Document for the scripting project report
-This is where the title page will go
+% Create the title page and remove the page number
+\clearpage\maketitle
+\thispagestyle{empty}
 
 \newpage
 \section{Description of prototype functionality}
+
 What have we built?
 Why did we build it?
 What does the product do? - Feature list.
 
 \newpage
 \section{List of tools and techniques used}
-Python Libraries:
+
+A variety of python libraries have been used, these include:
 \begin{itemize}
 \item Beautiful Soup
-\item Django
+\item Django templating engine.
 \item PIL
 \item Basically the contents of requirements.txt + Django
-\item The weird library used by hayden to comment the python
 \end{itemize}
+additionally Sphinx was used to document the python code....
+
 
 Javascript Libraries:
 \begin{itemize}
@@ -32,12 +69,18 @@ Javascript Libraries:
 \item d3.js
 \item Calendar stuff
 \item jQuery Cookies
+\item TableSorter
+\end{itemize}
+
+Google App Engine:
+\begin{itemize}
+\item Datastore
+\item Cron Jobs
 \end{itemize}
 
 Development Tools:
 \begin{itemize}
-\item Git
-\item GitHub
+\item Git \& GitHub
 \item Chrome/Firefox/Safari/IE for testing
 \item Firebug for testing in Firefox
 \item VIM/Sublime/Eclipse as IDE's
@@ -46,8 +89,9 @@ Development Tools:
 \item Google App Engine Local Launcher
 \end{itemize}
 
-HTML/JS/CSS libraries:
+HTML/CSS libraries:
 \begin{itemize}
+\item HTML5 and CSS3
 \item Bootstrap
 \item Bootflat
 \end{itemize}
