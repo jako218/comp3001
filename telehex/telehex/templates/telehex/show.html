@@ -44,7 +44,9 @@
                                 <li><a href="/admin/edit_show/{{show.key.name}}" class="load-on-click" /><i class="fa fa-pencil fa-fw"></i> edit show</a></li>
 	                            {% endif %}
 	                            <li><a href="/ratings/{{ show.url_string }}"><i class="fa fa-bar-chart-o fa-fw"></i> graph</a></li>
-	                            <li><a href="/similar/{{ show.url_string }}"><i class="fa fa-sitemap fa-fw"></i> similar shows</a></li>
+	                            {% if similar %}
+                                <li><a href="/similar/{{ show.url_string }}"><i class="fa fa-sitemap fa-fw"></i> similar shows</a></li>
+                                {% endif %}
                                 {% if show.imdb_id %}
 	                            <li><a href="http://www.imdb.com/title/{{ show.imdb_id }}"><i class="fa fa-film fa-fw"></i> IMDB</a></li>
                                 {% endif %}

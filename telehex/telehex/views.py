@@ -466,8 +466,18 @@ def show(request, show_title):
     show_genre = quote(show.genre) if show.genre else None
     show_subgenre = quote(show.subgenre) if show.subgenre else None
 
+    # Determine if this show has any similar shows
+    similar = False
+    q = db.GqlQuery("SELECT user_id FROM UserShow WHERE show_id = :id", id=int(show.key().name()))
+    user_ids = [uid.user_id for uid in q.run()]
+    if q.count() > 0:
+        q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id IN :users LIMIT 2", users=user_ids)
+        if q.count() > 1:
+            similar = True
+
     template_values = {'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode,
-                       'viewed_shows': viewed_list[:11], 'genre': show_genre, 'subgenre': show_subgenre}
+                       'viewed_shows': viewed_list[:11], 'genre': show_genre, 'subgenre': show_subgenre, 
+                       'similar' :similar}
 
     response = render(request, 'telehex/show.html', template_values)
 
