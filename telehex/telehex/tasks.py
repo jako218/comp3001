@@ -47,7 +47,7 @@ def email_update(request):
     messages_sent = 0
     for user in q.run():
         # For each user get the shows they're subscribed to
-        show_query = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.key().name())
+        show_query = db.GqlQuery("SELECT * FROM UserShow WHERE user_id = :id", id=user.key().name())
         show_ids = [str(show.show_id) for show in show_query.run()]
 
         # Don't send email if they're not subscribed to any shows
