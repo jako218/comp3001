@@ -30,9 +30,9 @@ def to_num_hex(rating):
 
     :param rating: The rating to be outputted
     """
-    spans = ""
+    spans = []
     solid_hex = int(math.floor(rating / 2))
     for i in range(solid_hex):
-        spans += "⬣"
+        spans.append('⬣')
 
     return spans

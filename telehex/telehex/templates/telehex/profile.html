@@ -52,7 +52,9 @@
                                 <div class="title-styling"><a href="/show/{{show.url_string}}">{{ show.title }}</a></div>
                                 {% if show.rating %} 
                                 <div class="hex_styling">
-                                    {{show.rating|to_num_hex}}
+                                    {% for icon in show.rating|to_num_hex %}
+                                        <img style="margin: -3px;" src="{% static "img/hex-icon.png" %}">
+                                    {% endfor %}
                                 </div> 
                                 {% endif %}
                                 <p>
