@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 :mod:`scraper` -- Performs the Scraping
 =================================================

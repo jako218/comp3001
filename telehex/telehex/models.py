@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 :mod:`models` - The models for the GAE Datastore
 =================================================

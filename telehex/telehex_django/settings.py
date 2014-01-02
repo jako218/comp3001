@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Django settings for telehex_django project.
 

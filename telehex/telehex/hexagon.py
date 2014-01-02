@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 :mod:`hexagon` -- Converts images to hexagons
 ===============================================

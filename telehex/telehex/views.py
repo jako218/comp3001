@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 :mod:`views` -- Generates the views for the site
 ================================================

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #coding: utf-8
 """
 :mod:`ratings_helper` -- Ratings Display
