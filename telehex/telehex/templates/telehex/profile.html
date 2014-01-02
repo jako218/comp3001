@@ -53,7 +53,7 @@
                                 {% if show.rating %} 
                                 <div class="hex_styling">
                                     {% for icon in show.rating|to_num_hex %}
-                                        <img style="margin: -3px;" src="{% static "img/hex-icon.png" %}">
+                                        <img class="hex-icon" src="{% static "img/hex-icon.png" %}">
                                     {% endfor %}
                                 </div> 
                                 {% endif %}

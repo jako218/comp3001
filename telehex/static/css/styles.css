@@ -444,7 +444,7 @@ a.ui-state-focus {
     color: #fff !important;
 }
 
-/*profile styles*/
+/* Profile Styles */
 .thumbnail-styling {
     background-color: rgba(41, 134, 185, 0);
     text-align:center;
@@ -465,6 +465,11 @@ a.ui-state-focus {
 
 .hex_styling {
     color: #fff !important;
+}
+
+.hex-icon
+{
+    margin: -3px;
 }
 
 .title-styling {
