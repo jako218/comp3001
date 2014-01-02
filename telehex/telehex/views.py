@@ -31,9 +31,8 @@ from scraper import Scraper, Search
 
 # Other Imports
 from collections import Counter
-from collections import OrderedDict
 import csv
-from datetime import datetime, timedelta, date, MAXYEAR, time
+from datetime import datetime, timedelta, date, MAXYEAR
 import json
 import re
 import string
@@ -75,10 +74,12 @@ def admin(request):
     subs_iterator = q.run()
 
     # Count the number of times a show has been subscribed to
-    subs_counts = Counter([str(show.show_id) for show in subs_iterator])
+    subs_counts = Counter([str(usershow.show_id) for usershow in subs_iterator])
 
     # Create a dictionary containing the variables required in the Django template
-    template_values = {'show_iterator': show_iterator, 'subs_counts': subs_counts, 'is_scraping': settings.SCRAPING}
+    template_values = {'show_iterator': show_iterator,
+                       'subs_counts': subs_counts,
+                       'is_scraping': settings.SCRAPING}
     return render(request, 'telehex/admin.html', template_values)
 
 
@@ -94,11 +95,14 @@ def calendar(request):
     # Check if a user is logged in - if not redirect them to the login screen
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
+        return HttpResponseRedirect(
+            '/login?continue={0}'.format(request.get_full_path()))
 
     user_entry = User.get_by_key_name(user.user_id())
 
-    return render(request, 'telehex/calendar.html', {"email_updates": user_entry})
+    return render(request, 'telehex/calendar.html',
+                  {"email_updates": user_entry})
+
 
 def edit_show(request, showid):
     """
@@ -116,29 +120,30 @@ def edit_show(request, showid):
         raise Http404
 
     # Get the TVShow for this id
-    show = TVShow.get_by_key_name(showid)
+    tv_show = TVShow.get_by_key_name(showid)
 
     # If the form has been submitted check it
     if request.method == 'POST':
         form = EditTVShowForm(request.POST)
-        
+
         # If the form is valid update the TVShow  
         if form.is_valid():
             # Check if the fanart url has changed and update the fanart hex
-            if show.fanart != form.cleaned_data['fanart']:
-                show.fanart = form.cleaned_data['fanart']
-                show.put()
-                
+            if tv_show.fanart != form.cleaned_data['fanart']:
+                tv_show.fanart = form.cleaned_data['fanart']
+                tv_show.put()
+
                 # Disable fanart scraping in future
                 form.cleaned_data['disable_fanart_scraping'] = True
                 # Rescrape the fanart
-                Scraper(showid, rescrape=True, options="01011100", update_options=False)
-                
+                Scraper(showid, rescrape=True, options="01011100",
+                        update_options=False)
 
             # Get the updated details
             for k in form.cleaned_data:
-                if hasattr(show, k) and form.cleaned_data[k] != getattr(show, k):
-                    setattr(show, k, form.cleaned_data[k])
+                if hasattr(tv_show, k) and form.cleaned_data[k] != getattr(
+                        tv_show, k):
+                    setattr(tv_show, k, form.cleaned_data[k])
 
             # Get the options for the show
             options_array = [0] * 8
@@ -148,29 +153,38 @@ def edit_show(request, showid):
             options_array[3] = form.cleaned_data['disable_tvshow_scraping']
             options_array[4] = form.cleaned_data['disable_tvepisode_scraping']
             options_array[5] = form.cleaned_data['disable_ep_desc_display']
-            show.options = "".join(str(int(x)) for x in options_array)
+            tv_show.options = "".join(str(int(x)) for x in options_array)
 
             # Recreate the url string
             exclude_chars = set(string.punctuation)
-            url_string = ''.join(char for char in form.cleaned_data['title'] if char not in exclude_chars)
-            show.url_string = re.sub(r'\W+', '_', url_string.lower())
+            url_string = ''.join(char for char in form.cleaned_data['title'] if
+                                 char not in exclude_chars)
+            tv_show.url_string = re.sub(r'\W+', '_', url_string.lower())
 
-            show.put()
+            tv_show.put()
             return HttpResponseRedirect('/admin/edit_show/{0}'.format(showid))
     else:
         # Split the show options into a list of booleans
-        checkboxValues = [bool(int(x)) for x in show.options]
+        checkbox_values = [bool(int(x)) for x in tv_show.options]
 
         # Create the form data
-        form_data = {'title' : show.title, 'desc' : show.desc, 'rating' : show.rating,'status' : show.status,
-                    'fanart' : show.fanart, 'genre' : show.genre, 'subgenre' : show.subgenre,
-                    'imdb_id' : show.imdb_id,'num_seasons' : show.num_seasons, 
-                    'disable_scraping' : checkboxValues[0], 'disable_ep_rating_scraping' : checkboxValues[1],
-                    'disable_fanart_scraping' : checkboxValues[2], 'disable_tvshow_scraping' : checkboxValues[3],
-                    'disable_tvepisode_scraping' : checkboxValues [4], 'disable_ep_desc_display' : checkboxValues[5]}
+        form_data = {'title': tv_show.title, 'desc': tv_show.desc,
+                     'rating': tv_show.rating, 'status': tv_show.status,
+                     'fanart': tv_show.fanart, 'genre': tv_show.genre,
+                     'subgenre': tv_show.subgenre,
+                     'imdb_id': tv_show.imdb_id,
+                     'num_seasons': tv_show.num_seasons,
+                     'disable_scraping': checkbox_values[0],
+                     'disable_ep_rating_scraping': checkbox_values[1],
+                     'disable_fanart_scraping': checkbox_values[2],
+                     'disable_tvshow_scraping': checkbox_values[3],
+                     'disable_tvepisode_scraping': checkbox_values[4],
+                     'disable_ep_desc_display': checkbox_values[5]}
         form = EditTVShowForm(form_data)
 
-    return render(request, 'telehex/edit_show.html', {'form' : form, 'show' : show})
+    return render(request, 'telehex/edit_show.html',
+                  {'form': form, 'show': tv_show})
+
 
 def genre(request, genre_type):
     """
@@ -185,9 +199,11 @@ def genre(request, genre_type):
     # Decode the genre_type
     genre_type = unquote(genre_type)
 
-    q = db.GqlQuery("SELECT * FROM TVShow WHERE genre = :genre", genre=genre_type)
+    q = db.GqlQuery("SELECT * FROM TVShow WHERE genre = :genre",
+                    genre=genre_type)
     r1 = q.run()
-    q = db.GqlQuery("SELECT * FROM TVShow WHERE subgenre = :genre", genre=genre_type)
+    q = db.GqlQuery("SELECT * FROM TVShow WHERE subgenre = :genre",
+                    genre=genre_type)
     r2 = q.run()
     results_list = []
 
@@ -196,7 +212,7 @@ def genre(request, genre_type):
     subs_iterator = q.run()
 
     # Count the number of times a show has been subscribed to
-    subs_counts = Counter([str(show.show_id) for show in subs_iterator])
+    subs_counts = Counter([str(usershow.show_id) for usershow in subs_iterator])
 
     for r in r1:
         r.subscribed = subs_counts[str(r.key().name())]
@@ -220,6 +236,7 @@ def genre(request, genre_type):
     template_values = {'results': results, 'genre': genre_type}
     return render(request, 'telehex/genre.html', template_values)
 
+
 def index(request):
     """
     Return the index page of the site
@@ -242,7 +259,8 @@ def login(request):
     user = users.get_current_user()
     if not user:
         if 'continue' in request.GET:
-            return HttpResponseRedirect(users.create_login_url(request.GET['continue']))
+            return HttpResponseRedirect(
+                users.create_login_url(request.GET['continue']))
         else:
             return HttpResponseRedirect(users.create_login_url('/'))
 
@@ -260,7 +278,8 @@ def logout(request):
     user = users.get_current_user()
     if user:
         if 'continue' in request.GET:
-            return HttpResponseRedirect(users.create_logout_url(request.GET['continue']))
+            return HttpResponseRedirect(
+                users.create_logout_url(request.GET['continue']))
         else:
             return HttpResponseRedirect(users.create_logout_url('/'))
 
@@ -279,10 +298,12 @@ def profile(request):
     # Check if a user is currently logged in - if not redirect to login screen
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
+        return HttpResponseRedirect(
+            '/login?continue={0}'.format(request.get_full_path()))
 
     # Retrieve all the show ids this user is subscribed to
-    q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
+    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id = :id",
+                    id=user.user_id())
     show_ids = [str(showid.show_id) for showid in q.run()]
 
     template_values = {}
@@ -293,8 +314,9 @@ def profile(request):
     # Determine the next episode yet to air. If all episodes have aired, get the latest aired episode
     subs_next_episodes = []
     for ids in subscribed_tv_shows:
-        q = db.GqlQuery("SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1",
-                        date.today(), ids)
+        q = db.GqlQuery(
+            "SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1",
+            date.today(), ids)
         nextepisode = q.run()
         if q.count() > 0:
             subs_next_episodes.append(nextepisode.next())
@@ -304,11 +326,12 @@ def profile(request):
         # Generate the template values. Have to zip the two lists so iteration is possible in Django. The shows list
         # is ordered based on closest episode of a continuing show. Ended shows latest episodes are given a max possible
         # date so that they appear at the end of the list
-        template_values = {'shows': sorted(zip(subscribed_tv_shows, subs_next_episodes),
-                                           key=lambda x: x[1].airdate if x[1] else date(MAXYEAR, 12, 31))}
+        template_values = {
+            'shows': sorted(zip(subscribed_tv_shows, subs_next_episodes),
+                            key=lambda x: x[1].airdate if x[1] else date(MAXYEAR,
+                                                                         12, 31))}
 
     return render(request, 'telehex/profile.html', template_values)
-
 
 
 def profile_stats(request):
@@ -322,14 +345,16 @@ def profile_stats(request):
     # Check if the user is logged in - if not redirect them to login
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
-    
-    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id=:id", id=user.user_id())
+        return HttpResponseRedirect(
+            '/login?continue={0}'.format(request.get_full_path()))
+
+    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id=:id",
+                    id=user.user_id())
     q.run()
 
     # If a user has no shows they shouldn't be able to view this page, redirect back to their profile page
     if q.count() == 0:
-        return render(request, 'telehex/profile.html')        
+        return render(request, 'telehex/profile.html')
 
     return render(request, 'telehex/profile_stats.html')
 
@@ -349,8 +374,9 @@ def scrape(request, tvdb_id):
     # Determine if the show already exists in the datastore
     q = TVShow.get_by_key_name(tvdb_id)
 
-    if users.is_current_user_admin() and 'force' in request.GET and request.GET['force'] == '1':
-        s = Scraper(tvdb_id, rescrape=True, options=q.options)
+    if users.is_current_user_admin() and 'force' in request.GET and request.GET[
+        'force'] == '1':
+        Scraper(tvdb_id, rescrape=True, options=q.options)
         return HttpResponseRedirect('/show/{0}'.format(q.url_string))
 
     # Check if the show has been scraped before and if that scrape was in the last x days specified by RESCRAPE_AFTER
@@ -374,6 +400,9 @@ def search(request):
     :param request: A Search HttpRequest Object
     :return: A HttpResponse Object
     """
+
+    search_string = ""
+    page_num = 1
 
     # Check if this request has POST data - if not redirect to the home page, otherwise get the query
     if request.method == 'POST':
@@ -401,7 +430,7 @@ def search(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         results = paginator.page(paginator.num_pages)
 
-    template_values = {'results': results, 'query': search_string }
+    template_values = {'results': results, 'query': search_string}
     return render(request, 'telehex/search.html', template_values)
 
 
@@ -415,40 +444,47 @@ def show(request, show_title):
     :return: A HttpResponse Object
     """
     # Get the show based on the show_title
-    show = get_tv_show(show_title)
-    if not show:
+    tv_show = get_tv_show(show_title)
+    if not tv_show:
         raise Http404
 
     # Check that show hasn't just been scraped
-    if show.last_scraped != datetime.utcfromtimestamp(0):
+    if tv_show.last_scraped != datetime.utcfromtimestamp(0):
         # Check if the show has been scraped within the last 7 days
-        if show.last_scraped < datetime.now() - timedelta(days=RESCRAPE_AFTER):
-            Scraper(show.key().name(), rescrape=True, options=show.options)
+        if tv_show.last_scraped < datetime.now() - timedelta(
+                days=RESCRAPE_AFTER):
+            Scraper(tv_show.key().name(), rescrape=True,
+                    options=tv_show.options)
 
         # Check if an episode has aired since the last scrape, if so rescrape
-        q = db.GqlQuery("SELECT name FROM TVEpisode WHERE airdate >= :1 AND airdate < :2 AND ANCESTOR IS :3",
-                        show.last_scraped, date.today() ,show)
-        q.run()
+        q = db.GqlQuery(
+            "SELECT * FROM TVEpisode WHERE airdate >= :1 AND airdate < :2 AND ANCESTOR IS :3",
+            tv_show.last_scraped, date.today(), tv_show)
         if q.count() > 0:
-            Scraper(show.key().name(), rescrape=True, options=show.options)
+            Scraper(tv_show.key().name(), rescrape=True,
+                    options=tv_show.options)
 
     # Determine if the user is subscribed
     user = users.get_current_user()
-    is_user_sub = UserShow.get_by_key_name("{0}{1}".format(user.user_id(), show.key().name())) if user else None
+    is_user_sub = UserShow.get_by_key_name(
+        "{0}{1}".format(user.user_id(), tv_show.key().name())) if user else None
     subscribed = True if is_user_sub else False
 
     # Select all the episodes for show        
-    q = db.GqlQuery("SELECT * FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number", show)
+    q = db.GqlQuery(
+        "SELECT * FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, ep_number",
+        tv_show)
     episodes = q.run()
 
     # Get the next airing episode if it exists
-    q = db.GqlQuery("SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1",
-                    date.today(), show)
+    q = db.GqlQuery(
+        "SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1",
+        date.today(), tv_show)
     nextepisode = q.run()
     nextepisode = nextepisode.next() if q.count() > 0 else None
 
     # Build a dictionary of season to episodes mappings
-    seasons = {key: [] for key in range(1, show.num_seasons + 1)}
+    seasons = {key: [] for key in range(1, tv_show.num_seasons + 1)}
     for e in episodes:
         seasons[e.season].append(e)
 
@@ -460,24 +496,30 @@ def show(request, show_title):
     if 'telehex_viewed' in request.COOKIES:
         viewed_list = json.loads(request.COOKIES['telehex_viewed'])
 
-    viewed_list = [d for d in viewed_list if d['title'] != show.title]
-    viewed_list.insert(0, {'title': show.title, 'url_string': show.url_string})
+    viewed_list = [d for d in viewed_list if d['title'] != tv_show.title]
+    viewed_list.insert(0, {'title': tv_show.title,
+                           'url_string': tv_show.url_string})
 
-    show_genre = quote(show.genre) if show.genre else None
-    show_subgenre = quote(show.subgenre) if show.subgenre else None
+    show_genre = quote(tv_show.genre) if tv_show.genre else None
+    show_subgenre = quote(tv_show.subgenre) if tv_show.subgenre else None
 
     # Determine if this show has any similar shows
-    similar = False
-    q = db.GqlQuery("SELECT user_id FROM UserShow WHERE show_id = :id", id=int(show.key().name()))
+    similarity_graph = False
+    q = db.GqlQuery("SELECT * FROM UserShow WHERE show_id = :id",
+                    id=int(tv_show.key().name()))
     user_ids = [uid.user_id for uid in q.run()]
     if q.count() > 0:
-        q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id IN :users LIMIT 2", users=user_ids)
+        q = db.GqlQuery(
+            "SELECT * FROM UserShow WHERE user_id IN :users LIMIT 2",
+            users=user_ids)
         if q.count() > 1:
-            similar = True
+            similarity_graph = True
 
-    template_values = {'show': show, 'seasons_dict': seasons, 'subscribed': subscribed, 'nextepisode': nextepisode,
-                       'viewed_shows': viewed_list[:11], 'genre': show_genre, 'subgenre': show_subgenre, 
-                       'similar' :similar}
+    template_values = {'show': tv_show, 'seasons_dict': seasons,
+                       'subscribed': subscribed, 'nextepisode': nextepisode,
+                       'viewed_shows': viewed_list[:11], 'genre': show_genre,
+                       'subgenre': show_subgenre,
+                       'similar': similarity_graph}
 
     response = render(request, 'telehex/show.html', template_values)
 
@@ -497,12 +539,12 @@ def ratings(request, show_title):
     """
 
     # Get the show based on the show_title
-    show = get_tv_show(show_title)
-    if not show:
+    tv_show = get_tv_show(show_title)
+    if not tv_show:
         raise Http404
 
     # Pass show variable to template and redirect
-    return render(request, 'telehex/ratings.html', {'show': show})
+    return render(request, 'telehex/ratings.html', {'show': tv_show})
 
 
 def similar(request, show_title):
@@ -516,12 +558,12 @@ def similar(request, show_title):
     """
 
     # Get the show based on the show_title
-    show = get_tv_show(show_title)
-    if not show:
+    tv_show = get_tv_show(show_title)
+    if not tv_show:
         raise Http404
 
     # Pass show variable to template and redirect
-    return render(request, 'telehex/similar.html', {'show': show})
+    return render(request, 'telehex/similar.html', {'show': tv_show})
 
 
 def subscribe(request):
@@ -535,7 +577,8 @@ def subscribe(request):
     # Determine if the user is logged in, if not redirect to login screen
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect('/login?continue={0}'.format(request.META['HTTP_REFERER']))
+        return HttpResponseRedirect(
+            '/login?continue={0}'.format(request.META['HTTP_REFERER']))
 
     if request.method != 'POST':
         return HttpResponseRedirect('/')
@@ -577,7 +620,8 @@ def unsubscribe(request):
     # Determine if a user is logged in - if not redirect them to the login screen
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect('/login?continue={0}'.format(request.META['HTTP_REFERER']))
+        return HttpResponseRedirect(
+            '/login?continue={0}'.format(request.META['HTTP_REFERER']))
 
     if request.method != 'POST':
         return HttpResponseRedirect('/')
@@ -585,7 +629,9 @@ def unsubscribe(request):
     tvdb_id = int(request.POST.get('show_id'))
 
     # Remove the mapping between this user and the show from the UserShow table
-    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id = :id AND show_id = :show", id=user.user_id(), show=tvdb_id)
+    q = db.GqlQuery(
+        "SELECT * FROM UserShow WHERE user_id = :id AND show_id = :show",
+        id=user.user_id(), show=tvdb_id)
     usershow = q.fetch(limit=1)[0]
     usershow.delete()
 
@@ -593,13 +639,14 @@ def unsubscribe(request):
 
 ########## FUNCTIONS ##########
 
+
 def generate_dict(tree, showid, visited, user_shows, depth=4):
     """
     A recursive function to build the similar shows tree. By default the tree can go to a depth of 4. Initially the
     function is given a showid of a show. It then works by finding all the other shows users have subscribed to who
     have also subscribed to this show. It then takes the top 6 of these shows (based on number of subscribers),
-    increments the depth and performs this function on each of these shows until a depth of 4 is reached and a similarity
-    tree is built.
+    increments the depth and performs this function on each of these shows until a depth of 4 is reached and a
+    similarity tree is built.
 
     :param tree: The tree dictionary at the current iteration of the recursion
     :param showid: The showid to find subtrees of and append to the tree dictionary
@@ -638,11 +685,14 @@ def generate_dict(tree, showid, visited, user_shows, depth=4):
         tree.pop('children')
 
     # For each show do the same thing!
-    for show in tv_shows:
-        showid = str(show.key().name())
-        imagelink = "/hexagons/{0}".format(showid) if show.fanart else '/static/img/errorhex.png'
+    for tv_show_entity in tv_shows:
+        showid = str(tv_show_entity.key().name())
+        imagelink = "/hexagons/{0}".format(
+            showid) if tv_show_entity.fanart else '/static/img/errorhex.png'
         [children, visited] = generate_dict(
-            {"name": "{0}".format(show.title), "url": show.url_string, "showid": showid, "imagelink": imagelink,
+            {"name": "{0}".format(tv_show_entity.title),
+             "url": tv_show_entity.url_string, "showid": showid,
+             "imagelink": imagelink,
              "children": []}, showid, visited, user_shows, depth - 1)
 
         # Check that children were returned, don't want to append an empty list to the tree
@@ -665,10 +715,10 @@ def get_tv_show(show_title):
 
     # Try get a TVShow entity from the database based on the show_title
     q = db.GqlQuery("SELECT * FROM TVShow WHERE url_string = :1", show_title)
-    show = q.run(limit=1)
+    show_entity = q.run(limit=1)
 
     # Check if show exists - if it does return the show, else None
-    tv_show = show.next() if q.count() > 0 else None
+    tv_show = show_entity.next() if q.count() > 0 else None
     return tv_show
 
 
@@ -689,6 +739,7 @@ def remove_empty_seasons(seasons):
 
 ############ JSON & CSV #############
 
+
 def calendar_data(request):
     """
     A function which returns the JSON required to construct a user's calendar
@@ -703,7 +754,8 @@ def calendar_data(request):
         return HttpResponseRedirect('/')
 
     # Get all the showids of the shows a user is subscribed to
-    q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
+    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id = :id",
+                    id=user.user_id())
     show_ids = [str(showid.show_id) for showid in q.run()]
 
     # Get all the show entities corresponding to the show ids
@@ -712,20 +764,26 @@ def calendar_data(request):
     # Obtains all the events for the date range specified in the url of the request
     events = []
     for entity in subs_shows_entities:
-        q = db.GqlQuery("SELECT * FROM TVEpisode WHERE airdate >= :start AND airdate <= :end AND ANCESTOR IS :ancestor",
-                        ancestor=entity, start=datetime.fromtimestamp(int(request.GET.get('start'))),
-                        end=datetime.fromtimestamp(int(request.GET.get('end'))))
+        q = db.GqlQuery(
+            "SELECT * FROM TVEpisode WHERE airdate >= :start AND airdate <= :end AND ANCESTOR IS :anc",
+            anc=entity,
+            start=datetime.fromtimestamp(int(request.GET.get('start'))),
+            end=datetime.fromtimestamp(int(request.GET.get('end'))))
         episode_iterator = q.run()
 
         # For each episode in the date range, append to the events list
         for episode in episode_iterator:
-            events.append({'title': "{0}\n{1}".format(entity.title, episode.name.encode('utf8')),
+            events.append({'title': "{0}\n{1}".format(entity.title,
+                                                      episode.name.encode(
+                                                          'utf8')),
                            'start': episode.airdate.strftime('%Y-%m-%d'),
-                           'url': "/show/{0}#s{1:02d}e{2:02d}".format(entity.url_string, episode.season,
-                                                                      episode.ep_number)})
+                           'url': "/show/{0}#s{1:02d}e{2:02d}".format(
+                               entity.url_string, episode.season,
+                               episode.ep_number)})
 
     # Return a JSON response containing all the shows for this date range
     return HttpResponse(json.dumps(events), content_type="application/json")
+
 
 def create_profile_pie_data(request, attribute):
     """
@@ -739,15 +797,18 @@ def create_profile_pie_data(request, attribute):
     # Check if the user is logged in - if not redirect them to login
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
+        return HttpResponseRedirect(
+            '/login?continue={0}'.format(request.get_full_path()))
 
     # Get all the showids of the shows a user is subscribed to
-    q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
+    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id = :id",
+                    id=user.user_id())
     show_ids = [str(showid.show_id) for showid in q.run()]
     subs_shows_entities = TVShow.get_by_key_name(show_ids)
 
     # Count the number of occurences of each attribute
-    counter_dict = Counter([getattr(show, attribute) for show in subs_shows_entities])
+    counter_dict = Counter([getattr(show_entity, attribute) for show_entity in
+                            subs_shows_entities])
 
     # Generate the csv file
     response = HttpResponse(content_type='text/csv')
@@ -760,6 +821,7 @@ def create_profile_pie_data(request, attribute):
     # Return the response containing the csv data
     return response
 
+
 def profile_stats_data(request):
     """
     A function which returns the JSON required to construct a user's stats page
@@ -771,54 +833,65 @@ def profile_stats_data(request):
     # Check if the user is logged in - if not redirect them to login
     user = users.get_current_user()
     if not user:
-        return HttpResponseRedirect('/login?continue={0}'.format(request.get_full_path()))
+        return HttpResponseRedirect(
+            '/login?continue={0}'.format(request.get_full_path()))
 
     # Get all the showids of the shows a user is subscribed to
-    q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id", id=user.user_id())
+    q = db.GqlQuery("SELECT show_id FROM UserShow WHERE user_id = :id",
+                    id=user.user_id())
     show_ids = [str(showid.show_id) for showid in q.run()]
 
     # Get all the show entities corresponding to the show ids
     subs_shows_entities = TVShow.get_by_key_name(show_ids)
 
     show_children = []
-    for show in subs_shows_entities:
+    for tv_show in subs_shows_entities:
         season_children = []
 
         # Get all the TVEpisodes for a show
-        q = db.GqlQuery("SELECT * FROM TVEpisode WHERE ANCESTOR IS :ancestor ORDER BY season, ep_number", ancestor=show)
+        q = db.GqlQuery(
+            "SELECT * FROM TVEpisode WHERE ANCESTOR IS :anc ORDER BY season, ep_number",
+            anc=tv_show)
         episode_iterator = q.run()
         number_episodes = q.count()
 
         # Create a dictionary to hold the seasons - keyed by season number
-        seasons = {key: [] for key in range(1, show.num_seasons + 1)}
+        seasons = {key: [] for key in range(1, tv_show.num_seasons + 1)}
 
         # For each episode, add it to the dictionary entry for it's corresponding season
         for episode in episode_iterator:
             if episode.rating > 0:
-                seasons[episode.season].append({"name" : episode.name,
-                                                "rating" : episode.rating,
-                                                "url_string" : "/show/{0}#s{1:02d}e{2:02d}".format(show.url_string, 
-                                                    episode.season, episode.ep_number)})
+                seasons[episode.season].append({"name": episode.name,
+                                                "rating": episode.rating,
+                                                "url_string": "/show/{0}#s{1:02d}e{2:02d}".format(
+                                                    tv_show.url_string,
+                                                    episode.season,
+                                                    episode.ep_number)})
             else:
-                seasons[episode.season].append({"name" : episode.name,
-                                                "rating" : 0,
-                                                "url_string" : "/show/{0}#s{1:02d}e{2:02d}".format(show.url_string, 
-                                                    episode.season, episode.ep_number)})
-        
+                seasons[episode.season].append({"name": episode.name,
+                                                "rating": 0,
+                                                "url_string": "/show/{0}#s{1:02d}e{2:02d}".format(
+                                                    tv_show.url_string,
+                                                    episode.season,
+                                                    episode.ep_number)})
+
         # Calculate the rating based on how many episodes are in the season
         for season in seasons:
             for episodes in seasons[season]:
-                episodes['rating'] = episodes['rating'] / (number_episodes * len(seasons[season]))
-            # Append each episode the the season list 
-            season_children.append({"name" : season , "children" :  seasons[season] })
+                episodes['rating'] /= number_episodes * len(seasons[season])
+                # Append each episode the the season list
+            season_children.append(
+                {"name": season, "children": seasons[season]})
 
         # Append the show to the show list
-        show_children.append({"name" : show.title, "children" : season_children})
+        show_children.append(
+            {"name": tv_show.title, "children": season_children})
 
     # Add the root name
-    jsonEvents = {"name" : "Your shows" , "children" : show_children}
+    json_events = {"name": "Your shows", "children": show_children}
 
-    return HttpResponse(json.dumps(jsonEvents), content_type="application/json")
+    return HttpResponse(json.dumps(json_events),
+                        content_type="application/json")
 
 
 def profile_stats_pie_genre(request):
@@ -829,6 +902,7 @@ def profile_stats_pie_genre(request):
     :return: A HttpResponse containing the JSON for the tree map
     """
     return create_profile_pie_data(request, "genre")
+
 
 def profile_stats_pie_ratings(request):
     """
@@ -858,23 +932,25 @@ def similarity_data(request):
     :return: A HttpResponse containing the JSON for the similarity graph
     """
 
-    if (request.method != 'POST'):
+    if request.method != 'POST':
         return HttpResponseRedirect('/')
 
     # Get show title out of POST data
     showid = request.POST.__getitem__("show_id")
 
     # Get the show object for this stats page
-    show = TVShow.get_by_key_name(showid)
+    tv_show = TVShow.get_by_key_name(showid)
 
     # Get all the user shows
-    q = db.GqlQuery("SELECT user_id, show_id FROM UserShow")
+    q = db.GqlQuery("SELECT * FROM UserShow")
     user_shows = [(sid.show_id, sid.user_id) for sid in q.run()]
 
-    imagelink = "/hexagons/{0}".format(showid) if show.fanart else '/static/img/errorhex.png'
+    imagelink = "/hexagons/{0}".format(
+        showid) if tv_show.fanart else '/static/img/errorhex.png'
     # Create a dictionary holding the show data
     [show_json, visited] = generate_dict(
-        {"name": show.title, "url": show.url_string, "showid": "{0}".format(showid), "imagelink": imagelink,
+        {"name": tv_show.title, "url": tv_show.url_string,
+         "showid": "{0}".format(showid), "imagelink": imagelink,
          "children": []}, showid, [str(showid)], user_shows)
 
     # It is possible that this show has no links
@@ -892,30 +968,33 @@ def ratings_data(request):
     :return: A HttpResponse containing the JSON for the rating graphs
     """
 
-    if (request.method != 'POST'):
+    if request.method != 'POST':
         return HttpResponseRedirect('/')
 
     # Get show title out of POST data
     show_title = request.POST.__getitem__("show_slug")
 
     # Get the show based on the show_title
-    show = get_tv_show(show_title)
+    tv_show = get_tv_show(show_title)
 
-    if not show:
+    if not tv_show:
         # Show doesn't exist so redirect to index
         return HttpResponseRedirect('/')
 
-    seasons = {key: [] for key in range(1, show.num_seasons + 1)}
+    seasons = {key: [] for key in range(1, tv_show.num_seasons + 1)}
 
     # Get the episode data for this show
-    episodes = db.GqlQuery("SELECT name, season, ep_number, rating FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, "
-                           "ep_number", show)
+    episodes = db.GqlQuery(
+        "SELECT * FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, "
+        "ep_number", tv_show)
 
     # Create dict of seasons with dicts of ep_num:rating 
     for e in episodes.run():
         seasons[e.season].append(
-            {'name': "{0}".format(e.name.encode('utf8')), 'episode': e.ep_number, 'rating': e.rating,
-             'url': "/show/{0}#s{1:02d}e{2:02d}".format(show.url_string, e.season, e.ep_number)})
+            {'name': "{0}".format(e.name.encode('utf8')),
+             'episode': e.ep_number, 'rating': e.rating,
+             'url': "/show/{0}#s{1:02d}e{2:02d}".format(tv_show.url_string,
+                                                        e.season, e.ep_number)})
 
         # Remove any empty seasons
     remove_empty_seasons(seasons)
@@ -924,11 +1003,11 @@ def ratings_data(request):
 
     # Check for seasons with no ratings
     for key in seasons.keys():
-        ratings = 'false'
+        ratings_bool = 'false'
         for ep in seasons[key]:
             if ep["rating"] >= 0:
-                ratings = 'true'
-        if ratings == 'false':
+                ratings_bool = 'true'
+        if ratings_bool == 'false':
             no_ratings.append(key)
 
     data = {"shows": seasons, "no_ratings": no_ratings}
@@ -943,9 +1022,10 @@ def search_tags(request):
     :param request: A HttpRequest object
     :return: A HttpResponse containing the JSON of the tags required for the auto-complete search
     """
-    q = db.GqlQuery('SELECT title FROM TVShow')
+    q = db.GqlQuery('SELECT * FROM TVShow')
     show_names = [s.title for s in q.run()]
-    return HttpResponse(json.dumps(dict(tags=show_names)), content_type="application/json")
+    return HttpResponse(json.dumps(dict(tags=show_names)),
+                        content_type="application/json")
 
 
 ########## OTHER ##########
