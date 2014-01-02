@@ -83,7 +83,8 @@ $(document).ready(function(){
                          * straight to the show page for the selected entry. Have to replace spaces with
                          * underscores and all uppercase to lowercase.
                          */
-                        var url_string = ui.item.label.toLowerCase(); 
+                        var url_string = ui.item.label.toLowerCase();
+                        url_string = url_string.replace(/[^\w\s]|_/g, "")
                         url_string = url_string.split(' ').join('_');
                         window.location.replace("/show/" + url_string); 
                     }
