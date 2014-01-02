@@ -16,21 +16,21 @@
 
 from django import forms
 
+
 class EditTVShowForm(forms.Form):
     """
     A Class used to create the form for editing a TV show
     """
-    
+
     textFieldWidget = forms.TextInput(attrs={'class': 'form-control'})
-    
+
     title = forms.CharField(label='Title:', widget=textFieldWidget)
-    desc = forms.CharField(label='Description:', required=False, 
-            widget=forms.Textarea(attrs={'class': 'form-control', 'rows' : '5'}))
+    desc = forms.CharField(label='Description:', required=False,
+                           widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
     rating = forms.FloatField(label="Rating:", required=False, widget=textFieldWidget)
-    status = forms.ChoiceField( choices=(
-                                ("Continuing","Continuing"), ("Ended","Ended"),
-                                ("On Hiatus","On Hiatus"), ("Other","Other")),
-                                label='Choice:', required=True, widget=forms.Select(attrs={'class': 'form-control'}))
+    status = forms.ChoiceField(choices=(("Continuing", "Continuing"), ("Ended", "Ended"),
+                                        ("On Hiatus", "On Hiatus"), ("Other", "Other")), label='Choice:', required=True,
+                               widget=forms.Select(attrs={'class': 'form-control'}))
     fanart = forms.URLField(label='Fanart:', required=False, widget=textFieldWidget)
     genre = forms.CharField(label='Genre:', required=False, widget=textFieldWidget)
     subgenre = forms.CharField(label='Sub-genre:', required=False, widget=textFieldWidget)

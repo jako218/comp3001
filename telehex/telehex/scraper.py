@@ -65,6 +65,9 @@ class Scraper:
                 6. Reserved
                 7. Reserved
         """
+        self.series_key = None
+        self.rating = -1
+
         # Determine if this is a new scrape or a rescrape
         self.rescrape = rescrape
 
@@ -81,8 +84,8 @@ class Scraper:
         self.disable_scraping = self.options_array[0]
         self.disable_episode_ratings = self.options_array[1]
         self.disbable_fanart_scraping = self.options_array[2]
-        self.disbable_TVShow_scraping = self.options_array[3]
-        self.disbable_TVEpisode_scraping = self.options_array[4]
+        self.disbable_tvshow_scraping = self.options_array[3]
+        self.disbable_tvepisode_scraping = self.options_array[4]
 
         # If the scraping isn't disable do this
         if not self.disable_scraping:
@@ -92,7 +95,8 @@ class Scraper:
             self.tvdb_id = tvdb_id
 
             # Fetch the XML from tvdb and turn into a BeautifulSoup Object
-            self.tvdbxml = urllib2.urlopen("http://thetvdb.com/api/{0}/series/{1}/all/en.xml".format(API_KEY, self.tvdb_id))
+            self.tvdbxml = urllib2.urlopen(
+                "http://thetvdb.com/api/{0}/series/{1}/all/en.xml".format(API_KEY, self.tvdb_id))
             self.tvdbsoup = BeautifulSoup(self.tvdbxml.read(), 'xml')
 
             # Generate the show slug for the show, e.g. Breaking Bad becomes breaking_bad
@@ -103,7 +107,7 @@ class Scraper:
             # Perform the scraping for the TVShow
             self.get_series_info()
 
-            if not self.disbable_TVEpisode_scraping:
+            if not self.disbable_tvepisode_scraping:
                 # Perform the scraping for the TVEpisodes
                 self.get_episode_info()
 
@@ -120,11 +124,9 @@ class Scraper:
         The information which is scraped includes show rating, show name, show description and show status.
         """
 
-        fanart_url = ""
-
-        if not self.disbable_TVShow_scraping:
+        if not self.disbable_tvshow_scraping:
             if not self.rescrape:
-                # Generate the fanart URL if fanart exists. This is used later to generate the Hexagon image for the show
+                # Generate the fanart URL if fanart exists. Used to generate the Hexagon image for the show
                 fanart_url = TVDB_BANNER_URL + self.tvdbsoup.fanart.text if self.tvdbsoup.fanart.text else None
             else:
                 show = TVShow.get_by_key_name(self.tvdb_id)
@@ -134,7 +136,8 @@ class Scraper:
             genres = self.tvdbsoup.Genre.text.strip('|').split('|')
 
             # Find the number of seasons
-            num_of_seasons = int(self.tvdbsoup.find_all('SeasonNumber')[-1].text) if self.tvdbsoup.find_all('SeasonNumber') else 0
+            num_of_seasons = int(self.tvdbsoup.find_all('SeasonNumber')[-1].text) if self.tvdbsoup.find_all(
+                'SeasonNumber') else 0
 
             # If this is a new scrape and the number of seasons is greated than 10 disable
             # episode rating scraping to conserve app engine quota
@@ -154,8 +157,7 @@ class Scraper:
                              imdb_id=self.tvdbsoup.IMDB_ID.text,
                              url_string=self.slug,
                              last_scraped=datetime.utcfromtimestamp(0),
-                             num_seasons=num_of_seasons,
-            ).put()
+                             num_seasons=num_of_seasons).put()
 
             # Obtain the key for the TVShow
             self.series_key = tv_show
@@ -166,11 +168,13 @@ class Scraper:
 
         # If fanart exists generate a hexagon image and store in the datastore
         if not self.disbable_fanart_scraping and fanart_url:
-            
-            HexImages(parent=self.series_key,
-                      key_name=self.tvdb_id,
-                      image=db.Blob(Hexagon(fanart_url).get_hex())
-            ).put()
+            hexagon_image = Hexagon(fanart_url).get_hex()
+
+            # Check if the hexagon is valid
+            if hexagon_image:
+                HexImages(parent=self.series_key,
+                          key_name=self.tvdb_id,
+                          image=db.Blob(hexagon_image)).put()
 
     def get_episode_info(self):
         """
@@ -183,7 +187,7 @@ class Scraper:
         # if the show has an IMDB id, try and grab the episode ratings for this show
         if not self.disable_episode_ratings and self.tvdbsoup.IMDB_ID.text:
             try:
-                # Turn the IMDB ratings pages into a BeautifulSoup Object, allowing particular page elements to be grabbed
+                # Turn the ratings pages into a BeautifulSoup Object, allowing particular page elements to be grabbed
                 imdbhtml = urllib2.urlopen("http://www.imdb.com/title/{0}/epdate".format(self.tvdbsoup.IMDB_ID.text))
                 imdbsoup = BeautifulSoup(imdbhtml.read())
 
@@ -244,9 +248,7 @@ class Scraper:
                           thumb=episode.filename.text,
                           airdate=airdate,
                           rating=ep_rating,
-                          imdb_id=episode.IMDB_ID.text
-                ).put()
-
+                          imdb_id=episode.IMDB_ID.text).put()
 
     def get_url_slug(self):
         """
@@ -268,11 +270,11 @@ class Scraper:
             soup = BeautifulSoup(xml.read(), 'xml')
             tv_show = soup.find('movie')
             try:
-                rating = float(tv_show['imdbRating']) if tv_show else -1
+                self.rating = float(tv_show['imdbRating']) if tv_show else -1
             except ValueError:
-                rating = -1
+                self.rating = -1
 
-            return rating
+            return self.rating
 
         return -1
 
@@ -281,6 +283,9 @@ class Search:
     """
     A Class used to perform a Search. Makes use of The TVDB's search API
     """
+
+    def __init__(self):
+        self.success = False
 
     def search_tvdb(self, query):
         """
@@ -297,7 +302,7 @@ class Search:
             # Use the tvdb to provide the search results
             searchsoup = BeautifulSoup(urllib2.urlopen(TVDB_SEARCH_URL.format(urllib2.quote(query))).read(), 'xml')
 
-            # Populate the list of search results, each item in the list is a dictionary containing the id, name and desc
+            # Populate the list of search results, each item in the list is a dict containing the id, name and desc
             # of the tv show
             for series in searchsoup.find_all('Series'):
                 desc = "No Description Available"
@@ -309,6 +314,8 @@ class Search:
                     'name': series.SeriesName.text,
                     'desc': desc,
                 })
+
+            self.success = True
 
         except IOError:
             # Use the datastore to provide the search results

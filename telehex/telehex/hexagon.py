@@ -43,20 +43,23 @@ class Hexagon:
         # Draw a hexagon on the mask
         draw.polygon([(0, 432), (250, 0), (750, 0), (1000, 432), (750, 864), (250, 864)], fill=255)
 
-        # Open the image specified by the url
-        im = Image.open(StringIO(urllib2.urlopen(url).read()))
+        try:
+            # Open the image specified by the url
+            im = Image.open(StringIO(urllib2.urlopen(url).read()))
+            # Put the mask in the center of the image from the url
+            hexagon = ImageOps.fit(im, mask.size, centering=(0.5, 0.5))
+            hexagon.putalpha(mask)
 
-        # Put the mask in the center of the image from the url
-        hexagon = ImageOps.fit(im, mask.size, centering=(0.5, 0.5))
-        hexagon.putalpha(mask)
+            # Resize the image to 500 x 500 px
+            hexagon.thumbnail((500, 500), Image.ANTIALIAS)
 
-        # Resize the image to 500 x 500 px
-        hexagon.thumbnail((500, 500), Image.ANTIALIAS)
+            # Output the contents of the image as a string which allows the hexa to be saved as a blob in the datastore
+            output = StringIO()
+            hexagon.save(output, format="png")
+            self.hex = output.getvalue()
 
-        # Output the contents of the image as a string which allows the hexagon to be saved as a blob in the datastore
-        output = StringIO()
-        hexagon.save(output, format="png")
-        self.hex = output.getvalue()
+        except urllib2.HTTPError:
+            self.hex = None
 
     def get_hex(self):
         """
