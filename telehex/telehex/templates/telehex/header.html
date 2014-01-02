@@ -7,11 +7,11 @@
             <div class="pull-right" id="inoutbutton">
                 {% if user %}
                 <div class="dropdown dropdown-menu-square" style="display: inline-block;">
-                    <a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/profile/" style="text-decoration:none; outline: none">{{ user.nickname }} <i style="color: #fff" class="fa fa-caret-down"></i></a>
+                    <a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/your-shows/" style="text-decoration:none; outline: none">{{ user.nickname }} <i style="color: #fff" class="fa fa-caret-down"></i></a>
                     <ul class="dropdown-menu" style="background" role="menu" aria-labelledby="dLabel">
                         <li role="presentation" class="dropdown-header">Navigate to...</li>
-                        <li><a href="/profile/">Profile</a></li>
-                        <li><a href="/profile/calendar/">Calendar</a></li>
+                        <li><a href="/your-shows/">Your Shows</a></li>
+                        <li><a href="/your-shows/calendar/">Calendar</a></li>
                         {% if is_admin %}<li><a href="/admin">Admin</a></li>{% endif %}
                     </ul>
                 </div>

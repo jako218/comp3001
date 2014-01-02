@@ -3,7 +3,7 @@
 {% load ratings_helper %}
 {% include "./telehex/header.html" %}
 
-{% block title %}- {{ user.nickname }}'s Profile{% endblock %}
+{% block title %}- Show Statistics{% endblock %}
 
 {% block content %}
 
@@ -11,7 +11,7 @@
 <div class="container">
     <!-- title for the page -->
     <div class="profile-title-styling">
-        <h1>{{user.nickname}}'s Subscribed Show Statistics</h1>
+        <h1>Subscribed Show Statistics</h1>
     </div>
     <!-- pie charts in bootflat's thumbnail class' -->
     <div class="row">
@@ -57,5 +57,5 @@
 <!-- JavaScript for the graphs -->
 {%block scripts %}
 <script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="{% static "js/our_js/profile_stats.js" %}"></script>
+<script src="{% static "js/our_js/show_stats.js" %}"></script>
 {% endblock %}

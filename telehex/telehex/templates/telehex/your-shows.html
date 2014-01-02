@@ -4,20 +4,19 @@
 {% include "./telehex/header.html" %}
 
 
-{% block title %}- {{ user.nickname }}'s Profile{% endblock %}
+{% block title %}- {{ user.nickname }}'s Shows{% endblock %}
 
 {%block content %}
 <div class="container">
     <!-- heading title -->
     <div class="profile-title-styling">
-        <h1>Hello, {{user.nickname}}</h1>
+        <h1>Your Subscribed Shows</h1>
     </div>
     <!-- don't allow them to view stats if they have not subscribed to any shows -->
     {% if shows %}
     <!-- create the options bar to take you to statistics -->
         <div class="caption-styling show_padding">
-            <h2>Your Subscribed Shows</h2>
-            <a href="/profile/stats" class="stats_link"> View your user statistics </a>
+            <a href="/your-shows/stats" class="stats_link"> View your show statistics </a>
         </div>
     <!-- hexagons and descriptions inside thumbnails -->
     <div>
@@ -75,4 +74,4 @@
 </div>
 {% endblock %}
 
-{% block scripts %}<script src="{% static "js/our_js/profile.js" %}"></script>{% endblock %}
+{% block scripts %}<script src="{% static "js/our_js/your_shows.js" %}"></script>{% endblock %}

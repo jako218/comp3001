@@ -287,79 +287,6 @@ def logout(request):
     return HttpResponseRedirect('/')
 
 
-def profile(request):
-    """
-    Returns the profile page for a specific user. The profile page allows a user to see which shows they have
-    subscribed to and tells them how many days are left until a show airs.
-
-    :param request: The request object for the profile page.
-    :return: HttpResponse Object
-    """
-
-    # Check if a user is currently logged in - if not redirect to login screen
-    user = users.get_current_user()
-    if not user:
-        return HttpResponseRedirect(
-            '/login?continue={0}'.format(request.get_full_path()))
-
-    # Retrieve all the show ids this user is subscribed to
-    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id = :id",
-                    id=user.user_id())
-    show_ids = [str(showid.show_id) for showid in q.run()]
-
-    template_values = {}
-
-    # Get the subscribed TVShows based on the show ids
-    subscribed_tv_shows = TVShow.get_by_key_name(show_ids)
-
-    # Determine the next episode yet to air. If all episodes have aired, get the latest aired episode
-    subs_next_episodes = []
-    for ids in subscribed_tv_shows:
-        q = db.GqlQuery(
-            "SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1",
-            date.today(), ids)
-        nextepisode = q.run()
-        if q.count() > 0:
-            subs_next_episodes.append(nextepisode.next())
-        else:
-            subs_next_episodes.append(None)
-
-        # Generate the template values. Have to zip the two lists so iteration is possible in Django. The shows list
-        # is ordered based on closest episode of a continuing show. Ended shows latest episodes are given a max possible
-        # date so that they appear at the end of the list
-        template_values = {
-            'shows': sorted(zip(subscribed_tv_shows, subs_next_episodes),
-                            key=lambda x: x[1].airdate if x[1] else date(MAXYEAR,
-                                                                         12, 31))}
-
-    return render(request, 'telehex/profile.html', template_values)
-
-
-def profile_stats(request):
-    """
-    Displays the profile stats page if a user is logged in and has subscribe to some shows
-
-    :param request: The HTTP request for this page.
-    :return: A HttpResponse Object containing the profile stats for this user
-    """
-
-    # Check if the user is logged in - if not redirect them to login
-    user = users.get_current_user()
-    if not user:
-        return HttpResponseRedirect(
-            '/login?continue={0}'.format(request.get_full_path()))
-
-    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id=:id",
-                    id=user.user_id())
-    q.run()
-
-    # If a user has no shows they shouldn't be able to view this page, redirect back to their profile page
-    if q.count() == 0:
-        return render(request, 'telehex/profile.html')
-
-    return render(request, 'telehex/profile_stats.html')
-
-
 def scrape(request, tvdb_id):
     """
     Takes a scrape request, constructs a Scraper object and performs a scrape for the show if it hasn't been scraped
@@ -530,6 +457,30 @@ def show(request, show_title):
     return response
 
 
+def show_stats(request):
+    """
+    Displays the stats page if a user is logged in and has subscribe to some shows
+
+    :param request: The HTTP request for this page.
+    :return: A HttpResponse Object containing the profile stats for this user
+    """
+
+    # Check if the user is logged in - if not redirect them to login
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect(
+            '/login?continue={0}'.format(request.get_full_path()))
+
+    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id=:id",
+                    id=user.user_id())
+    q.run()
+
+    # If a user has no shows they shouldn't be able to view this page, redirect back to their profile page
+    if q.count() == 0:
+        return render(request, 'telehex/profile.html')
+
+    return render(request, 'telehex/show-stats.html')
+
 def ratings(request, show_title):
     """
     Takes a show title and returns a page which contains graphs of all the episode rating
@@ -637,6 +588,55 @@ def unsubscribe(request):
     usershow.delete()
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+
+def your_shows(request):
+    """
+    Returns the subscribed show page for a specific user. The page allows a user to see which
+    shows they have subscribed to and tells them how many days are left until a show airs.
+
+    :param request: The request object for the profile page.
+    :return: HttpResponse Object
+    """
+
+    # Check if a user is currently logged in - if not redirect to login screen
+    user = users.get_current_user()
+    if not user:
+        return HttpResponseRedirect(
+            '/login?continue={0}'.format(request.get_full_path()))
+
+    # Retrieve all the show ids this user is subscribed to
+    q = db.GqlQuery("SELECT * FROM UserShow WHERE user_id = :id",
+                    id=user.user_id())
+    show_ids = [str(showid.show_id) for showid in q.run()]
+
+    template_values = {}
+
+    # Get the subscribed TVShows based on the show ids
+    subscribed_tv_shows = TVShow.get_by_key_name(show_ids)
+
+    # Determine the next episode yet to air. If all episodes have aired, get the latest aired episode
+    subs_next_episodes = []
+    for ids in subscribed_tv_shows:
+        q = db.GqlQuery(
+            "SELECT * FROM TVEpisode WHERE airdate >= :1 AND ANCESTOR IS :2 ORDER BY airdate LIMIT 1",
+            date.today(), ids)
+        nextepisode = q.run()
+        if q.count() > 0:
+            subs_next_episodes.append(nextepisode.next())
+        else:
+            subs_next_episodes.append(None)
+
+        # Generate the template values. Have to zip the two lists so iteration is possible in Django. The shows list
+        # is ordered based on closest episode of a continuing show. Ended shows latest episodes are given a max possible
+        # date so that they appear at the end of the list
+        template_values = {
+            'shows': sorted(zip(subscribed_tv_shows, subs_next_episodes),
+                            key=lambda x: x[1].airdate if x[1] else date(MAXYEAR,
+                                                                         12, 31))}
+
+    return render(request, 'telehex/your-shows.html', template_values)
+
 
 ########## FUNCTIONS ##########
 
@@ -823,7 +823,110 @@ def create_profile_pie_data(request, attribute):
     return response
 
 
-def profile_stats_data(request):
+def ratings_data(request):
+    """
+    A function which returns the JSON required to construct the rating graphs
+
+    :param request: A HttpRequest object
+    :return: A HttpResponse containing the JSON for the rating graphs
+    """
+
+    if request.method != 'POST':
+        return HttpResponseRedirect('/')
+
+    # Get show title out of POST data
+    show_title = request.POST.__getitem__("show_slug")
+
+    # Get the show based on the show_title
+    tv_show = get_tv_show(show_title)
+
+    if not tv_show:
+        # Show doesn't exist so redirect to index
+        return HttpResponseRedirect('/')
+
+    seasons = {key: [] for key in range(1, tv_show.num_seasons + 1)}
+
+    # Get the episode data for this show
+    episodes = db.GqlQuery(
+        "SELECT * FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, "
+        "ep_number", tv_show)
+
+    # Create dict of seasons with dicts of ep_num:rating 
+    for e in episodes.run():
+        seasons[e.season].append(
+            {'name': "{0}".format(e.name.encode('utf8')),
+             'episode': e.ep_number, 'rating': e.rating,
+             'url': "/show/{0}#s{1:02d}e{2:02d}".format(tv_show.url_string,
+                                                        e.season, e.ep_number)})
+
+        # Remove any empty seasons
+    remove_empty_seasons(seasons)
+
+    no_ratings = []
+
+    # Check for seasons with no ratings
+    for key in seasons.keys():
+        ratings_bool = 'false'
+        for ep in seasons[key]:
+            if ep["rating"] >= 0:
+                ratings_bool = 'true'
+        if ratings_bool == 'false':
+            no_ratings.append(key)
+
+    data = {"shows": seasons, "no_ratings": no_ratings}
+
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+def search_tags(request):
+    """
+    A function which returns the JSON required for the auto-completing search
+
+    :param request: A HttpRequest object
+    :return: A HttpResponse containing the JSON of the tags required for the auto-complete search
+    """
+    q = db.GqlQuery('SELECT * FROM TVShow')
+    show_names = [s.title for s in q.run()]
+    return HttpResponse(json.dumps(dict(tags=show_names)),
+                        content_type="application/json")
+
+
+def similarity_data(request):
+    """
+    A function which returns the JSON required to construct the show similarity graph
+
+    :param request: A HttpRequest object
+    :return: A HttpResponse containing the JSON for the similarity graph
+    """
+
+    if request.method != 'POST':
+        return HttpResponseRedirect('/')
+
+    # Get show title out of POST data
+    showid = request.POST.__getitem__("show_id")
+
+    # Get the show object for this stats page
+    tv_show = TVShow.get_by_key_name(showid)
+
+    # Get all the user shows
+    q = db.GqlQuery("SELECT * FROM UserShow")
+    user_shows = [(sid.show_id, sid.user_id) for sid in q.run()]
+
+    imagelink = "/hexagons/{0}".format(
+        showid) if tv_show.fanart else '/static/img/errorhex.png'
+    # Create a dictionary holding the show data
+    [show_json, visited] = generate_dict(
+        {"name": tv_show.title, "url": tv_show.url_string,
+         "showid": "{0}".format(showid), "imagelink": imagelink,
+         "children": []}, showid, [str(showid)], user_shows)
+
+    # It is possible that this show has no links
+    if 'children' not in show_json:
+        show_json['children'] = []
+
+    return HttpResponse(json.dumps(show_json), content_type="application/json")
+
+def stats_data(request):
     """
     A function which returns the JSON required to construct a user's stats page
 
@@ -895,7 +998,7 @@ def profile_stats_data(request):
                         content_type="application/json")
 
 
-def profile_stats_pie_genre(request):
+def stats_pie_genre(request):
     """
     A function which returns a CSV required to construct a pie chart on user's stats page
 
@@ -905,7 +1008,7 @@ def profile_stats_pie_genre(request):
     return create_profile_pie_data(request, "genre")
 
 
-def profile_stats_pie_ratings(request):
+def stats_pie_ratings(request):
     """
     A function which returns a CSV required to construct a ratings pie chart on user's stats page
 
@@ -915,7 +1018,7 @@ def profile_stats_pie_ratings(request):
     return create_profile_pie_data(request, "rating")
 
 
-def profile_stats_pie_status(request):
+def stats_pie_status(request):
     """
     A function which returns a CSV required to construct a pie chart on user's stats page
 
@@ -923,111 +1026,6 @@ def profile_stats_pie_status(request):
     :return: A HttpResponse containing the JSON for the tree map
     """
     return create_profile_pie_data(request, "status")
-
-
-def similarity_data(request):
-    """
-    A function which returns the JSON required to construct the show similarity graph
-
-    :param request: A HttpRequest object
-    :return: A HttpResponse containing the JSON for the similarity graph
-    """
-
-    if request.method != 'POST':
-        return HttpResponseRedirect('/')
-
-    # Get show title out of POST data
-    showid = request.POST.__getitem__("show_id")
-
-    # Get the show object for this stats page
-    tv_show = TVShow.get_by_key_name(showid)
-
-    # Get all the user shows
-    q = db.GqlQuery("SELECT * FROM UserShow")
-    user_shows = [(sid.show_id, sid.user_id) for sid in q.run()]
-
-    imagelink = "/hexagons/{0}".format(
-        showid) if tv_show.fanart else '/static/img/errorhex.png'
-    # Create a dictionary holding the show data
-    [show_json, visited] = generate_dict(
-        {"name": tv_show.title, "url": tv_show.url_string,
-         "showid": "{0}".format(showid), "imagelink": imagelink,
-         "children": []}, showid, [str(showid)], user_shows)
-
-    # It is possible that this show has no links
-    if 'children' not in show_json:
-        show_json['children'] = []
-
-    return HttpResponse(json.dumps(show_json), content_type="application/json")
-
-
-def ratings_data(request):
-    """
-    A function which returns the JSON required to construct the rating graphs
-
-    :param request: A HttpRequest object
-    :return: A HttpResponse containing the JSON for the rating graphs
-    """
-
-    if request.method != 'POST':
-        return HttpResponseRedirect('/')
-
-    # Get show title out of POST data
-    show_title = request.POST.__getitem__("show_slug")
-
-    # Get the show based on the show_title
-    tv_show = get_tv_show(show_title)
-
-    if not tv_show:
-        # Show doesn't exist so redirect to index
-        return HttpResponseRedirect('/')
-
-    seasons = {key: [] for key in range(1, tv_show.num_seasons + 1)}
-
-    # Get the episode data for this show
-    episodes = db.GqlQuery(
-        "SELECT * FROM TVEpisode WHERE ANCESTOR IS :1 ORDER BY season, "
-        "ep_number", tv_show)
-
-    # Create dict of seasons with dicts of ep_num:rating 
-    for e in episodes.run():
-        seasons[e.season].append(
-            {'name': "{0}".format(e.name.encode('utf8')),
-             'episode': e.ep_number, 'rating': e.rating,
-             'url': "/show/{0}#s{1:02d}e{2:02d}".format(tv_show.url_string,
-                                                        e.season, e.ep_number)})
-
-        # Remove any empty seasons
-    remove_empty_seasons(seasons)
-
-    no_ratings = []
-
-    # Check for seasons with no ratings
-    for key in seasons.keys():
-        ratings_bool = 'false'
-        for ep in seasons[key]:
-            if ep["rating"] >= 0:
-                ratings_bool = 'true'
-        if ratings_bool == 'false':
-            no_ratings.append(key)
-
-    data = {"shows": seasons, "no_ratings": no_ratings}
-
-    return HttpResponse(json.dumps(data), content_type="application/json")
-
-
-def search_tags(request):
-    """
-    A function which returns the JSON required for the auto-completing search
-
-    :param request: A HttpRequest object
-    :return: A HttpResponse containing the JSON of the tags required for the auto-complete search
-    """
-    q = db.GqlQuery('SELECT * FROM TVShow')
-    show_names = [s.title for s in q.run()]
-    return HttpResponse(json.dumps(dict(tags=show_names)),
-                        content_type="application/json")
-
 
 ########## OTHER ##########
 
