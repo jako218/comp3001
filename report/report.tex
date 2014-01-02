@@ -126,10 +126,17 @@ JS/HTML/CSS front end using a variety of external sources. Chose to use jQuery a
 
 \newpage	
 \section{Critical evaluation of the prototype submitted}
+If the prototype were to be released to the public then GAE probably wouldn't be the best place to host the application without incurring significant charges as the application is extremely data heavy. Furthermore, it was found that scraping large shows exceeded the memory usage of the app engine, as the xml parser consumed a large amount of memory when traversing large xml files. 
+
+Additionally there are a few issues we would like to have but were having problems. Ideally we would like the calendar to display the times shows are airing, however the api we were using had no consistent time format which made this impossible. A page for each episode would have also been desirable so users could post their comments about the show. 
+
+A consistent coding style was aimed for with python being documented with Sphinx. Additionally javascript was checked with JSHint to ensure the code was correct. However, these tools were only used as a guideline...
+
 Mention the group dynamics in the section - did we work well together or did hayden do everything? etc. How would we solve disagreements? We totally held regular meetings and did votes and shit. 
 
 What went well?
 The product built is pretty rad and i'd actually use it.
+Issues were tracked on github and assigned to users so they could be resolved as quickly as possible
 
 What went wrong?
 Didn't plan well enough, didnt share work out well enough, meant we had to do a lot of work remotely over christmas whilst group members had other concerns too.
