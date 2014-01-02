@@ -43,3 +43,4 @@ class EditTVShowForm(forms.Form):
     disable_tvshow_scraping = forms.BooleanField(label="Disable TVShow Scraping:", required=False)
     disable_tvepisode_scraping = forms.BooleanField(label="Disable TVEpisode Scraping:", required=False)
     disable_ep_desc_display = forms.BooleanField(label="Disable Episode Description Display:", required=False)
+    disable_ep_display = forms.BooleanField(label="Disable Episode Display:", required=False)

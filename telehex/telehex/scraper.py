@@ -63,7 +63,8 @@ class Scraper:
                     0 = TVEpisode scraping enabled, 1 = TVEpisode scraping disabled
                 5. Disable Episode Description Display
                     0 = display episode desc, 1 = don't display episode desc
-                6. Reserved
+                6. Disable Episode Display
+                    0 = display episodes, 1 = don't display episodes
                 7. Reserved
         """
         self.series_key = None

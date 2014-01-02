@@ -43,7 +43,9 @@
 	                            <li><a href="/scrape/{{show.key.name}}?force=1" class="load-on-click" /><i class="fa fa-refresh fa-fw"></i> rescrape</a></li>
                                 <li><a href="/admin/edit_show/{{show.key.name}}" class="load-on-click" /><i class="fa fa-pencil fa-fw"></i> edit show</a></li>
 	                            {% endif %}
-	                            <li><a href="/ratings/{{ show.url_string }}"><i class="fa fa-bar-chart-o fa-fw"></i> graph</a></li>
+	                            {% if show.options.6 == "0"%}
+                                <li><a href="/ratings/{{ show.url_string }}"><i class="fa fa-bar-chart-o fa-fw"></i> graph</a></li>
+                                {% endif %}
 	                            {% if similar %}
                                 <li><a href="/similar/{{ show.url_string }}"><i class="fa fa-sitemap fa-fw"></i> similar shows</a></li>
                                 {% endif %}
@@ -128,7 +130,7 @@
                 </div>
 
                 <br>
-
+                {% if show.options.6 == "0"%}
                 <div class="row">
                     <div class="panel-group" id="accordion">
                         {% for season, episodes in seasons_dict.items reversed %}
@@ -203,6 +205,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

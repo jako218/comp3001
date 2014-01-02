@@ -154,6 +154,7 @@ def edit_show(request, showid):
             options_array[3] = form.cleaned_data['disable_tvshow_scraping']
             options_array[4] = form.cleaned_data['disable_tvepisode_scraping']
             options_array[5] = form.cleaned_data['disable_ep_desc_display']
+            options_array[6] = form.cleaned_data['disable_ep_display']
             tv_show.options = "".join(str(int(x)) for x in options_array)
 
             # Recreate the url string
@@ -180,7 +181,8 @@ def edit_show(request, showid):
                      'disable_fanart_scraping': checkbox_values[2],
                      'disable_tvshow_scraping': checkbox_values[3],
                      'disable_tvepisode_scraping': checkbox_values[4],
-                     'disable_ep_desc_display': checkbox_values[5]}
+                     'disable_ep_desc_display': checkbox_values[5],
+                     'disable_ep_display': checkbox_values[6]}
         form = EditTVShowForm(form_data)
 
     return render(request, 'telehex/edit_show.html',
