@@ -539,11 +539,11 @@ path.connection {
 
 /* Edit show Page */
 
-#edit_show_form {
+#edit_show_form, #edit_episode_form {
     margin-top: 30px;
 }
 
-.fanart{
+.fanart, .ep-thumbnail{
     max-width: 100%;
     margin-bottom: 30px;
 }

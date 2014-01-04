@@ -149,6 +149,9 @@
                                                 <th class="sortable">Name</th>
                                                 <th class="sortable">Air Date</th>
                                                 <th class="sortable">Rating</th>
+                                                {% if is_admin %}
+                                                <th></th>
+                                                {% endif %}
                                             </tr>
                                         </thead>
 
@@ -164,11 +167,12 @@
                                                     <span class="ep-desc" style="display: none">
                                                         <div class="media">
                                                             {% if episode.thumb %}
-                                                            <img class="pull-left media-object img-rounded" src="http://thetvdb.com/banners/{{episode.thumb}}" style="width: 120px; height: 90px;">
+                                                            <img class="pull-left media-object img-rounded" src="{{episode.thumb}}" style="width: 120px; height: 90px;">
                                                             {% endif %}
                                                             <div class="media-body">
                                                                 <h4 class="media-heading">{{ episode.name }}</h4>
                                                                 <p>{{episode.desc}}</p>
+                                                                <p><a href="http://www.imdb.com/title/{{ episode.imdb_id }}">View on IMDB</a></p>
                                                             </div>
                                                         </div>
                                                     </span>
@@ -195,6 +199,10 @@
                                             </td>
                                             {% endif %}
 
+                                            {% if is_admin %}
+                                            <td><center><a href="/admin/edit_show/{{show.key.name}}/edit_episode/{{episode.key.name}}"><i class="fa fa-pencil fa-fw"></i></a></center></td>
+                                            {% endif %}
+
                                         </tr>
                                         {% endfor %}
 
@@ -212,68 +220,5 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-<script>
-    $(document).ready(function(){
-        if(location.hash){
-            $(location.hash).closest('.panel-collapse').removeClass("collapse").addClass("in");
-            $(location.hash).css('background-color', '#2986b9');
-            $(location.hash).animate({'background-color': "transparent"}, 4000);
-        }
-        else {
-            $('#accordion').find('.panel-collapse').first().removeClass("collapse").addClass("in");
-        }
+{% block scripts %}<script src="{% static "js/our_js/show.js" %}"></script>{% endblock %}
 
-        $(".rating-col").each(function() {
-            var r = $(this).children('.rating-num').text();
-            $(this).children('.rating-bar').css('width', (r*10)+"%");
-        });
-
-        $('.seasontable').tablesorter({
-            /* Sort the first column in ascending order, by default.
-            sortList: [[0,0]],
-
-            /* Make jQuery TableSort use the data-sort-value attribute, if available
-               Otherwise, just fall back to the text in the table cell. */
-            textExtraction: function(node) {
-                var attr = $(node).attr('data-sort-value');
-                if(typeof attr !== 'undefined' && attr !== false) {
-                    return attr;
-                }
-                return $(node).text();
-            }
-        });
-
-        $('.balloon').each(function() {
-            var shown = false;
-            $(this).on("click", function(){
-                if($(window).width() < 1100) {
-                    return;
-                }
-                shown ? $(this).hideBalloon() : $(this).showBalloon();
-                shown = !shown;
-            }).showBalloon({
-                contents : $(this).children(".ep-desc").html(),
-                tipSize: 5,
-                position: "bottom right",
-                css: {
-                    backgroundColor: '#292929',
-                    border: 'solid 2px #292929',
-                    'box-shadow': 'none',
-                    color: 'white',
-                    'font-size': '0.9em',
-                    opacity: '1',
-                    padding: '10px',
-                    width: '400px'
-                },
-                hideDuration: 600
-            }).hideBalloon();
-
-            $(this).mouseleave(function(){
-                $(this).hideBalloon();
-                shown = false;
-            });
-        });
-    });
-</script>
-{% endblock %}

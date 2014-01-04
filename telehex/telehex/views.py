@@ -26,7 +26,7 @@ from google.appengine.ext import db
 from google.appengine.api import users
 
 # Telehex Imports
-from forms import EditTVShowForm
+from forms import EditTVShowForm, EditTVEpisodeForm
 from models import *
 from scraper import Scraper, Search
 
@@ -104,17 +104,71 @@ def calendar(request):
     return render(request, 'telehex/calendar.html',
                   {"email_updates": user_entry})
 
+def edit_episode(request, show_id, episode_id):
+    """
+    Provides the page that allows an admin to edit an episode for a show
+
+    :param request: The request object for this page.
+    :param show_id: The show_id this episode belongs to
+    :param episode_id: The id of this episode
+    :return:  A HttpResponse Object
+    """
+
+    # Check if the current user is logged in
+    if not users.get_current_user():
+        return HttpResponseRedirect('/login?continue=/admin/edit_show/show_id')
+
+    # Check if the current user is an admin
+    if not users.is_current_user_admin():
+        raise Http404
+
+    # Get the show and episode entities
+    tv_show = TVShow.get_by_key_name(show_id)
+    show_episode = TVEpisode.get_by_key_name(episode_id, tv_show)
+
+    if request.method == 'POST':
+        form = EditTVEpisodeForm(request.POST)
+
+        # Check if all the form fields have been filled in correctly
+        if form.is_valid():
+            show_episode.name = form.cleaned_data['name']
+            show_episode.airdate = form.cleaned_data['airdate']
+            show_episode.desc = form.cleaned_data['desc']
+            show_episode.ep_number = form.cleaned_data['ep_number']
+            show_episode.season = form.cleaned_data['season']
+            show_episode.rating = form.cleaned_data['rating']
+            show_episode.thumb = form.cleaned_data['thumbnail']
+            show_episode.imdb_id = form.cleaned_data['imdb_id']
+            show_episode.put()
+            return HttpResponseRedirect('/admin/edit_show/{0}/edit_episode/{1}'.format(show_id, episode_id))
+
+    else:
+        # Create the form data
+        form_data = {'name': show_episode.name,
+                     'airdate' : show_episode.airdate, 
+                     'desc': show_episode.desc,
+                     'ep_number': show_episode.ep_number,
+                     'season': show_episode.season, 
+                     'rating': show_episode.rating,
+                     'thumbnail': show_episode.thumb, 
+                     'imdb_id': show_episode.imdb_id}
+        form = EditTVEpisodeForm(form_data)
+
+
+    template_values = {'show' : tv_show, 'episode' : show_episode, 'form' : form}
+    return render(request, 'telehex/edit_episode.html', template_values)
 
 def edit_show(request, showid):
     """
-    Allows an admin to edit a specific show
+    Provides the page which allows an admin to edit a specific show
 
     :param request: The request object for this page.
+    :param showid: The id of the show to be edited
     :return:  A HttpResponse Object
     """
     # Check if the current user is logged in
     if not users.get_current_user():
-        return HttpResponseRedirect('/login?continue=/admin/edit_show')
+        return HttpResponseRedirect('/login?continue=/admin/edit_show/show_id')
 
     # Check if the current user is an admin
     if not users.is_current_user_admin():
