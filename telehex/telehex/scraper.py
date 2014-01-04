@@ -240,6 +240,8 @@ class Scraper:
                 except ValueError:
                     airdate = None
 
+                thumbnail_url = TVDB_BANNER_URL + episode.filename.text if episode.filename.text else None
+
                 # Put the TVEpisode into the datastore
                 TVEpisode(parent=self.series_key,
                           key_name=episode.id.text,
@@ -247,7 +249,7 @@ class Scraper:
                           season=int(episode.SeasonNumber.text),
                           desc=overview,
                           ep_number=int(episode.EpisodeNumber.text),
-                          thumb=episode.filename.text,
+                          thumb=thumbnail_url,
                           airdate=airdate,
                           rating=ep_rating,
                           imdb_id=episode.IMDB_ID.text).put()
