@@ -79,10 +79,8 @@ def email_update(request):
         if not ep_this_week:
             continue
 
-        print episodes_this_week
-        
         # Construct a message containing the episodes for this week
-        message = "Hello Telehex Subscriber,\n\nThese are the shows you've subscribed to airing this week:\n\n"
+        message = "Hello Telehex Subscriber,\n\nHere are your shows airing this week:\n\n"
         for key in sorted(episodes_this_week):
             if len(episodes_this_week[key]) == 0:
                 continue
@@ -91,8 +89,6 @@ def email_update(request):
                 message += "\t{0} - {1} (S{2:02d}E{3:02d})\n".format(show_ep['show_title'], show_ep['ep_name'],
                                                                     show_ep['season_num'], show_ep['ep_num'])
             message += "\n\n"
-
-        print message
 
         # Get the server to send the mail
         mail.send_mail(sender="updates@telehex3001.appspotmail.com",
