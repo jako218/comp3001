@@ -10,3 +10,4 @@ index.yaml
 *.fls
 *.log
 *.gz
+report/report.pdf
