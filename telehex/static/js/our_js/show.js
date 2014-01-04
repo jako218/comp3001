@@ -2,13 +2,12 @@
  * show.js is the JavaScript for various aspects of the show page, including
  * generating the rating bars and providing the tooltips for the episode description
  */
-
-
+ 
 /*
  * Waits for the page to load before adding tablesorter, episode tooltips, etc.
  */
 $(document).ready(function () {
-    
+
     // Get the location hash from the url. If it exists then collapse the first panel
     // and expand the panel the location hash resides within
     if (location.hash) {
@@ -42,13 +41,13 @@ $(document).ready(function () {
     });
 
     // Add a balloon tooltip for any episodes that have descriptions
-    $('.balloon').each(function(){
+    $('.balloon').each(function () {
         $(this).balloon({
             contents: $(this).children(".ep-desc").html(),
             tipSize: 5,
             delay: 200,
             position: "bottom right",
-            // Add the css to the ballloon tooltip
+            // Add the css to the balloon tooltip
             css: {
                 backgroundColor: '#292929',
                 border: 'solid 2px #292929',
