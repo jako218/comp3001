@@ -30,7 +30,8 @@ $(document).ready(function () {
     $('.seasontable').tablesorter({
         // Sort the first column in ascending order, by default: sortList: [[0,0]] 
         // Make jQuery TableSort use the data-sort-value attribute, if available
-        // Otherwise, just fall back to the text in the table cell.
+        // Otherwise, just fall back to the text in the table cell. Mainly 
+        // Used for sorting dates
         textExtraction: function (node) {
             var attr = $(node).attr('data-sort-value');
             if (typeof attr !== 'undefined' && attr !== false) {
