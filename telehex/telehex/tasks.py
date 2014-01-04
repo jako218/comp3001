@@ -27,7 +27,7 @@ from django.shortcuts import render
 from models import TVShow
 
 # Other Imports
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 
 def email_update(request):
@@ -58,7 +58,8 @@ def email_update(request):
         shows = TVShow.get_by_key_name(show_ids)
 
         # For all the shows subscribed to - find the shows which have episodes airing this week
-        episodes_this_week = {}
+        episodes_this_week = {date.today() + timedelta(days=k) : [] for k in range(0, 7)}
+        ep_this_week = False
         for showid in shows:
             episodes_query = db.GqlQuery(
                 "SELECT * FROM TVEpisode WHERE airdate >= :today AND airdate < :weektoday AND ANCESTOR IS :showid ORDER BY airdate",
@@ -67,21 +68,31 @@ def email_update(request):
             # Create a list of all the episodes
             episodes = [episode for episode in episodes_query.run()]
 
-            # Add a dictionary entry if episodes exist for a show
-            if len(episodes) > 0:
-                episodes_this_week[showid.title] = episodes
+            # Map the date for an episode to a dictionary containing the show title, the episode name 
+            # and the season and episode number
+            for episode in episodes:
+                ep_this_week = True
+                episodes_this_week[episode.airdate].append({'show_title' : showid.title, 'ep_name' : episode.name,
+                                                            'season_num' : episode.season, 'ep_num': episode.ep_number })  
 
-                # Don't send email if there are no episode airing this week
-        if len(episodes_this_week) == 0:
+        # Don't send email if there are no episode airing this week
+        if not ep_this_week:
             continue
 
+        print episodes_this_week
+        
         # Construct a message containing the episodes for this week
         message = "Hello Telehex Subscriber,\n\nThese are the shows you've subscribed to airing this week:\n\n"
         for key in sorted(episodes_this_week):
-            message += "{0}:\n".format(key)
-            for episode in episodes_this_week[key]:
-                message += "\t{0} - {1}\n".format(episode.airdate.strftime("%B %d, %Y"), episode.name)
+            if len(episodes_this_week[key]) == 0:
+                continue
+            message += "{0}:\n".format(key.strftime("%B %d, %Y"))
+            for show_ep in episodes_this_week[key]:
+                message += "\t{0} - {1} (S{2:02d}E{3:02d})\n".format(show_ep['show_title'], show_ep['ep_name'],
+                                                                    show_ep['season_num'], show_ep['ep_num'])
             message += "\n\n"
+
+        print message
 
         # Get the server to send the mail
         mail.send_mail(sender="updates@telehex3001.appspotmail.com",
