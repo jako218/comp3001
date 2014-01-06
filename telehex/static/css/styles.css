@@ -283,23 +283,7 @@ th.headerSortDown:after {
 }
     
 
-/* End show information page styles */
-
-.hover_hex {
-    opacity: 0.2;
-    -webkit-filter: blur(3px); 
-}
-
-.hex-im-cont {
-    position: relative;
-}
-
-.days-left {
-    position: absolute;
-    top: 40%;
-    text-align: center;
-    width: 100%;
-}
+/* End Your Shows styles */
 
 /* Calendar styles */
 .fc-day {
@@ -450,11 +434,12 @@ a.ui-state-focus {
     text-align:center;
     color:#fff !important;
     border: 0px transparent !important;
-    padding: 0;
+    padding-bottom:0px;
+    margin-bottom:10px;
 }
 
 .caption-styling {
-   color:#c0392b !important; 
+   color:#fff !important; 
    text-align: center;
 }
 
@@ -464,6 +449,8 @@ a.ui-state-focus {
 
 .hex_styling {
     color: #fff !important;
+    padding-bottom:5px;
+    margin-top:-5px;
 }
 
 .hex-icon
@@ -472,19 +459,37 @@ a.ui-state-focus {
 }
 
 .title-styling {
-    color: #fff;
     font-weight: bold;
+    font-size: 22px;
 }
 
 .title-styling a {
     text-decoration: none;
 }
 
+#subscribe{
+    padding: 20px 0px 40px 0px;
+}
+
+.hover_hex {
+    opacity: 0.2;
+    -webkit-filter: blur(3px); 
+}
+
+.hex-im-cont {
+    position: relative;
+}
+
+.days-left {
+    position: absolute;
+    top: 40%;
+    text-align: center;
+    width: 100%;
+}
+
 .tree_center { margin-left:auto; margin-right: auto;}
 
 .colour_change { color: rgba(192, 57, 43, 1) !important;}
-
-.stats_link { color: #2986b9; }
 
 .show_padding { padding-bottom:20px; }
 

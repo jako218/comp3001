@@ -9,10 +9,9 @@
 
 <script src="{% static "js/d3.v3.min.js" %}"></script>
 <div class="container">
-    <!-- title for the page -->
-    <div class="profile-title-styling">
-        <h1>Subscribed Show Statistics</h1>
-        <p><a href="/your-shows">&larr; back to your shows</a></p>
+    <h1>Subscribed Show Statistics</h1>
+    <div class="caption-styling">
+        <h2>Breakdown of subscribed shows</h2> 
     </div>
     <!-- pie charts in bootflat's thumbnail class' -->
     <div class="row">
@@ -45,9 +44,7 @@
     <!-- header for the second graph -->
     <div class="caption-styling">
         <h2>Explore your shows</h2> 
-        <p class="stats_link">A breakdown of your subscribed show information</p>
-        <p class="stats_link">The infograph below highlights all your chosen shows.</p>
-        <p class="stats_link">They are ordered by each season's ratings, to help you decide what to watch.</p>
+        <p class="stats_link">Here are your subscribed shows ordered by each season's average rating, to help you decide what to watch.<br>Click on a show or series to zoom in, and click on an episode to view its description.</p>
     </div>
     <!-- the d3 layout partition graph -->
     <div id="layout_graph">
