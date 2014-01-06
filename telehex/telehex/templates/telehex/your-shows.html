@@ -6,6 +6,14 @@
 
 {% block title %}- {{ user.nickname }}'s Shows{% endblock %}
 
+{% block css %}
+    <link rel='stylesheet' href="{% static "css/icheck_line/blue.css" %}" media="screen">
+{% endblock %}
+
+{% block js %}
+    <script src="{% static "js/jquery.icheck.js" %}"></script>
+{% endblock %}
+
 {%block content %}
 <div class="container">
     <!-- heading title -->
@@ -14,6 +22,12 @@
     </div>
     <!-- don't allow them to view stats if they have not subscribed to any shows -->
     {% if shows %}
+    <div>
+        {% if not email_updates %}<p>Would you like us to email you a weekly summary of the coming week's shows?</p>{% endif %}
+        <input id="updates_check" type="checkbox" {% if not email_updates %} checked="checked" {% endif %}>
+        <label>{% if email_updates %}Stop Receiving Email Updates{% endif %}{% if not email_updates %}Receive Email Updates{% endif %}</label>
+    </div>
+    <br>
     <!-- create the options bar to take you to statistics -->
         <div class="caption-styling show_padding">
             <a href="/your-shows/stats" class="stats_link"> View your show statistics </a>

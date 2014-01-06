@@ -28,8 +28,4 @@ $(document).ready(function() {
         }
 	});
 
-    // Use AJAX to set whether or not a user is subscribed to email updates
-    $("#updates_check").change(function(){
-        $.get("/receive_updates/");
-    });
 });

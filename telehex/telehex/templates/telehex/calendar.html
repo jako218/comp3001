@@ -2,23 +2,26 @@
 
 {% block title %}- {{user.nickname}}'s Calendar{% endblock %}
 
-{% block css %}<link rel='stylesheet' href="{% static "css/fullcalendar.css" %}" media="screen">
+{% block css %}
+    <link rel='stylesheet' href="{% static "css/fullcalendar.css" %}" media="screen">
 	<style>
 	    .oldclass {
 	        opacity: 0.3;
 	    }
-	</style>{% endblock %}
-{% block js %}<script src="{% static "js/fullcalendar.js" %}"></script>{% endblock %}
+    </style>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static "js/fullcalendar.js" %}"></script>
+{% endblock %}
 
 {%block content %}<div class="container">
     <h1>Your Show Calendar</h1>
     <br>
     <div id='calendar'></div>
     <br>
-    <div>
-        Receive email updates:
-        <input id="updates_check" type="checkbox" {% if email_updates %} checked="checked" {% endif %}>
-    </div>
 </div>{% endblock %}
 
-{% block scripts %}<script src="{% static "js/our_js/calendar.js" %}"></script>{% endblock %}
+{% block scripts %}
+<script src="{% static "js/our_js/calendar.js" %}"></script>
+{% endblock %}

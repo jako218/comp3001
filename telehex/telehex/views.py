@@ -99,10 +99,7 @@ def calendar(request):
         return HttpResponseRedirect(
             '/login?continue={0}'.format(request.get_full_path()))
 
-    user_entry = User.get_by_key_name(user.user_id())
-
-    return render(request, 'telehex/calendar.html',
-                  {"email_updates": user_entry})
+    return render(request, 'telehex/calendar.html')
 
 def edit_episode(request, show_id, episode_id):
     """
@@ -671,6 +668,9 @@ def your_shows(request):
     # Get the subscribed TVShows based on the show ids
     subscribed_tv_shows = TVShow.get_by_key_name(show_ids)
 
+    # Get the user's current email subscription status
+    user_entry = User.get_by_key_name(user.user_id())
+
     # Determine the next episode yet to air. If all episodes have aired, get the latest aired episode
     subs_next_episodes = []
     for ids in subscribed_tv_shows:
@@ -689,7 +689,8 @@ def your_shows(request):
         template_values = {
             'shows': sorted(zip(subscribed_tv_shows, subs_next_episodes),
                             key=lambda x: x[1].airdate if x[1] else date(MAXYEAR,
-                                                                         12, 31))}
+                                                                         12, 31)),
+            'email_updates': user_entry}
 
     return render(request, 'telehex/your-shows.html', template_values)
 

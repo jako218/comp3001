@@ -72,4 +72,22 @@ $(document).ready(function () {
     }, function () {
         $(this).siblings("a").children(".hex-im").mouseleave();
     });
+
+    // Using the iCheck plugin, style the email checkbox
+    $('input').each(function(){
+        var self = $(this),
+        label = self.next(),
+        label_text = label.text();
+
+        label.remove();
+        self.iCheck({
+            checkboxClass: 'icheckbox_line-blue',
+            insert: '<div class="icheck_line-icon"></div>' + label_text
+        });
+    }); 
+
+    // Use AJAX to set whether or not a user is subscribed to email updates
+    $("#updates_check").on('ifClicked', function(event){
+        $.get("/receive_updates/");
+    });
 });
