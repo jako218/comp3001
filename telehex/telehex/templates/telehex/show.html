@@ -125,7 +125,9 @@
                 <div class="row">
                     <div id="showdescription">
                         {{ show.desc }}
+                        {% if show.genre %}
                         [<a href="/genre/{{ genre }}">{{ show.genre }}</a>{% if show.subgenre %}, <a href="/genre/{{ subgenre }}">{{ show.subgenre }}</a>{% endif %}]
+                        {% endif %}
                     </div>
                 </div>
 
