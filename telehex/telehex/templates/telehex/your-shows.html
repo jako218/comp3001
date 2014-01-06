@@ -16,23 +16,14 @@
 
 {%block content %}
 <div class="container">
-    <!-- heading title -->
-    <div class="profile-title-styling">
-        <h1>Your Subscribed Shows</h1>
-    </div>
-    <!-- don't allow them to view stats if they have not subscribed to any shows -->
+    <h1>Your Subscribed Shows</h1>
     {% if shows %}
-    <div>
-        {% if not email_updates %}<p>Would you like us to email you a weekly summary of the coming week's shows?</p>{% endif %}
+    <div id="subscribe">
+        {% if email_updates %}<p id="subscribeoffer">You will receive a weekly email on Sundays, summarising the coming week's shows.</p>{% endif %}
+        {% if not email_updates %}<p id="subscribeoffer">Would you like us to email you a weekly summary of the coming week's shows?</p>{% endif %}
         <input id="updates_check" type="checkbox" {% if not email_updates %} checked="checked" {% endif %}>
         <label>{% if email_updates %}Stop Receiving Email Updates{% endif %}{% if not email_updates %}Receive Email Updates{% endif %}</label>
     </div>
-    <br>
-    <!-- create the options bar to take you to statistics -->
-        <div class="caption-styling show_padding">
-            <a href="/your-shows/stats" class="stats_link"> View your show statistics </a>
-        </div>
-    <!-- hexagons and descriptions inside thumbnails -->
     <div>
             {% for show, next in shows %}
                 {% if forloop.counter|divisibleby:3 %}

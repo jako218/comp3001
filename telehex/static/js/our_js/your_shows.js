@@ -82,12 +82,26 @@ $(document).ready(function () {
         label.remove();
         self.iCheck({
             checkboxClass: 'icheckbox_line-blue',
-            insert: '<div class="icheck_line-icon"></div>' + label_text
+            insert: '<div class="icheck_line-icon"></div>' + '<span id="subscribelabel">' + label_text + '</span>'
         });
     }); 
 
-    // Use AJAX to set whether or not a user is subscribed to email updates
-    $("#updates_check").on('ifClicked', function(event){
+    // Having the checkbox 'checked' for receive_updates == false and
+    // unchecked for receive_updates == true means we get a tick when
+    // the user isn't subscribed (to prompt them to subscribe) and a 
+    // cross when they are (to prompt them to unsubscribe)
+
+    // If unchecked, user has subscribed 
+    $("#updates_check").on('ifUnchecked', function(event){
         $.get("/receive_updates/");
+        $("#subscribelabel").text("Stop Receiving Email Updates");
+        $("#subscribeoffer").text("You will receive a weekly email on Sundays, summarising the coming week's shows.");
+    });
+   
+    // If checked, user has unsubscribed
+    $("#updates_check").on('ifChecked', function(event){
+        $.get("/receive_updates/");
+        $("#subscribelabel").text("Receive Email Updates");
+        $("#subscribeoffer").text("Would you like us to email you a weekly summary of the coming week's shows?");
     });
 });
