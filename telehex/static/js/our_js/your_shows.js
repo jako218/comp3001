@@ -57,12 +57,12 @@ $(document).ready(function () {
     // Specify a function that gets executed on hex-image hover
     $(".hex-im").hover(function () {
         // Image is being hovered over - add the hover class
-        $(this).addClass("hover");
+        $(this).addClass("hover_hex");
         // Show the days left
         $(this).parent().siblings(".days-left").show();
     }, function () {
         // Image is being left 
-        $(this).removeClass("hover");
+        $(this).removeClass("hover_hex");
         $(this).parent().siblings(".days-left").hide();
     });
 
