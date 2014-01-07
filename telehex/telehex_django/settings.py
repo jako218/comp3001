@@ -1,37 +1,30 @@
 #!/usr/bin/env python
 """
-Django settings for telehex_django project.
+:mod:`settings` -- Django Settings File
+=================================================
 
-For more information on this file, see
-https://docs.djangoproject.com/en/1.6/topics/settings/
+.. module:: settings
+   :synopsis: Settings file for Django
 
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.6/ref/settings/
+.. moduleauthor:: Miles Armstrong <mhha1g11@ecs.soton.ac.uk>
+.. moduleauthor:: Simon Bidwell <sab3g11@ecs.soton.ac.uk>
+.. moduleauthor:: Will Buss <wjb1g11@ecs.soton.ac.uk>
+.. moduleauthor:: Jamie Davies <jagd1g11@ecs.soton.ac.uk>
+.. moduleauthor:: Hayden Eskriett <hpe1g11@ecs.soton.ac.uk>
+.. moduleauthor:: Jack Flann <jof1g11@ecs.soton.ac.uk>
+.. moduleauthor:: Chantel Spencer-Bowdage <csb1g11@ecs.soton.ac.uk>
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-#BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 ROOT_PATH = os.path.dirname(__file__)
 TEMPLATE_DIRS = (os.path.join(ROOT_PATH, "templates"),)
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ''
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
 TEMPLATE_DEBUG = False
-
 ALLOWED_HOSTS = []
 
 
 # Application definition
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,7 +35,6 @@ INSTALLED_APPS = (
 
     'telehex',
 )
-
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,33 +43,16 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
-
 ROOT_URLCONF = 'telehex_django.urls'
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
-
 LANGUAGE_CODE = 'en-gb'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
-
 STATIC_URL = '/static/'
-
 TEMPLATE_CONTEXT_PROCESSORS = (
     "telehex.context_processors.user_processor",
     "telehex.context_processors.admin_processor",
     "django.core.context_processors.request",
 )
-
 SCRAPING = True
