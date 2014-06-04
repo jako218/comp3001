@@ -21,7 +21,7 @@ TEMPLATE_DIRS = (os.path.join(ROOT_PATH, "templates"),)
 SECRET_KEY = ''
 DEBUG = False
 TEMPLATE_DEBUG = False
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['telehex3001.appspot.com']
 
 
 # Application definition
